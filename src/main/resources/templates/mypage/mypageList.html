@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="~{layout/header :: header}"></div>
+    <th:block th:replace="~{layout/header :: header}"></th:block>
     <title>NEXT502 | 정보 수정</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <style>
         :root { --main-gold: #b89255; --main-gold-hover: #9c7b46; }
 
@@ -28,10 +31,46 @@
             background-color: var(--main-gold); color: white;
         }
     </style>
+
+
+
+    <script>
+        $(document).ready(function() {
+
+            $("#frm").on("submit", function(e) {
+
+                e.preventDefault();  // 기본 submit 막기
+
+                let pw = $("#pw").val();
+                let pwCheck = $("#pwCheck").val();
+
+                // 비밀번호를 입력한 경우에만 체크
+                if (pw !== "" || pwCheck !== "") {
+
+                    if (pw !== pwCheck) {
+                        alert("비밀번호가 다릅니다.");
+                        return;
+                    }
+                }
+
+                // 통과하면 PUT 방식 세팅
+                $("#method").val("PUT");
+
+                // 이벤트 제거 후 실제 submit
+                this.submit();
+            });
+
+        });
+
+
+    </script>
+
+
+
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
-<div th:replace="~{layout/navbar :: navbar}"></div>
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
 
 <main class="container my-5">
     <div class="row g-4">
@@ -45,7 +84,7 @@
                     <p class="text-muted small mb-0">일반 회원</p>
                 </div>
                 <div class="list-group list-group-flush small">
-                    <a th:href="@{/mypage/main}" class="list-group-item list-group-item-action py-3 px-4">
+                    <a th:href="@{/mypage}" class="list-group-item list-group-item-action py-3 px-4">
                         <i class="bi bi-calendar me-2"></i> 나의 예약 내역
                     </a>
                     <a th:href="@{/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center">
@@ -67,20 +106,21 @@
                 <div class="card-body p-4 p-md-5">
                     <h4 class="fw-bold mb-4 pb-2 border-bottom">개인정보 수정</h4>
 
-                    <form>
+                    <!--                    <p th:text="${userInfo}"></p>-->
+                    <form th:action="@{/mypage/edit}" method="post" id="frm">
                         <div class="mb-4">
-                            <label class="form-label text-muted small">아이디(이메일)</label>
-                            <input type="text" class="form-control bg-light" value="user@example.com" readonly>
+                            <label class="form-label text-muted small id" id="user-email">아이디(이메일)</label>
+                            <input type="text" class="form-control" th:value="${userInfo.email}" name="email" readonly>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label text-muted small">이름</label>
-                            <input type="text" class="form-control" value="홍길동">
+                            <input type="text" class="form-control" th:value="${userInfo.name}" name="name">
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label text-muted small">전화번호</label>
-                            <input type="text" class="form-control" value="010-1234-5678">
+                            <input type="text" class="form-control" th:value="${userInfo.phone}" name="phone">
                         </div>
 
                         <hr class="my-4">
@@ -88,24 +128,28 @@
 
                         <div class="mb-3">
                             <label class="form-label text-muted small">새 비밀번호</label>
-                            <input type="password" class="form-control" placeholder="변경할 경우에만 입력하세요">
+                            <input type="password" class="form-control" id="pw" name="pw"  placeholder="변경할 경우에만 입력하세요">
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-muted small">새 비밀번호 확인</label>
-                            <input type="password" class="form-control">
+                            <input type="password" class="form-control" id="pwCheck" name="pwCheck">
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-light border">취소</button>
-                            <button type="submit" class="btn btn-gold px-4">저장하기</button>
+                            <button type="button" class="btn btn-light border" id="btn-cancel">취소</button>
+                            <button type="submit" class="btn btn-gold px-4" id="btn-edit">저장하기</button>
                         </div>
+
+                        <input type="hidden" id="method" name="_method">
                     </form>
 
                 </div>
             </div>
         </section>
+
     </div>
 </main>
-<div th:replace="~{layout/footer :: footer}"></div>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
 </body>
 </html>

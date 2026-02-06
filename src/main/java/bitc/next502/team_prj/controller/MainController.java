@@ -22,7 +22,7 @@ public class MainController {
     @Autowired
     private RestaurantService restaurantService;
 
-    @GetMapping({"/main","/"})
+    @GetMapping("/main")
     public String mainPage(Model model) {
         // 상위 3개 데이터 가져오기
         List<RestaurantDTO> topList = restaurantService.getTop3();
@@ -48,20 +48,9 @@ public class MainController {
 //        return "redirect:/main";
 //    }
 
-    @GetMapping("/mybookmarkList")
-    public String mybookmarkList() {
-        return "mypage/mybookmarkList";
-    }
 
-    @GetMapping("/myreviewList")
-    public String myreviewList() {
-        return "mypage/myreviewList";
-    }
 
-    @GetMapping("/mypageList")
-    public String mypageList() {
-        return "mypage/mypageList";
-    }
+
 
 
     @GetMapping("/detail")
@@ -82,43 +71,5 @@ public class MainController {
 
         return "store/detail";
     }
-
-    @GetMapping("/mngstoreWrite")
-    public String mngstoreWrite() {
-        return "mng/mngstoreWrite";
-    }
-
-    @GetMapping("/store/search")
-    public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
-                                    Model model) {
-
-        List<RestaurantDTO> resList = restaurantService.searchByKeyword(keyword);
-
-        model.addAttribute("resList", resList);
-        model.addAttribute("keyword", keyword);
-
-        return "store/searchList";
-    }
-
-//    // 예약자 명단 관리
-//    @GetMapping("/mngmenu")
-//    public String mngMenu(Model model) {
-//        model.addAttribute("menuId", "menu"); // 'menu'라는 별명을 붙임
-//        return "mng/mngmenu";
-//    }
-//
-//    // 식당 정보 등록
-//    @GetMapping("/mngstoreWrite")
-//    public String mngStoreWrite(Model model) {
-//        model.addAttribute("menuId", "store"); // 'store'라는 별명을 붙임
-//        return "mng/mngstoreWrite";
-//    }
-//
-//    // 리뷰 답변 관리
-//    @GetMapping("/mngreview")
-//    public String mngReview(Model model) {
-//        model.addAttribute("menuId", "review"); // 'review'라는 별명을 붙임
-//        return "mng/mngreview";
-//    }
 }
 

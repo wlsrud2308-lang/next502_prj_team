@@ -11,6 +11,9 @@ public interface MypageMapper {
     // XML id="selectMyInfoById"
     MyInfoDTO selectMyInfoById(String userId);
 
+    // 내 정보 수정
+    void editMyInfo(MyInfoDTO info);
+
     // XML id="selectMyResvList"
     List<MyResvDTO> selectMyResvList(String userId);
 

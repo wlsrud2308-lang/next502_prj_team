@@ -16,6 +16,12 @@
             user_id = #{userId}
     </select>
 
+    <update id="editMyInfo" parameterType="bitc.next502.team_prj.dto.MyInfoDTO">
+        UPDATE normal_user
+        SET  user_pw = #{pw}, user_tel = #{phone}, user_name = #{name}
+        WHERE user_email = #{email}
+    </update>
+
     <select id="selectMyResvList" resultType="bitc.next502.team_prj.dto.MyResvDTO">
         SELECT
             r.reservation_id     AS resvId,

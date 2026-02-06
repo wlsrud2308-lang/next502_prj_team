@@ -19,6 +19,11 @@ public class MyPageServiceImpl implements MypageService {
         return myPageMapper.selectMyInfoById(userId);
     }
 
+    @Override
+    public void editMyInfo(MyInfoDTO info) {
+        myPageMapper.editMyInfo(info);
+    }
+
     // 예약 목록 가져오기
     public List<MyResvDTO> getMyResvList(String userId) {
         return myPageMapper.selectMyResvList(userId);
