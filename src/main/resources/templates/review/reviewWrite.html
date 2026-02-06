@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>리뷰 쓰기</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      font-family: "Noto Sans KR", Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    .container {
+      width: 420px;
+      margin: 40px auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #c49a6c;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 20px 0 10px;
+      text-align: left;
+    }
+
+    /* 별점 */
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      font-size: 24px;
+      color: #ddd;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .stars span:hover,
+    .stars span.active {
+      color: #f2b01e;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: none;
+      box-sizing: border-box;
+    }
+
+    /* 사진 업로드 */
+    .upload-box {
+      border: 1px dashed #ddd;
+      border-radius: 4px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .upload-box input {
+      display: none;
+    }
+
+    /* 버튼 */
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background-color: #eee;
+      color: #333;
+    }
+
+    .btn-submit {
+      background-color: #c49a6c;
+      color: #fff;
+    }
+
+  </style>
+
+  <script>
+    $(function (){
+
+      const stars = document.querySelectorAll('.stars .star');
+      const ratingInput = document.getElementById('rating');
+      let selectedRating = 0;
+
+      stars.forEach(function (star) {
+            star.addEventListener('click', function () {
+                selectedRating = star.dataset.value;
+                ratingInput.value = selectedRating;
+                updateStars(selectedRating);
+            });
+          // 마우스 오버
+          star.addEventListener('mouseover', () => {
+              updateStars(star.dataset.value);
+          });
+
+          // 마우스 아웃
+          star.addEventListener('mouseout', () => {
+              updateStars(selectedRating);
+          });
+      });
+
+     //별점변경
+     function updateStars(val00) {
+            stars.forEach(function (star) {
+                star.classList.toggle(
+                    'active',
+                    star.dataset.value <= val00
+                );
+            });
+        }
+
+     //취소버튼
+     $("#btn-cancel").on("click",function (){
+       // history.back();
+         alert("취소버튼");
+      })
+
+
+
+
+    });
+  </script>
+
+</head>
+<body>
+
+<div class="container">
+  <h1>리뷰 쓰기</h1>
+  <div class="subtitle">"레스토랑 이름 A"에서의 경험은 어떠셨나요?</div>
+
+  <form action="/review/reviewWrite" method="post" th:action="@{/review/reviewWrite}">
+      <input type="hidden" id="userId" name="userId" th:value="${session.loginUser.userId}">
+    <input type="hidden" id="rating" name="rating" value="0">
+    <input type="hidden" id="restaurantId" name="restaurantId" value="Buk7096">
+      <input type="hidden" name="imgUrl" value="">
+
+    <div class="section-title">평점 선택</div>
+          <div class="stars">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+          </div>
+          <div class="hint">별을 클릭하여 점수를 매겨주세요.</div>
+
+          <div class="section-title">방문 후기</div>
+          <textarea id="comment" name="comment" placeholder="음식의 맛, 서비스, 분위기 등에 대한 솔직한 리뷰를 남겨주세요. (최소 10자 이상)"></textarea>
+
+          <div class="section-title">사진 첨부 (선택)</div>
+          <label class="upload-box">
+            📷 음식 사진 등록하기
+            <input type="file" accept="image/*" id="imgUrl">
+          </label>
+
+          <div class="buttons">
+            <button class="btn-cancel" type="reset">취소</button>
+            <button class="btn-submit" type="submit">리뷰 등록하기</button>
+          </div>
+  </form>
+</div>
+
+</body>
+</html>

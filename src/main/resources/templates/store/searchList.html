@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:replace="~{layout/header :: header}"></div>
+  <title>NEXT502 | 검색 결과</title>
+  <style>
+      :root { --main-gold: #b89255; }
+      .text-gold { color: var(--main-gold) !important; }
+      .btn-gold { background-color: var(--main-gold); color: white; border: none; }
+      .btn-gold:hover { background-color: #9c7b46; color: white; }
+
+      /* 사이드바 필터 */
+      .filter-section { position: sticky; top: 100px; }
+      .filter-title { font-size: 1rem; font-weight: bold; margin-bottom: 1rem; border-bottom: 2px solid var(--main-gold); padding-bottom: 5px; }
+      .form-check-input:checked { background-color: var(--main-gold); border-color: var(--main-gold); }
+
+      /* 식당 카드 */
+      .res-card {
+          border: none;
+          border-bottom: 1px solid #eee;
+          border-radius: 0;
+          transition: background 0.2s;
+          padding: 20px 0;
+      }
+      .res-card:hover { background-color: #fafafa; }
+      .res-img-wrapper {
+          width: 240px; height: 180px; overflow: hidden; border-radius: 8px;
+          background: #f8f9fa; display: flex; align-items: center; justify-content: center;
+      }
+      .res-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+      .badge-category { background-color: #f0f0f0; color: #666; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-white">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<div class="bg-light py-3 border-bottom">
+  <div class="container">
+    <form action="/store/search" method="get" class="row g-2 justify-content-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <input type="text" name="keyword" class="form-control border-0 shadow-sm" th:value="${keyword}" placeholder="지역, 식당 이름 검색...">
+          <button class="btn btn-gold px-4" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="container my-5">
+  <div class="row">
+    <aside class="col-lg-3 pe-lg-5">
+      <div class="filter-section">
+        <div class="mb-5">
+          <h6 class="filter-title">지역</h6>
+          <div class="form-check mb-2" th:each="loc : ${ {'연제구', '해운대구', '부산진구', '수영구'} }">
+            <input class="form-check-input" type="checkbox" th:value="${loc}" th:id="'loc-' + ${loc}">
+            <label class="form-check-label small" th:for="'loc-' + ${loc}" th:text="${loc}"></label>
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <h6 class="filter-title">요리 유형</h6>
+          <div class="form-check mb-2" th:each="cat : ${['프렌치', '일식/오마카세', '한식', '이탈리안']}">
+            <input class="form-check-input" type="checkbox" th:value="${cat}" th:id="'cat-' + ${cat}">
+            <label class="form-check-label small" th:for="'cat-' + ${cat}" th:text="${cat}"></label>
+          </div>
+        </div>
+
+        <button class="btn btn-outline-dark btn-sm w-100 mt-2">필터 초기화</button>
+      </div>
+    </aside>
+
+    <main class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-end mb-4 pb-3 border-bottom">
+        <div>
+          <span class="fs-5 fw-bold text-dark">총 <span class="text-gold" th:text="${#lists.size(resList)}">0</span>곳의 미식 공간</span>
+        </div>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm border-0 bg-light" style="width: 120px;">
+            <option>별점순</option>
+            <option>리뷰순</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="res-card card" th:each="res : ${resList}">
+        <div class="row g-0 align-items-center">
+          <div class="col-md-4">
+            <div class="res-img-wrapper shadow-sm">
+              <img th:if="${res.mainImgThumb}" th:src="${res.mainImgThumb}" alt="식당이미지">
+              <span th:unless="${res.mainImgThumb}" class="text-muted small">No Image</span>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="card-body py-0 ps-md-4">
+              <div class="mb-2">
+                <span class="badge-category" th:text="${res.category}">카테고리</span>
+                <span class="ms-2 text-muted small"><i class="bi bi-geo-alt"></i> [[${res.locationTag}]]</span>
+              </div>
+              <h4 class="card-title fw-bold mb-2">
+                <a th:href="@{/detail(id=${res.restaurantId})}" class="text-decoration-none text-dark" th:text="${res.restaurantName}">식당 이름</a>
+              </h4>
+              <div class="mb-3">
+                <span class="text-gold fw-bold fs-5">★ [[${res.rating}]]</span>
+                <span class="text-muted ms-2 small">| 리뷰 [[${res.reviewCount ?: 0}]]</span>
+              </div>
+              <p class="card-text text-secondary small mb-3 text-truncate-2" th:text="${res.description}">
+                식당 한 줄 소개가 들어가는 자리입니다.
+              </p>
+              <a th:href="@{/detail(id=${res.restaurantId})}" class="btn btn-dark btn-sm px-4">상세보기 / 예약</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(resList)}" class="py-5 text-center">
+        <i class="bi bi-search fs-1 text-muted"></i>
+        <p class="mt-3 text-secondary">검색 결과가 없습니다.</p>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

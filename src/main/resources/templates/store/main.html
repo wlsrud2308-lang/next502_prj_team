@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{layout/header :: header}"></div>
+    <title>NEXT502 | 메인 맛집 찾기</title>
+    <style>
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1470&q=80');
+            background-size: cover; background-position: center;
+            height: 450px; display: flex; align-items: center; justify-content: center; color: white;
+        }
+        .top-card {
+            border: 1px solid #f0f0f0;
+            border-radius: 0px !important;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .top-card:hover { transform: translateY(-10px); }
+        .top-card img { height: 250px; object-fit: cover;  border-radius: 0px !important;}
+        .badge-rank { position: absolute; top: 15px; left: 15px; z-index: 10; background: #b89255; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; }
+        #main-map { width: 100%; height: 500px; border-radius: 15px; border: 1px solid #ddd; }
+        .section-title { font-weight: bold; border-left: 5px solid #b89255; padding-left: 15px; margin-bottom: 30px; }
+        .card-link { display: block; color: inherit; text-decoration: none; }
+        .card-link:hover { color: inherit; text-decoration: none; }
+
+        /* Placeholder 스타일링 */
+        .hero-input::placeholder {
+            color: #ccc;
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            transition: opacity 0.3s ease;
+            line-height: 1.5;
+            vertical-align: middle;
+        }
+
+
+        .hero-input:focus::placeholder {
+            opacity: 0;
+        }
+
+        .hero-input { color: #333; font-weight: 500; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<header class="hero-section">
+    <div class="text-center w-100 px-3" style="max-width: 700px;">
+        <h1 class="display-4 fw-bold mb-4">오늘 어디서 먹을까?</h1>
+        <form action="/store/search" method="get" class="input-group input-group-lg shadow-lg">
+
+            <input type="text" name="keyword" class="form-control border-0 hero-input"
+                   placeholder="지역, 식당, 음식 종류 검색..." autocomplete="off">
+
+            <button class="btn btn-warning px-4 text-white" type="submit" style="background-color: #b89255;">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+</header>
+
+<main class="container my-5">
+    <section class="mb-5 py-3">
+        <h3 class="section-title">실시간 인기 맛집 TOP 3</h3>
+        <div class="row g-4">
+            <div class="col-md-4" th:each="res, iterStat : ${topList}">
+                <a class="card-link" th:href="@{/detail(id=${res.restaurantId})}">
+                    <div class="card top-card shadow-sm">
+                        <span class="badge-rank shadow" th:text="${iterStat.count} + '위'">1위</span>
+                        <img src="" th:src="${res.mainImg}" class="card-img-top" alt="식당">
+                        <div class="card-body px-3">
+                            <div class="text-muted small">
+                                <span th:text="${res.foods}"></span> • <span th:text="${res.address}"></span>
+                            </div>
+                            <h5 class="card-title fw-bold mt-1" th:text="${res.restaurantName}"></h5>
+                            <p class="text-gold mb-0">
+                                ★ <span th:text="${res.rating}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

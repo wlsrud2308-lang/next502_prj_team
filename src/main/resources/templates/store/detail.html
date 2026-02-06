@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:replace="~{layout/header :: header}"></div>
+  <title>NEXT502 | [[${restaurant.restaurantName}]]</title>
+
+  <style>
+      :root { --main-gold: #b89255; }
+      .text-gold { color: var(--main-gold) !important; }
+
+      .detail-hero {
+          width: 100%;
+          height: 450px;
+          background: #444 url([(${restaurant.mainImgThumb})]) center/cover no-repeat;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      /* 예약 박스 */
+      .sticky-booking {
+          position: sticky;
+          top: 100px;
+          z-index: 10;
+      }
+
+      /* 지도 스타일 */
+      .map-box {
+          width: 100%;
+          height: 250px;
+          border-radius: 8px;
+          border: 1px solid #dee2e6;
+      }
+
+      /* 버튼 커스텀 */
+      .btn-gold { background-color: var(--main-gold); color: white; border: none; }
+      .btn-gold:hover { background-color: #9c7b46; color: white; }
+      .btn-bookmark { border: 1px solid #dee2e6; color: #ccc; transition: 0.3s; }
+      .btn-bookmark.active { color: #e74c3c; border-color: #e74c3c; background: #fff5f5; }
+
+
+      .star-meter {
+          position: relative;
+          display: inline-block;
+          font-size: 1.1rem;
+          letter-spacing: 2px;
+          line-height: 1;
+          vertical-align: middle;
+      }
+      .star-meter .stars-bg { color: #d7d7d7; }
+      .star-meter .stars-fill {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 0%;
+          overflow: hidden;
+          white-space: nowrap;
+          color: var(--main-gold);
+      }
+  </style>
+</head>
+
+<body class="bg-white">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<div class="detail-hero shadow-inner">
+
+</div>
+
+<main class="container my-5">
+  <div class="row g-5">
+
+    <section class="col-lg-8">
+      <div class="mb-2 text-gold fw-bold small">
+        [[${restaurant.category}]] • [[${restaurant.foods}]] • [[${restaurant.locationTag}]]
+      </div>
+      <h1 class="display-5 fw-bold mb-4">[[${restaurant.restaurantName}]]</h1>
+
+      <div class="d-flex gap-4 py-3 border-top border-bottom mb-4 text-center">
+        <div>
+          <span class="text-muted small d-block">평점</span>
+          <b class="text-gold fs-5">★ [[${restaurant.rating}]]</b>
+        </div>
+        <div class="border-start ps-4">
+          <span class="text-muted small d-block">리뷰</span>
+          <b class="fs-5">[[${reviewCount}]]개</b>
+        </div>
+        <div class="border-start ps-4">
+          <span class="text-muted small d-block">좌석 수</span>
+          <b class="fs-5">[[${restaurant.seats}]]석</b>
+        </div>
+      </div>
+
+      <div class="py-3">
+        <h5 class="fw-bold mb-3">식당 소개</h5>
+        <p class="lh-lg text-secondary" style="white-space: pre-line;">[[${restaurant.itemCntnts}]]</p>
+      </div>
+
+      <div class="mt-5 pt-5 border-top">
+        <h4 class="fw-bold mb-4">
+          방문자 리뷰 <span class="text-gold fs-6">([[${reviewCount}]])</span>
+        </h4>
+
+        <!-- 리뷰 요약 -->
+        <div class="bg-light p-4 rounded-3 d-flex align-items-center gap-4 mb-4">
+          <h2 class="display-4 fw-bold text-gold mb-0">[[${restaurant.rating}]]</h2>
+          <div>
+            <div class="star-meter mb-1">
+              <div class="stars-bg">★★★★★</div>
+              <div class="stars-fill" th:style="'width:' + (${restaurant.rating} * 20) + '%'">★★★★★</div>
+            </div>
+            <div class="text-muted small">최근 고객 리뷰를 반영한 평균 평점입니다.</div>
+          </div>
+        </div>
+
+        <!-- 별점 분포 막대 차트 -->
+        <div class="mb-5">
+          <h6 class="fw-bold mb-3">별점 분포</h6>
+
+          <div class="vstack gap-2 small">
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 42px;" class="text-muted">5점</div>
+              <div class="progress flex-grow-1" style="height: 10px;">
+                <div class="progress-bar"
+                     style="background-color: #b89255;"
+                     th:style="'width:' + (${reviewCount} == 0 ? 0 : (${ratingCounts[5]} * 100.0 / ${reviewCount})) + '%'">
+                </div>
+              </div>
+              <div style="width: 44px;" class="text-end text-muted" th:text="${ratingCounts[5]}">0</div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 42px;" class="text-muted">4점</div>
+              <div class="progress flex-grow-1" style="height: 10px;">
+                <div class="progress-bar"
+                     style="background-color: #b89255;"
+                     th:style="'width:' + (${reviewCount} == 0 ? 0 : (${ratingCounts[4]} * 100.0 / ${reviewCount})) + '%'">
+                </div>
+              </div>
+              <div style="width: 44px;" class="text-end text-muted" th:text="${ratingCounts[4]}">0</div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 42px;" class="text-muted">3점</div>
+              <div class="progress flex-grow-1" style="height: 10px;">
+                <div class="progress-bar"
+                     style="background-color: #b89255;"
+                     th:style="'width:' + (${reviewCount} == 0 ? 0 : (${ratingCounts[3]} * 100.0 / ${reviewCount})) + '%'">
+                </div>
+              </div>
+              <div style="width: 44px;" class="text-end text-muted" th:text="${ratingCounts[3]}">0</div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 42px;" class="text-muted">2점</div>
+              <div class="progress flex-grow-1" style="height: 10px;">
+                <div class="progress-bar"
+                     style="background-color: #b89255;"
+                     th:style="'width:' + (${reviewCount} == 0 ? 0 : (${ratingCounts[2]} * 100.0 / ${reviewCount})) + '%'">
+                </div>
+              </div>
+              <div style="width: 44px;" class="text-end text-muted" th:text="${ratingCounts[2]}">0</div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <div style="width: 42px;" class="text-muted">1점</div>
+              <div class="progress flex-grow-1" style="height: 10px;">
+                <div class="progress-bar"
+                     style="background-color: #b89255;"
+                     th:style="'width:' + (${reviewCount} == 0 ? 0 : (${ratingCounts[1]} * 100.0 / ${reviewCount})) + '%'">
+                </div>
+              </div>
+              <div style="width: 44px;" class="text-end text-muted" th:text="${ratingCounts[1]}">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 리뷰 목록 -->
+        <div class="vstack gap-4">
+          <div class="pb-4 border-bottom" th:each="rv : ${reviewList}">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="fw-bold" th:text="${rv.userId}">작성자</span>
+              <span class="text-muted small" th:text="${rv.createDate}">작성일</span>
+            </div>
+
+            <div class="star-meter mb-2">
+              <div class="stars-bg">★★★★★</div>
+              <div class="stars-fill" th:style="'width:' + (${rv.rating} * 20) + '%'">★★★★★</div>
+            </div>
+
+            <p class="text-secondary small mb-0" th:text="${rv.comment}">리뷰 내용</p>
+          </div>
+
+          <div class="text-muted small" th:if="${#lists.isEmpty(reviewList)}">
+            아직 등록된 리뷰가 없습니다.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="col-lg-4">
+      <div class="sticky-booking">
+        <div class="card shadow-sm border-light">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-4">방문 예약</h5>
+
+            <div class="mb-4">
+              <label class="form-label small text-muted"><i class="bi bi-geo-alt me-1"></i> 위치</label>
+              <p class="small mb-2 fw-medium">[[${restaurant.address}]]</p>
+              <div id="map" class="map-box mb-3"></div>
+            </div>
+
+            <div class="d-flex gap-2 mb-4">
+              <!--              예약하기 페이지 연결 -->
+              <button type="button" class="btn btn-dark btn-lg flex-grow-1 fw-bold py-3" onclick="checkLoginAndGo()">예약하기</button>
+
+              <button class="btn btn-bookmark btn-lg px-3" onclick="this.classList.toggle('active')">
+                <i class="bi bi-heart-fill"></i>
+              </button>
+            </div>
+
+            <div class="pt-4 border-top">
+              <h6 class="fw-bold mb-3 small"><i class="bi bi-compass me-1"></i> 주변 관광 명소 (2km 이내)</h6>
+              <div id="tourMap" class="map-box" style="height: 180px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<KAKAO_APP_KEY>&libraries=services"></script>
+<script th:inline="javascript">
+    window.onload = function() {
+        // restaurant.lat/lng가 문자열이어도 숫자로 변환해서 안전하게 사용
+        const latRaw = /*[[${restaurant.lat}]]*/ "35.1796";
+        const lngRaw = /*[[${restaurant.lng}]]*/ "129.0756";
+        const lat = parseFloat(latRaw) || 35.1796;
+        const lng = parseFloat(lngRaw) || 129.0756;
+
+        // 1. 메인 지도 설정
+        const mapContainer = document.getElementById('map');
+        const mapOption = { center: new kakao.maps.LatLng(lat, lng), level: 3 };
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+
+        new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(lat, lng),
+            map: map
+        });
+
+        // 2. 관광지 지도 설정
+        const tourMapContainer = document.getElementById('tourMap');
+        const tourMapOption = { center: new kakao.maps.LatLng(lat, lng), level: 5 };
+        const tourMap = new kakao.maps.Map(tourMapContainer, tourMapOption);
+
+        const ps = new kakao.maps.services.Places();
+        ps.categorySearch('AT4', (data, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+                data.forEach(place => {
+                    new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(place.y, place.x),
+                        map: tourMap
+                    });
+                });
+            }
+        }, { location: new kakao.maps.LatLng(lat, lng), radius: 2000 });
+    };
+
+    // 비로그인 상황에서 예약하기 버튼눌렀을때 로그인 페이지로 보내주는 스크립트
+
+    function checkLoginAndGo() {
+
+        const loginUser = '[[${session.loginUser}]]';
+        const restaurantId = '[[${restaurant.restaurantId}]]';
+
+        console.log("세션 확인용:", loginUser);
+
+
+        if (!loginUser || loginUser === "" || loginUser === "null") {
+            if (confirm("예약은 로그인 후 이용 가능합니다.\n로그인 페이지로 이동하시겠습니까?")) {
+
+                location.href = "/login";
+            }
+        } else {
+
+            location.href = "/reservation/write?restaurantId=" + restaurantId;
+        }
+    }
+</script>
+</body>
+</html>

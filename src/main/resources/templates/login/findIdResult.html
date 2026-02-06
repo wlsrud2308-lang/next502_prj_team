@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>NEXT502 | 아이디 찾기 결과</title>
+</head>
+<body>
+<div class="container mt-5">
+  <h3>아이디 찾기 결과</h3>
+
+  <div th:if="${foundId != null}">
+    <p>찾으신 아이디: <strong th:text="${foundId}"></strong></p>
+  </div>
+
+  <div th:if="${error != null}">
+    <p th:text="${error}" style="color:red;"></p>
+  </div>
+
+  <a th:href="@{/login}" class="btn btn-dark mt-3">로그인 화면으로 돌아가기</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top px-4">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-gold" th:href="@{/main}">NEXT502</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto small">
+                <li class="nav-item" th:if="${session.loginUser == null}">
+                    <a class="nav-link" th:href="@{/login}">로그인</a>
+                </li>
+                <li class="nav-item" th:if="${session.loginUser == null}">
+                    <a class="nav-link" th:href="@{/user/signup}">회원가입</a>
+                </li>
+
+
+                <li class="nav-item" th:if="${session.loginUser != null}">
+                    <span class="nav-link">[[${session.loginUser.name}]]님 환영합니다</span>
+                </li>
+                <li class="nav-item" th:if="${session.loginUser != null}">
+                    <a class="nav-link" th:href="@{/logout}">로그아웃</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/mypage/main}">마이페이지</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</html>

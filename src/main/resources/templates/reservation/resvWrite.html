@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NEXT502 | 정성스러운 한 끼를 위한 예약</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700&family=Noto+Sans+KR:wght@100;300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --next-gold: #C19A6B;
+            --next-dark: #222222;
+            --next-light-gray: #f9f9f9;
+        }
+
+        body {
+            background-color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--next-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .premium-wrapper {
+            max-width: 650px;
+            margin: 100px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .brand-logo {
+            font-family: 'Noto Serif KR', serif;
+            color: var(--next-gold);
+            font-size: 14px;
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .main-title {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 32px;
+            font-weight: 400;
+            color: #111;
+        }
+
+        .form-container {
+            border-top: 1px solid var(--next-dark);
+            padding-top: 40px;
+        }
+
+        .form-section-title {
+            font-size: 13px;
+            color: var(--next-gold);
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 45px;
+            position: relative;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 300;
+        }
+
+        .form-control, .form-select {
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            border-radius: 0;
+            padding: 12px 0;
+            font-size: 18px;
+            background-color: transparent;
+            transition: all 0.4s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: none;
+            border-bottom: 1px solid var(--next-gold);
+            background-color: transparent;
+        }
+
+        .readonly-text {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 22px;
+            color: var(--next-dark);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .btn-box {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .btn-premium {
+            background-color: var(--next-dark);
+            color: #fff;
+            border: 1px solid var(--next-dark);
+            padding: 20px 80px;
+            font-size: 15px;
+            letter-spacing: 2px;
+            transition: 0.4s;
+            width: 100%;
+            font-weight: 400;
+        }
+
+        .btn-premium:hover {
+            background-color: transparent;
+            color: var(--next-dark);
+        }
+
+        .btn-cancel {
+            display: inline-block;
+            margin-top: 25px;
+            color: #bbb;
+            text-decoration: none;
+            font-size: 13px;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .btn-cancel:hover {
+            color: var(--next-gold);
+            border-bottom: 1px solid var(--next-gold);
+        }
+
+        @media (max-width: 768px) {
+            .premium-wrapper { margin: 50px auto; }
+            .main-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{layout/header :: header}"></header>
+
+<div class="premium-wrapper">
+    <div class="header-section">
+        <span class="brand-logo">NEXT502</span>
+        <h1 class="main-title">예약 신청</h1>
+    </div>
+
+    <div class="form-container">
+        <form action="/reservation/insert" method="post">
+            <input type="hidden" name="restaurantId" th:value="${restaurantId}">
+            <input type="hidden" name="userId" value="test_user_01">
+
+            <div class="form-section-title">01. 예약 식당</div>
+            <div class="form-group">
+                <label class="form-label">선택한 식당</label>
+                <div class="readonly-text">레스토랑 이름 A</div>
+            </div>
+
+            <div class="form-section-title">02. 날짜 & 시간</div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">날짜</label>
+                        <input type="date" name="reservationDate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">시간</label>
+                        <select name="reservationTime" class="form-select" required>
+                            <option value="" disabled selected>예약 시간 선택</option>
+                            <option value="11:00">11:00 (점심)</option>
+                            <option value="11:30">11:30 (점심)</option>
+                            <option value="12:00">12:00 (점심)</option>
+                            <option value="12:30">12:30 (점심)</option>
+                            <option value="13:00">13:00 (점심)</option>
+                            <option value="18:00">18:00 (저녁)</option>
+                            <option value="19:00">19:00 (저녁)</option>
+                            <option value="20:00">20:00 (저녁)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">인원 수</label>
+                <input type="number" name="countPeople" class="form-control" min="1" max="10" placeholder="인원 수를 입력하세요" required>
+            </div>
+
+            <div class="form-section-title">03. 요청사항</div>
+            <div class="form-group">
+                <label class="form-label">Message (Optional)</label>
+                <textarea name="requestMemo" class="form-control" rows="1" placeholder="특별한 요청사항이 있으시면 기재해 주세요. (알러지 등)"></textarea>
+            </div>
+
+            <div class="btn-box">
+                <button type="submit" class="btn-premium">예약 확정</button>
+                <a href="javascript:history.back();" class="btn-cancel">취소</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+
+
+

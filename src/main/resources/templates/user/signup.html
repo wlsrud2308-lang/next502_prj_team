@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{layout/header :: header}"></div>
+    <title>NEXT502 | 회원가입</title>
+
+    <style>
+        body { background-color: #f8f9fa; }
+
+        .signup-card {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border: 1px solid #eee;
+        }
+
+        .text-gold { color: #b89255; }
+
+        .btn-dark {
+            background-color: #333;
+            border: none;
+        }
+
+        .btn-dark:hover {
+            background-color: #b89255;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+
+    <div class="signup-card p-4 shadow-sm">
+
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-gold">NEXT502</h2>
+            <p class="text-muted small">회원가입을 진행해주세요.</p>
+        </div>
+
+        <form action="/signupProcess" method="post">
+
+            <div class="mb-4 text-center">
+                <label class="me-3">
+                    <input type="radio" name="userType" value="normal" checked onclick="toggleForm()"> 일반 고객
+                </label>
+
+                <label>
+                    <input type="radio" name="userType" value="business" onclick="toggleForm()"> 식당 관리자
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">아이디</label>
+                <input type="text" class="form-control" name="id" required>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">비밀번호</label>
+                <input type="password" class="form-control" name="pw" required>
+            </div>
+
+            <!-- ===== 일반 회원 영역 ===== -->
+            <div id="normalArea">
+
+                <div class="mb-3">
+                    <label class="form-label">이메일</label>
+                    <input type="text" class="form-control" name="userEmail" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">이름</label>
+                    <input type="text" class="form-control" name="userName">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">전화번호</label>
+                    <input type="text" class="form-control" name="userTel">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">나이</label>
+                    <input type="number" class="form-control" name="userAge">
+                </div>
+
+            </div>
+
+            <!-- ===== 식당 관리자 영역 ===== -->
+            <div id="businessArea" style="display:none;">
+
+                <div class="mb-3">
+                    <label class="form-label">사업자명</label>
+                    <input type="text" class="form-control" name="businessName">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">사업자 번호</label>
+                    <input type="text" class="form-control" name="businessNumber">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">연락처</label>
+                    <input type="text" class="form-control" name="businessTel">
+                </div>
+
+            </div>
+
+            <button class="btn btn-dark w-100 mt-3">가입하기</button>
+
+            <div class="text-center mt-3">
+                이미 계정이 있으신가요?
+                <a th:href="@{/templates/login}" class="text-gold">로그인</a>
+            </div>
+
+        </form>
+    </div>
+
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    function toggleForm() {
+        const type = document.querySelector('input[name="userType"]:checked').value;
+
+        if(type === "normal") {
+            document.getElementById("normalArea").style.display = "block";
+            document.getElementById("businessArea").style.display = "none";
+        }
+        else {
+            document.getElementById("normalArea").style.display = "none";
+            document.getElementById("businessArea").style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>

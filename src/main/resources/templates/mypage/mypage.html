@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{layout/header :: header}"></div>
+    <title>NEXT502 | 마이페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <style>
+        :root { --main-gold: #b89255; --main-gold-hover: #9c7b46; }
+
+        .text-gold { color: var(--main-gold) !important; }
+        .bg-gold-subtle { background-color: #fcf8f3; color: var(--main-gold); }
+
+        /* 사이드바 메뉴  */
+        .list-group-item.active {
+            background-color: transparent;
+            color: var(--main-gold);
+            font-weight: bold;
+            border-color: #eee;
+            border-left: 3px solid var(--main-gold); /* 왼쪽 강조 선 */
+        }
+        .list-group-item { border-left: 3px solid transparent; transition: all 0.2s; }
+        .list-group-item:hover { color: var(--main-gold); background-color: #f9f9f9; }
+
+        /* 버튼 커스텀 */
+        .btn-outline-gold {
+            color: var(--main-gold); border-color: var(--main-gold);
+        }
+        .btn-outline-gold:hover {
+            background-color: var(--main-gold); color: white;
+        }
+    </style>
+    <script>
+        $(function (){
+            $("#btn-review").on("click",function (){
+                //리뷰쓰기
+                const url="/review/reviewWrite";
+                location.href=url;
+            });
+
+
+        });
+
+    </script>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<main class="container my-5">
+    <div class="row g-4">
+
+        <aside class="col-lg-3">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center p-4">
+                    <div class="bg-secondary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="bi bi-person-fill fs-1 text-secondary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1" th:text="${userInfo.name + '님'}">사용자님</h5>
+                    <p class="text-muted small mb-0" th:text="${userInfo.grade}">일반 회원</p>
+                </div>
+                <div class="list-group list-group-flush small">
+                    <a th:href="@{/mypage}" class="list-group-item list-group-item-action py-3 px-4 active">
+                        <i class="bi bi-calendar-check me-2"></i> 나의 예약 내역
+                    </a>
+                    <a th:href="@{/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-heart me-2"></i> 관심 식당</span>
+                        <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill">5</span>
+                    </a>
+                    <a th:href="@{/review/myreviewList(userId=${session.loginUser.userId})}" class="list-group-item list-group-item-action py-3 px-4">
+                        <i class="bi bi-pencil-square me-2"></i> 내가 쓴 리뷰
+                    </a>
+                    <a th:href="@{/mypageList}" class="list-group-item list-group-item-action py-3 px-4">
+                        <i class="bi bi-gear me-2"></i> 개인정보 수정
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <section class="col-lg-9">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="d-flex justify-content-between align-items-end mb-4 pb-2 border-bottom">
+                        <h4 class="fw-bold mb-0">나의 예약 내역</h4>
+                        <span class="small text-gold fw-bold">최근 3개월</span>
+                    </div>
+
+                    <div class="vstack gap-3">
+
+                        <div th:each="resv : ${resvList}" class="card border border-light-subtle shadow-sm">
+                            <div class="card-body d-md-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-3 align-items-center mb-3 mb-md-0">
+                                    <div class="text-center">
+                                        <span class="badge bg-gold-subtle border border-warning-subtle py-2 px-3 mb-2" th:text="${resv.status}">방문 예정</span>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-1" th:text="${resv.storeName}">추천 식당 A</h5>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i> [[${resv.resvDate}]] <span class="mx-1">|</span>
+                                            <i class="bi bi-clock me-1"></i> [[${resv.resvTime}]] <span class="mx-1">|</span>
+                                            <i class="bi bi-people me-1"></i> [[${resv.headCount}]]명
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-secondary btn-sm px-3"
+                                        th:onclick="|if(confirm('예약을 취소하시겠습니까?')) location.href='/mypage/delete?resvId=${resv.resvId}'|">예약 취소</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(resvList)}" class="text-center py-5 text-muted">예약 내역이 없습니다.</div>
+
+                        <div class="card border-0 bg-light">
+                            <div class="card-body d-md-flex justify-content-between align-items-center opacity-75">
+                                <div class="d-flex gap-3 align-items-center mb-3 mb-md-0">
+                                    <div class="text-center">
+                                        <span class="badge bg-secondary text-white py-2 px-3 mb-2">방문 완료</span>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-secondary">레스토랑 이름 B</h5>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-calendar3 me-1"></i> 2026.01.10 (토) <span class="mx-1">|</span> 12:30
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-gold btn-sm px-3" id="btn-review">리뷰 쓰기</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <div class="mt-5 pt-4 border-top">
+                    <h5 class="fw-bold mb-4">내 정보 요약</h5>
+                    <div class="row g-3 small">
+                        <div class="col-sm-6">
+                            <label class="text-muted d-block mb-1">이메일</label>
+                            <span class="fs-6">user@example.com</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted d-block mb-1">연락처</label>
+                            <span class="fs-6">010-1234-5678</span>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+</body>
+</html>

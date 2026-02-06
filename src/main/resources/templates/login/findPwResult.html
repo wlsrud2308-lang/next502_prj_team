@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>NEXT502 | 비밀번호 찾기 결과</title>
+</head>
+<body>
+<div class="container mt-5">
+  <h3>비밀번호 찾기 결과</h3>
+
+  <div th:if="${userId != null}">
+    <p>사용자 확인 완료: <strong th:text="${userId}"></strong></p>
+    <p>비밀번호를 재설정하려면 고객센터로 문의해주세요.</p>
+  </div>
+
+  <div th:if="${error != null}">
+    <p th:text="${error}" style="color:red;"></p>
+  </div>
+
+  <a th:href="@{/login}" class="btn btn-dark mt-3">로그인 화면으로 돌아가기</a>
+</div>
+</body>
+</html>

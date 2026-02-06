@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bitc.next502.team_prj.mapper.MypageMapper">
+
+    <select id="selectMyInfoById" resultType="bitc.next502.team_prj.dto.MyInfoDTO">
+        SELECT
+            user_email  AS email,
+            user_tel   AS phone,
+            user_age    AS age,
+            user_name   AS name,
+            user_role   AS grade
+        FROM
+            normal_user
+        WHERE
+            user_id = #{userId}
+    </select>
+
+    <select id="selectMyResvList" resultType="bitc.next502.team_prj.dto.MyResvDTO">
+        SELECT
+            r.reservation_id     AS resvId,
+            d.title              AS storeName,
+            r.reservation_date   AS resvDate,
+            r.reservation_time   AS resvTime,
+            r.count_people       AS headCount,
+            r.reservation_state  AS status
+        FROM
+            reservation r
+                JOIN
+            restaurant_detail d ON r.restaurant_id = d.restaurant_id WHERE
+            r.user_id = #{userId}
+        ORDER BY
+            r.reservation_date DESC
+    </select>
+
+    <delete id="deleteReservation">
+        DELETE FROM reservation
+        WHERE reservation_id = #{resvId}
+    </delete>
+
+</mapper>

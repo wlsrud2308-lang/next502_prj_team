@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bitc.next502.team_prj.mapper.BusinessUserMapper">
+
+    <!-- 로그인 -->
+    <select id="login" resultType="bitc.next502.team_prj.dto.BusinessUserDTO">
+        SELECT
+            business_id   AS businessId,
+            business_pwd  AS businessPwd,
+            business_name AS businessName,
+            business_tel  AS phone
+        FROM business_user
+        WHERE business_id = #{id}
+          AND business_pwd = #{pw}
+    </select>
+
+    <!-- 이름 + 전화번호 -->
+    <select id="findByNameAndPhone" resultType="bitc.next502.team_prj.dto.BusinessUserDTO">
+        SELECT
+            business_id   AS businessId,
+            business_name AS businessName,
+            business_tel  AS phone
+        FROM business_user
+        WHERE business_name = #{name}
+          AND business_tel = #{phone}
+    </select>
+
+    <!-- ID + 이름 + 전화번호 -->
+    <select id="findByIdNamePhone" resultType="bitc.next502.team_prj.dto.BusinessUserDTO">
+        SELECT
+            business_id   AS businessId,
+            business_name AS businessName,
+            business_tel  AS phone
+        FROM business_user
+        WHERE business_id = #{id}
+          AND business_name = #{name}
+          AND business_tel = #{phone}
+    </select>
+
+    <!--  회원가입  -->
+    <insert id="insertBusinessUser"
+            parameterType="bitc.next502.team_prj.dto.BusinessUserDTO">
+
+        INSERT INTO business_user (
+            business_id,
+            business_pwd,
+            business_name,
+            business_number,
+            business_tel
+        )
+        VALUES (
+                   #{businessId},
+                   #{businessPwd},
+                   #{businessName},
+                   #{businessNumber},
+                   #{businessPhone}
+               )
+
+    </insert>
+
+</mapper>

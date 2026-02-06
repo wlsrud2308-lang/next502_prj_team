@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{layout/header :: header}"></div>
+    <title>NEXT502 | 나의 리뷰</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <style>
+        :root { --main-gold: #b89255; --main-gold-hover: #9c7b46; }
+
+        .text-gold { color: var(--main-gold) !important; }
+        .bg-gold-subtle { background-color: #fcf8f3; color: var(--main-gold); }
+
+        /* 사이드바 메뉴  */
+        .list-group-item.active {
+            background-color: transparent;
+            color: var(--main-gold);
+            font-weight: bold;
+            border-color: #eee;
+            border-left: 3px solid var(--main-gold); /* 왼쪽 강조 선 */
+        }
+        .list-group-item { border-left: 3px solid transparent; transition: all 0.2s; }
+        .list-group-item:hover { color: var(--main-gold); background-color: #f9f9f9; }
+
+        /* 버튼 커스텀 */
+        .btn-outline-gold {
+            color: var(--main-gold); border-color: var(--main-gold);
+        }
+        .btn-outline-gold:hover {
+            background-color: var(--main-gold); color: white;
+        }
+    </style>
+
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<main class="container my-5">
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center p-4">
+                    <div class="bg-secondary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="bi bi-person-fill fs-1 text-secondary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">홍길동님</h5>
+                    <p class="text-muted small mb-0">일반 회원</p>
+                </div>
+                <div class="list-group list-group-flush small">
+                    <a th:href="@{/mypage}" class="list-group-item list-group-item-action py-3 px-4">
+                        <i class="bi bi-calendar me-2"></i> 나의 예약 내역
+                    </a>
+                    <a th:href="@{/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-heart me-2"></i> 관심 식당</span>
+                        <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill">5</span>
+                    </a>
+                    <a th:href="@{/review/myreviewList(userId=${session.loginUser.userId})}" class="list-group-item list-group-item-action py-3 px-4">
+                        <i class="bi bi-pencil-square me-2"></i> 내가 쓴 리뷰
+                    </a>
+                    <a th:href="@{/mypageList}" class="list-group-item list-group-item-action py-3 px-4">
+                        <i class="bi bi-gear me-2"></i> 개인정보 수정
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <section class="col-lg-9">
+            <div class="card shadow-sm border-0 min-vh-100">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 pb-2 border-bottom">내가 쓴 리뷰</h4>
+
+                    <div th:each="icnt,review : ${reviewList}">
+                        <form id="frm" action="#" method="post">
+                            <div class="card mb-3 border-light-subtle shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <h5 class="card-title fw-bold mb-0" >금수복국 해운대본점</h5>
+                                        <small class="text-muted" th:text="${review.createDate}">2026.02.01 작성</small>
+                                    </div>
+                                    <div class="mb-2 text-gold">평점: <span class="text-dark small ms-1" th:text="${review.rating}">5.0</span></div>
+                                    <p class="card-text text-secondary"><span th:text="${review.comment}">국물이 정말 시원하고 맛있었어요. </span></p>
+                                    <div class="text-end">
+                                        <button class="btn btn-sm btn-outline-secondary" id="btn-upt">수정</button>
+                                        <button class="btn btn-sm btn-outline-danger" id="btn-del">삭제</button>
+                                        <input type="hidden" id="urlValue" name="urlValue" th:value="/review/${review.reviewIdx}">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="method" name="_method">
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    $(function (){
+        $("#btn-upt").on("click",function (){
+            location.href="/review/";
+
+        });
+
+        $("#btn-del").on("click",function (){
+
+            //const url=$("#urlValue").val() ;
+            $("#method").val("DELETE");
+            const frm = $("#frm")[0];
+            const boardIdx=$("#board-idx").val();
+            frm.action="/board/"+boardIdx;
+
+            frm.submit();
+
+
+            alert("삭제");
+            //location.href=$("#urlValue").val() ;
+            console.log("삭제할 변경 url") ;
+        });
+
+
+    });
+
+</script>
+</body>
+</html>
