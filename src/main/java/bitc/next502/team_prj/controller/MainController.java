@@ -30,24 +30,6 @@ public class MainController {
         return "store/main";
     }
 
-//    @GetMapping("/login")
-//    public String loginForm() {
-//        return "login/login";
-//    }
-
-//    @GetMapping("/mypage")
-//    public String mypage() {
-//        return "mypage/mypage";
-//    }
-
-//    @PostMapping("/loginProcess")
-//    public String loginProcess(
-//            @RequestParam String username,
-//            @RequestParam String password
-//    ) {
-//        return "redirect:/main";
-//    }
-
     @GetMapping("/mybookmarkList")
     public String mybookmarkList() {
         return "mypage/mybookmarkList";
@@ -83,11 +65,6 @@ public class MainController {
         return "store/detail";
     }
 
-    @GetMapping("/mngstoreWrite")
-    public String mngstoreWrite() {
-        return "mng/mngstoreWrite";
-    }
-
     @GetMapping("/store/search")
     public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
                                     Model model) {
@@ -99,26 +76,5 @@ public class MainController {
 
         return "store/searchList";
     }
-
-//    // 예약자 명단 관리
-//    @GetMapping("/mngmenu")
-//    public String mngMenu(Model model) {
-//        model.addAttribute("menuId", "menu"); // 'menu'라는 별명을 붙임
-//        return "mng/mngmenu";
-//    }
-//
-//    // 식당 정보 등록
-//    @GetMapping("/mngstoreWrite")
-//    public String mngStoreWrite(Model model) {
-//        model.addAttribute("menuId", "store"); // 'store'라는 별명을 붙임
-//        return "mng/mngstoreWrite";
-//    }
-//
-//    // 리뷰 답변 관리
-//    @GetMapping("/mngreview")
-//    public String mngReview(Model model) {
-//        model.addAttribute("menuId", "review"); // 'review'라는 별명을 붙임
-//        return "mng/mngreview";
-//    }
 }
 
