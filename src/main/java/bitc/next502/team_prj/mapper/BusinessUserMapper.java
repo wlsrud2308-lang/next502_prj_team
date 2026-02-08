@@ -16,4 +16,8 @@ public interface BusinessUserMapper {
                                       @Param("phone") String phone);
     //    회원가입
     void insertBusinessUser(BusinessUserDTO dto);
+
+//    비밀번호 변경
+    int updatePassword(@Param("id") String id,
+                       @Param("pw") String pw);
 }

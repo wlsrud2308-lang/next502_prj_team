@@ -1,22 +1,72 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>NEXT502 | 비밀번호 찾기 결과</title>
+  <div th:replace="~{layout/header :: header}"></div>
+  <title>NEXT502 | 비밀번호 변경</title>
+
+  <style>
+    body { background-color: #f8f9fa; }
+    .login-card {
+        max-width: 400px;
+        width: 100%;
+        border: 1px solid #eee;
+        background: #ffffff;
+    }
+    .text-gold { color: #b89255; }
+    .btn-dark { background-color: #333; border: none; }
+    .btn-dark:hover { background-color: #b89255; }
+  </style>
 </head>
-<body>
-<div class="container mt-5">
-  <h3>비밀번호 찾기 결과</h3>
 
-  <div th:if="${userId != null}">
-    <p>사용자 확인 완료: <strong th:text="${userId}"></strong></p>
-    <p>비밀번호를 재설정하려면 고객센터로 문의해주세요.</p>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+
+  <div class="login-card p-4 p-md-5 shadow-sm">
+
+    <h2 class="fw-bold text-gold text-center mb-4">비밀번호 변경</h2>
+
+
+    <form th:if="${userId}"
+          th:action="@{/user/resetPw}"
+          method="post">
+
+
+      <input type="hidden" name="userType" th:value="${userType}">
+      <input type="hidden" name="userId" th:value="${userId}">
+
+      <div class="mb-3">
+        <label class="form-label small text-muted">새 비밀번호</label>
+        <input type="password"
+               name="newPassword"
+               class="form-control"
+               required>
+      </div>
+
+      <button type="submit"
+              class="btn btn-dark w-100 py-3 mt-2">
+        비밀번호 변경
+      </button>
+    </form>
+
+    <!-- 실패 메시지 -->
+    <div th:if="${error}" class="text-center text-danger">
+      <p th:text="${error}"></p>
+    </div>
+
+    <div class="text-center mt-4">
+      <a th:href="@{/login}" class="text-gold text-decoration-none">
+        로그인 화면으로 이동
+      </a>
+    </div>
+
   </div>
 
-  <div th:if="${error != null}">
-    <p th:text="${error}" style="color:red;"></p>
-  </div>
+</main>
 
-  <a th:href="@{/login}" class="btn btn-dark mt-3">로그인 화면으로 돌아가기</a>
-</div>
+<div th:replace="~{layout/footer :: footer}"></div>
+
 </body>
 </html>

@@ -15,4 +15,8 @@ public interface NormalUserMapper {
 
     //    회원가입
     void insertNormalUser(NormalUserDTO dto);
+
+//    비밀번호 변경
+    int updatePassword(@Param("id") String id,
+                       @Param("pw") String pw);
 }

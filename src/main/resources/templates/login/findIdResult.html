@@ -1,21 +1,56 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <div th:replace="~{layout/header :: header}"></div>
   <title>NEXT502 | 아이디 찾기 결과</title>
+
+  <style>
+    body { background-color: #f8f9fa; }
+
+    .login-card {
+        max-width: 400px;
+        width: 100%;
+        border: 1px solid #eee;
+        background: #ffffff;
+    }
+
+    .text-gold { color: #b89255; }
+
+    .btn-dark { background-color: #333; border: none; }
+
+    .btn-dark:hover { background-color: #b89255; }
+  </style>
 </head>
-<body>
-<div class="container mt-5">
-  <h3>아이디 찾기 결과</h3>
 
-  <div th:if="${foundId != null}">
-    <p>찾으신 아이디: <strong th:text="${foundId}"></strong></p>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+
+  <div class="login-card p-4 p-md-5 shadow-sm text-center">
+
+    <h2 class="fw-bold text-gold mb-3" style="letter-spacing: 2px;">NEXT502</h2>
+
+    <div th:if="${foundId}">
+      <p class="text-secondary small">회원님의 아이디는</p>
+
+      <h4 class="fw-bold mt-2 mb-4" th:text="${foundId}"></h4>
+    </div>
+
+    <div th:if="${error}">
+      <p class="text-danger fw-semibold" th:text="${error}"></p>
+    </div>
+
+    <a th:href="@{/login}" class="btn btn-dark btn-lg w-100 rounded-0 py-3 mt-3">
+      로그인 하러가기
+    </a>
+
   </div>
 
-  <div th:if="${error != null}">
-    <p th:text="${error}" style="color:red;"></p>
-  </div>
+</main>
 
-  <a th:href="@{/login}" class="btn btn-dark mt-3">로그인 화면으로 돌아가기</a>
-</div>
+<div th:replace="~{layout/footer :: footer}"></div>
+
 </body>
 </html>

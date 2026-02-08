@@ -125,4 +125,24 @@ public class LoginController {
 
         return "login/findPwResult";
     }
+
+//    비밀번호 변경
+
+    @PostMapping("/user/resetPw")
+    public String resetPassword(@RequestParam String userType,
+                                @RequestParam String userId,
+                                @RequestParam String newPassword,
+                                RedirectAttributes rttr) {
+
+        boolean result =
+                loginService.updatePassword(userType, userId, newPassword);
+
+        if(result){
+            rttr.addFlashAttribute("msg","비밀번호가 변경되었습니다.");
+            return "redirect:/login";
+        }
+
+        rttr.addFlashAttribute("error","비밀번호 변경 실패");
+        return "redirect:/login";
+    }
 }
