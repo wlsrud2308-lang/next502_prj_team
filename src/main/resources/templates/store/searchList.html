@@ -31,6 +31,7 @@
 
       .badge-category { background-color: #f0f0f0; color: #666; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
   </style>
+
 </head>
 <body class="bg-white">
 
@@ -55,16 +56,19 @@
       <div class="filter-section">
         <div class="mb-5">
           <h6 class="filter-title">지역</h6>
-          <div class="form-check mb-2" th:each="loc : ${ {'연제구', '해운대구', '부산진구', '수영구'} }">
-            <input class="form-check-input" type="checkbox" th:value="${loc}" th:id="'loc-' + ${loc}">
+          <div class="form-check mb-2" th:each="loc :
+          ${ {'연제구' , '해운대구', '부산진구', '수영구','강서구','사상구','북구','사하구','서구','동구','중구','영도구','남구','동래구','금정구','기장군'} }">
+            <input class="form-check-input" type="checkbox" th:value="${loc}" th:id="'loc-' + ${loc}"
+                   th:checked="${selectedLocs != null and #lists.contains(selectedLocs, loc)}">
             <label class="form-check-label small" th:for="'loc-' + ${loc}" th:text="${loc}"></label>
           </div>
         </div>
 
         <div class="mb-5">
           <h6 class="filter-title">요리 유형</h6>
-          <div class="form-check mb-2" th:each="cat : ${ {'중식', '일식', '한식', '양식'} }">
-            <input class="form-check-input" type="checkbox" th:value="${cat}" th:id="'cat-' + ${cat}">
+          <div class="form-check mb-2" th:each="cat : ${ {'중식' , '일식' , '한식' , '양식'} }">
+            <input class="form-check-input" type="checkbox" th:value="${cat}" th:id="'cat-' + ${cat}"
+                   th:checked="${selectedCats != null and #lists.contains(selectedCats, cat)}">
             <label class="form-check-label small" th:for="'cat-' + ${cat}" th:text="${cat}"></label>
           </div>
         </div>
@@ -80,8 +84,8 @@
         </div>
         <div class="d-flex gap-2">
           <select class="form-select form-select-sm border-0 bg-light" style="width: 120px;">
-            <option>별점순</option>
-            <option>리뷰순</option>
+            <option value="rating" th:selected="${selectedSort == 'rating'}">별점순</option>
+            <option value="reviews" th:selected="${selectedSort == 'reviews'}">리뷰순</option>
           </select>
         </div>
       </div>
@@ -124,5 +128,52 @@
 </div>
 
 <div th:replace="~{layout/footer :: footer}"></div>
+
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterInputs = document.querySelectorAll('.form-check-input, .form-select');
+    const resetBtn = document.querySelector('.btn-outline-dark');
+    const searchInput = document.querySelector('input[name="keyword"]');
+
+    filterInputs.forEach(el => {
+      el.addEventListener('change', () => {
+        applyFilters();
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        const keyword = searchInput.value;
+        location.href = `/store/search?keyword=${encodeURIComponent(keyword)}`;
+      });
+    }
+
+    function applyFilters() {
+      const keyword = searchInput.value;
+
+      const sort = document.querySelector('.form-select').value;
+
+      const locations = Array.from(document.querySelectorAll('input[id^="loc-"]:checked'))
+              .map(cb => cb.value);
+
+      const categories = Array.from(document.querySelectorAll('input[id^="cat-"]:checked'))
+              .map(cb => cb.value);
+
+      const url = new URL(window.location.origin + '/store/search');
+      url.searchParams.set('keyword', keyword);
+      url.searchParams.set('sort', sort);
+
+      if (locations.length > 0) {
+        url.searchParams.set('locations', locations.join(','));
+      }
+
+      if (categories.length > 0) {
+        url.searchParams.set('categories', categories.join(','));
+      }
+
+      location.href = url.toString();
+    }
+  });
+</script>
 </body>
 </html>

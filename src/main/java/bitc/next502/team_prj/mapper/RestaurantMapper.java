@@ -22,4 +22,11 @@ public interface RestaurantMapper {
 
     List<RestaurantDTO> searchByKeyword(@Param("keyword") String keyword);
 
+    List<RestaurantDTO> searchByFilter(
+            @Param("keyword") String keyword,
+            @Param("locations") List<String> locations,
+            @Param("categories") List<String> categories,
+            @Param("sort") String sort
+    );
+
 }

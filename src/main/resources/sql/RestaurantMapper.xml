@@ -117,5 +117,55 @@
             r.itemcntnts
         ORDER BY rating DESC
     </select>
+    <select id="searchByFilter" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
+        SELECT
+        r.restaurant_id AS restaurantId,
+        COALESCE(rd.title, r.place) AS restaurantName,
+        c.foods AS foods,
+        r.category AS category,
+        r.addr1 AS address,
+        r.gugun_nm AS locationTag,
+        r.main_img AS mainImg,
+        r.itemcntnts AS description,
+        COALESCE(ROUND(AVG(rv.rating), 1), 0) AS rating,
+        COUNT(rv.review_idx) AS reviewCount
+        FROM restaurant r
+        JOIN category c ON r.category = c.category
+        LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
+        LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
+        WHERE (
+        r.place LIKE CONCAT('%', #{keyword}, '%')            OR rd.title LIKE CONCAT('%', #{keyword}, '%')        OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')   OR rd.itemcntnts LIKE CONCAT('%', #{keyword}, '%')  OR c.foods LIKE CONCAT('%', #{keyword}, '%')         OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')         OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')      )
+
+        <if test="locations != null and locations.size() > 0">
+            AND r.gugun_nm IN
+            <foreach item="loc" collection="locations" open="(" separator="," close=")">
+                #{loc}
+            </foreach>
+        </if>
+
+        <if test="categories != null and categories.size() > 0">
+            AND c.foods IN
+            <foreach item="cat" collection="categories" open="(" separator="," close=")">
+                #{cat}
+            </foreach>
+        </if>
+
+        GROUP BY
+        r.restaurant_id,
+        rd.title,
+        r.place,
+        c.foods,
+        r.category,
+        r.addr1,
+        r.gugun_nm,
+        r.main_img,
+        rd.itemcntnts,
+        r.itemcntnts
+
+        <choose>
+            <when test="sort == 'reviews'">ORDER BY reviewCount DESC</when>
+            <otherwise>ORDER BY rating DESC</otherwise>
+        </choose>
+    </select>
 
 </mapper>

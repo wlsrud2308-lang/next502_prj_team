@@ -17,5 +17,6 @@ public interface RestaurantService {
 
     List<RatingStatDTO> getRatingStatsByRestaurantId(String restaurantId);
 
-    List<RestaurantDTO> searchByKeyword(String keyword);
+
+    List<RestaurantDTO> searchByFilter(String keyword, List<String> locations, List<String> categories, String sort);
 }

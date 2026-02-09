@@ -65,16 +65,34 @@ public class MainController {
         return "store/detail";
     }
 
-    @GetMapping("/store/search")
-    public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
-                                    Model model) {
+//    @GetMapping("/store/search")
+//    public String searchRestaurants(@RequestParam(value = "keyword", required = false) String keyword,
+//                                    Model model) {
+//
+//        List<RestaurantDTO> resList = restaurantService.searchByKeyword(keyword);
+//
+//        model.addAttribute("resList", resList);
+//        model.addAttribute("keyword", keyword);
+//
+//        return "store/searchList";
+//    }
+@GetMapping("/store/search")
+public String searchRestaurants(
+        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+        @RequestParam(value = "locations", required = false) List<String> locations,
+        @RequestParam(value = "categories", required = false) List<String> categories,
+        @RequestParam(value = "sort", required = false, defaultValue = "rating") String sort,
+        Model model) {
 
-        List<RestaurantDTO> resList = restaurantService.searchByKeyword(keyword);
+    List<RestaurantDTO> resList = restaurantService.searchByFilter(keyword, locations, categories, sort);
 
-        model.addAttribute("resList", resList);
-        model.addAttribute("keyword", keyword);
+    model.addAttribute("resList", resList);
+    model.addAttribute("keyword", keyword);
+    model.addAttribute("selectedLocs", locations);
+    model.addAttribute("selectedCats", categories);
+    model.addAttribute("selectedSort", sort);
 
-        return "store/searchList";
-    }
+    return "store/searchList";
+}
 }
 

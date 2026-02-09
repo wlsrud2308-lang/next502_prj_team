@@ -40,9 +40,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantMapper.selectRatingStatsByRestaurantId(restaurantId);
     }
 
-    @Override
-    public List<RestaurantDTO> searchByKeyword(String keyword) {
-        return restaurantMapper.searchByKeyword(keyword);
-    }
 
+    @Override
+    public List<RestaurantDTO> searchByFilter(String keyword, List<String> locations, List<String> categories, String sort) {
+        return restaurantMapper.searchByFilter(keyword, locations, categories, sort);
+    }
 }
