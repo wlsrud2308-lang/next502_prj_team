@@ -63,4 +63,10 @@
 
     </insert>
 
+    <!--    비밀번호 변경 -->
+    <update id="updatePassword">
+        UPDATE normal_user
+        SET user_pw = #{pw}
+        WHERE user_id = #{id}
+    </update>
 </mapper>

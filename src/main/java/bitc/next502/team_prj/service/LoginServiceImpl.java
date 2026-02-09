@@ -48,4 +48,17 @@ public class LoginServiceImpl implements LoginService {
         return businessUserMapper.findByIdNamePhone(id, name, phone);
     }
 
+    @Override
+    public boolean updatePassword(String userType, String userId, String newPassword) {
+
+        if("NORMAL".equals(userType)){
+            return normalUserMapper.updatePassword(userId, newPassword) > 0;
+        }
+
+        if("BUSINESS".equals(userType)){
+            return businessUserMapper.updatePassword(userId, newPassword) > 0;
+        }
+
+        return false;
+    }
 }

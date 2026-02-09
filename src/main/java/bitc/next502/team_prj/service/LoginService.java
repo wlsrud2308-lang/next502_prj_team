@@ -18,4 +18,6 @@ public interface LoginService {
   // 아이디+이름+전화번호로 사업자 비밀번호 조회
   BusinessUserDTO findBusinessUserByIdNamePhone(String id, String name, String phone);
 
+  // 비밀번호 변경
+  boolean updatePassword(String userType, String userId, String newPassword);
 }
