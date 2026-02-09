@@ -20,4 +20,5 @@ public class RestaurantDTO {
     private String lat;
     private String lng;
     private String mainImgThumb;
+    private String price;
 }

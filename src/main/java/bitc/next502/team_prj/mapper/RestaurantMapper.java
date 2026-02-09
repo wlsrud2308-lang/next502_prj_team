@@ -29,4 +29,6 @@ public interface RestaurantMapper {
             @Param("sort") String sort
     );
 
+    void insertRestaurant(RestaurantDTO dto);
+
 }
