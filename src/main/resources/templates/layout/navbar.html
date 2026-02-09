@@ -23,9 +23,14 @@
                     <a class="nav-link" th:href="@{/logout}">로그아웃</a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" th:if="${session.role == 'NORMAL'}">
                     <a class="nav-link" th:href="@{/mypage/main}">마이페이지</a>
                 </li>
+
+                <li class="nav-item" th:if="${session.role == 'BUSINESS'}">
+                    <a class="nav-link" th:href="@{/mngmenu}">마이페이지</a>
+                </li>
+
             </ul>
         </div>
     </div>

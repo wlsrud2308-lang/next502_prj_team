@@ -3,6 +3,34 @@
 
 <mapper namespace="bitc.next502.team_prj.mapper.MngMapper">
 
+    <select id="selectMngById" resultType="bitc.next502.team_prj.dto.MngDTO">
+        SELECT
+            restaurant_id AS restaurantID,
+            business_id AS businessId,
+            business_tel AS tel,
+            business_name  AS name,
+            business_number AS number
+        FROM
+            business_user
+        WHERE
+            business_id = #{businessId}
+    </select>
 
+    <select id="selectResvList" resultType="bitc.next502.team_prj.dto.MngDTO">
+        SELECT
+            r.reservation_id     AS resvId,
+            d.title              AS storeName,
+            r.reservation_date   AS resvDate,
+            r.reservation_time   AS resvTime,
+            r.count_people       AS headCount,
+            r.reservation_state  AS status
+        FROM
+            reservation r
+                JOIN
+            restaurant_detail d ON r.restaurant_id = d.restaurant_id WHERE
+            r.restaurant_id = #{restaurant_id}
+        ORDER BY
+            r.reservation_date DESC
+    </select>
 
 </mapper>
