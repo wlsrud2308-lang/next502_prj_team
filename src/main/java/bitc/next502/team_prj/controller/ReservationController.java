@@ -1,7 +1,9 @@
 package bitc.next502.team_prj.controller;
 
 import bitc.next502.team_prj.dto.ReservationDTO;
+import bitc.next502.team_prj.dto.RestaurantDTO;
 import bitc.next502.team_prj.service.ReservationService;
+import bitc.next502.team_prj.service.RestaurantService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,21 +21,31 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    private final RestaurantService restaurantService;
+
     @GetMapping("/write")
     public String resvWrite(@RequestParam("restaurantId") String restaurantId,
                             HttpSession session,
-                            Model model,
-                            RedirectAttributes rttr) {
+                            Model model) {
 
 
         if (session.getAttribute("loginUser") == null) {
-            rttr.addFlashAttribute("errorMsg", "로그인 후 이용 가능합니다.");
-            return "redirect:/login";
+
+            model.addAttribute("msg", "로그인 후 이용 가능합니다.");
+            model.addAttribute("url", "/login");
+            return "common/alert";
         }
 
-        model.addAttribute("restaurantId", restaurantId);
+
+        String cleanId = restaurantId.replace("\"", "");
+        RestaurantDTO restaurant = restaurantService.getRestaurantDetail(cleanId);
+
+        model.addAttribute("restaurant", restaurant);
+        model.addAttribute("restaurantId", cleanId);
+
         return "reservation/resvWrite";
     }
+
 
     @PostMapping("/insert")
     public String resvInsert(ReservationDTO reservation, Model model) {
@@ -44,6 +56,8 @@ public class ReservationController {
             return "common/alert";
         } catch (Exception e) {
             // DB 에러(외래키 등)가 나면 이쪽으로 옵니다.
+
+            e.printStackTrace();
             model.addAttribute("msg", "예약 처리 중 오류가 발생했습니다. 정보를 다시 확인해 주세요.");
             model.addAttribute("url", "javascript:history.back();");
             return "common/alert";
