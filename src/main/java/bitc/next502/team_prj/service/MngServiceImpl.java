@@ -1,7 +1,6 @@
 package bitc.next502.team_prj.service;
 
 import bitc.next502.team_prj.dto.MngDTO;
-import bitc.next502.team_prj.dto.MyResvDTO;
 import bitc.next502.team_prj.mapper.MngMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

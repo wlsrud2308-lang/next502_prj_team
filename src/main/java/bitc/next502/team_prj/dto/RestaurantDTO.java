@@ -14,7 +14,6 @@ public class RestaurantDTO {
     private String mainImg;
     private String itemCntnts;
 
-
     private String locationTag;
     private String seats;
     private String description;

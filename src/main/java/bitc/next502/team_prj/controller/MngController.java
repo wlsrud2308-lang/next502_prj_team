@@ -23,7 +23,9 @@ public class MngController {
 
     // 예약자 명단 관리
     @GetMapping("/mngmenu")
-    public String mngMenu(Model model, HttpSession session) {
+    public String mngMenu(Model model,
+                          HttpSession session,
+                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate resvDate) {
 
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
@@ -40,11 +42,26 @@ public class MngController {
         String businessId = businessUser.getBusinessId();
 
         MngDTO mng = mngService.getMngInfo(businessId);
-        List<MngDTO> resvList = mngService.getResvList(businessId);
+        List<MngDTO> resvList;
+
+        if (resvDate != null) {
+            resvList = mngService.getResvListByDate(businessId, resvDate);
+        } else {
+            resvList = mngService.getResvList(businessId);
+            resvDate = LocalDate.now();
+        }
+
+        int totalCount = resvList.size();
+        int visitCount = (int) resvList.stream().filter(r -> "방문 완료".equals(r.getStatus())).count();
+        int waitingCount = totalCount - visitCount;
 
         model.addAttribute("mng", mng);
         model.addAttribute("resvList", resvList);
-        
+        model.addAttribute("resvDate", resvDate);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("visitCount", visitCount);
+        model.addAttribute("waitingCount", waitingCount);
+
         return "mng/mngmenu";
     }
 

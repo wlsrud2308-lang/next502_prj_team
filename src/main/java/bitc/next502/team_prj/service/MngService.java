@@ -1,7 +1,6 @@
 package bitc.next502.team_prj.service;
 
 import bitc.next502.team_prj.dto.MngDTO;
-import bitc.next502.team_prj.dto.MyResvDTO;
 
 import java.time.LocalDate;
 import java.util.List;
