@@ -105,12 +105,12 @@
             </thead>
             <tbody th:each="mng, iterStat : ${resvList}">
             <tr>
-              <td class="ps-3 fw-bold" th:text="${iterStat.resvTime}">18:00</td>
-              <td><a href="#" class="text-dark fw-bold" th:text="${iterStat.userId + '님'}">김철수님</a></td>
-              <td th:text="${iterStat.headCount}">2명</td>
+              <td class="ps-3 fw-bold" th:text="${mng.resvTime}">18:00</td>
+              <td><a href="#" class="text-dark fw-bold" th:text="${mng.userId + '님'}">김철수님</a></td>
+              <td th:text="${mng.headCount}">2명</td>
               <td class="text-muted">010-1111-2222</td>
               <td class="text-center">
-                <button class="btn btn-sm bg-gold px-3" th:text="${iterStat.status}">방문확인</button>
+                <button class="btn btn-sm bg-gold px-3" th:text="${mng.status}">방문확인</button>
                 <button class="btn btn-sm btn-outline-secondary px-3">취소</button>
               </td>
             </tr>
