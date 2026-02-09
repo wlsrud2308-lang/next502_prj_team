@@ -19,7 +19,7 @@
     <select id="selectResvList" resultType="bitc.next502.team_prj.dto.MngDTO">
         SELECT
             r.reservation_id     AS resvId,
-            n.user_id            AS userID,
+            b.restaurant_id      AS restaurantId,
             r.reservation_date   AS resvDate,
             r.reservation_time   AS resvTime,
             r.count_people       AS headCount,
@@ -27,10 +27,27 @@
         FROM
             reservation r
                 JOIN
-            normal_user n ON n.user_id = r.user_id WHERE
-            r.user_id = #{user_id}
+            business_user b ON b.restaurant_id = r.restaurant_id WHERE
+            r.restaurant_id = #{restaurantId}
         ORDER BY
-            r.reservation_date DESC
+            r.reservation_date DESC;
+    </select>
+
+    <select id="selectList" resultType="bitc.next502.team_prj.dto.MngDTO">
+        SELECT
+            r.reservation_id     AS resvId,
+            b.restaurant_id      AS restaurantId,
+            r.reservation_date   AS resvDate,
+            r.reservation_time   AS resvTime,
+            r.count_people       AS headCount,
+            r.reservation_state  AS status
+        FROM
+            reservation r
+                JOIN
+            business_user b ON b.restaurant_id = r.restaurant_id WHERE
+            r.restaurant_id = #{restaurantId}
+        ORDER BY
+            r.reservation_date DESC;
     </select>
 
 </mapper>

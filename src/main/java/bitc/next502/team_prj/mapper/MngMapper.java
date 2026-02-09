@@ -4,6 +4,7 @@ import bitc.next502.team_prj.dto.MngDTO;
 import bitc.next502.team_prj.dto.MyResvDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -12,4 +13,6 @@ public interface MngMapper {
   MngDTO selectMngById(String businessId);
 
   List<MngDTO> selectResvList(String businessId);
+
+  List<MngDTO> selectList(LocalDate resvDate);
 }
