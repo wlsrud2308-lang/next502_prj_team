@@ -63,7 +63,7 @@
 
         <div class="mb-5">
           <h6 class="filter-title">요리 유형</h6>
-          <div class="form-check mb-2" th:each="cat : ${['프렌치', '일식/오마카세', '한식', '이탈리안']}">
+          <div class="form-check mb-2" th:each="cat : ${ {'중식', '일식', '한식', '양식'} }">
             <input class="form-check-input" type="checkbox" th:value="${cat}" th:id="'cat-' + ${cat}">
             <label class="form-check-label small" th:for="'cat-' + ${cat}" th:text="${cat}"></label>
           </div>
