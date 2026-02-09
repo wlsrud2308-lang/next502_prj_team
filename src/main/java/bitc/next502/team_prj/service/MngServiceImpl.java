@@ -26,7 +26,9 @@ public class MngServiceImpl implements MngService{
   }
 
   @Override
-  public List<MngDTO> getResvList(LocalDate resvDate) {
-    return mngMapper.selectList(resvDate);
+  public List<MngDTO> getResvListByDate(String businessId, LocalDate resvDate) {
+    return mngMapper.selectResvListByDate(businessId, resvDate);
   }
+
+
 }

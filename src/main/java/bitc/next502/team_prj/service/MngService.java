@@ -10,7 +10,7 @@ public interface MngService {
 
   MngDTO getMngInfo(String businessId);
 
-  List<MngDTO> getResvList(String businessID);
+  List<MngDTO> getResvList(String businessId);
 
-  List<MngDTO> getResvList(LocalDate resvDate);
+  List<MngDTO> getResvListByDate(String businessId, LocalDate resvDate);
 }

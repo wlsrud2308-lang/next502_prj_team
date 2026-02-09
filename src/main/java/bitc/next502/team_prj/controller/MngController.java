@@ -23,23 +23,21 @@ public class MngController {
 
     // 예약자 명단 관리
     @GetMapping("/mngmenu")
-    public String mngMenu(Model model, HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
-        Object userBoxing = session.getAttribute("loginUser");
-
-        String businessId = null;
+    public String mngMenu(Model model, HttpSession session) {
 
         String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
 
-        if (role.equals("BUSINESS")) {
-            BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-            businessId = businessUser.getBusinessId();
+        if (role == null || userBoxing == null) {
+            return "redirect:/login";
         }
-        else if (role.equals("NORMAL")) {
-            NormalUserDTO normalUser = (NormalUserDTO) userBoxing;
-            businessId = normalUser.getUserId();
+
+        if (!"BUSINESS".equals(role)) {
+            return "redirect:/login";
         }
+
+        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        String businessId = businessUser.getBusinessId();
 
         MngDTO mng = mngService.getMngInfo(businessId);
         List<MngDTO> resvList = mngService.getResvList(businessId);
@@ -48,13 +46,6 @@ public class MngController {
         model.addAttribute("resvList", resvList);
         
         return "mng/mngmenu";
-    }
-
-    @GetMapping("/resvListByDate")
-    public String getResvListByDate(@RequestParam("date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, Model model) {
-        List<MngDTO> resvList = mngService.getResvList(date);
-        model.addAttribute("resvList", resvList);
-        return "fragments/resvTable :: resvTableFragment";
     }
 
     @GetMapping("/mngstoreWrite")

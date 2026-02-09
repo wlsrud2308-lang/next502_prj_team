@@ -3,51 +3,63 @@
 
 <mapper namespace="bitc.next502.team_prj.mapper.MngMapper">
 
+    <!-- 사업자 정보 조회 -->
     <select id="selectMngById" resultType="bitc.next502.team_prj.dto.MngDTO">
         SELECT
-            restaurant_id AS restaurantID,
+            restaurant_id AS restaurantId,
             business_id AS businessId,
-            business_tel AS tel,
-            business_name  AS name,
-            business_number AS number
+            business_tel AS businessPhone,
+            business_name AS storeName,
+            business_number AS businessNumber
         FROM
             business_user
         WHERE
             business_id = #{businessId}
     </select>
 
+    <!-- 전체 예약 조회 -->
     <select id="selectResvList" resultType="bitc.next502.team_prj.dto.MngDTO">
         SELECT
-            r.reservation_id     AS resvId,
-            b.restaurant_id      AS restaurantId,
-            r.reservation_date   AS resvDate,
-            r.reservation_time   AS resvTime,
-            r.count_people       AS headCount,
-            r.reservation_state  AS status
+            r.reservation_id AS resvId,
+            b.restaurant_id AS restaurantId,
+            r.reservation_date AS resvDate,
+            r.reservation_time AS resvTime,
+            r.count_people AS headCount,
+            r.reservation_state AS status,
+            n.user_id AS userId,
+            n.user_name AS name,
+            n.user_tel AS phone
         FROM
             reservation r
-                JOIN
-            business_user b ON b.restaurant_id = r.restaurant_id WHERE
-            r.restaurant_id = #{restaurantId}
+                JOIN business_user b ON b.restaurant_id = r.restaurant_id
+                JOIN normal_user n ON r.user_id = n.user_id
+        WHERE
+            b.business_id = #{businessId}
         ORDER BY
-            r.reservation_date DESC;
+            r.reservation_date DESC, r.reservation_time;
     </select>
 
-    <select id="selectList" resultType="bitc.next502.team_prj.dto.MngDTO">
+    <!-- 날짜별 예약 조회 -->
+    <select id="selectResvListByDate" resultType="bitc.next502.team_prj.dto.MngDTO">
         SELECT
-            r.reservation_id     AS resvId,
-            b.restaurant_id      AS restaurantId,
-            r.reservation_date   AS resvDate,
-            r.reservation_time   AS resvTime,
-            r.count_people       AS headCount,
-            r.reservation_state  AS status
+            r.reservation_id AS resvId,
+            b.restaurant_id AS restaurantId,
+            r.reservation_date AS resvDate,
+            r.reservation_time AS resvTime,
+            r.count_people AS headCount,
+            r.reservation_state AS status,
+            n.user_id AS userId,
+            n.user_name AS name,
+            n.user_tel AS phone
         FROM
             reservation r
-                JOIN
-            business_user b ON b.restaurant_id = r.restaurant_id WHERE
-            r.restaurant_id = #{restaurantId}
+                JOIN business_user b ON b.restaurant_id = r.restaurant_id
+                JOIN normal_user n ON r.user_id = n.user_id
+        WHERE
+            b.business_id = #{businessId}
+          AND r.reservation_date = #{resvDate}
         ORDER BY
-            r.reservation_date DESC;
+            r.reservation_time;
     </select>
 
 </mapper>

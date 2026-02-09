@@ -29,8 +29,6 @@
 
 <div class="container my-5">
   <div class="row g-4">
-    <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org">
     <aside th:fragment="adminSidebar" class="col-lg-3">
       <div class="card shadow-sm border-0 mb-4 sticky-top" style="top: 20px;">
         <div class="card-header bg-dark text-white py-3 text-center">
@@ -58,7 +56,6 @@
         </div>
       </div>
     </aside>
-    </html>
 
     <main class="col-lg-9">
       <div class="card shadow-sm border-0 p-4">
@@ -67,7 +64,7 @@
           <h3 class="fw-bold mb-0">예약자 명단 관리</h3>
           <div class="d-flex align-items-center gap-2">
             <span class="small text-muted">조회 일자:</span>
-            <input type="date" class="form-control form-control-sm" th:text="${mng.resvDate}" value="2026-02-06">
+            <input type="date" class="form-control form-control-sm" th:value="${mng.resvDate}" value="2026-02-06">
           </div>
         </div>
 
@@ -105,12 +102,12 @@
             </thead>
             <tbody th:each="mng, iterStat : ${resvList}">
             <tr>
-              <td class="ps-3 fw-bold" th:text="${iterStat.resvTime}">18:00</td>
-              <td><a href="#" class="text-dark fw-bold" th:text="${iterStat.userId + '님'}">김철수님</a></td>
-              <td th:text="${iterStat.headCount}">2명</td>
+              <td class="ps-3 fw-bold" th:text="${mng.resvTime}">18:00</td>
+              <td><a href="#" class="text-dark fw-bold" th:text="${mng.userId + '님'}">김철수님</a></td>
+              <td th:text="${mng.headCount}">2명</td>
               <td class="text-muted">010-1111-2222</td>
               <td class="text-center">
-                <button class="btn btn-sm bg-gold px-3" th:text="${iterStat.status}">방문확인</button>
+                <button class="btn btn-sm bg-gold px-3" th:text="${mng.status}">방문확인</button>
                 <button class="btn btn-sm btn-outline-secondary px-3">취소</button>
               </td>
             </tr>

@@ -14,5 +14,5 @@ public interface MngMapper {
 
   List<MngDTO> selectResvList(String businessId);
 
-  List<MngDTO> selectList(LocalDate resvDate);
+  List<MngDTO> selectResvListByDate(String businessId, LocalDate resvDate);
 }
