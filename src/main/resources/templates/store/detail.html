@@ -413,18 +413,20 @@
     // 비로그인 상황에서 예약하기 버튼눌렀을때 로그인 페이지로 보내주는 스크립트 0209 am  수정
 
     function checkLoginAndGo() {
-      const loginUser = '[[${session.loginUser}]]';
-      const restaurantId = '[[${restaurant.restaurantId}]]';
 
-      if (!loginUser || loginUser === "" || loginUser === "null") {
-        document.getElementById("loginCheckModal").style.display = "block";
-      } else {
-        location.href = "/reservation/write?restaurantId=" + restaurantId;
-      }
+      const resId = [[${restaurant.restaurantId}]];
+
+
+      location.href = "/reservation/write?restaurantId=" + resId;
     }
 
     function closeLoginModal() {
-      document.getElementById("loginCheckModal").style.display = "none";
+
+
+      const modal = document.getElementById("loginCheckModal");
+      if(modal) {
+        modal.style.display = "none";
+      }
     }
 
 
