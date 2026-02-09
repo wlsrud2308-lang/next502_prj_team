@@ -19,7 +19,7 @@
     <select id="selectResvList" resultType="bitc.next502.team_prj.dto.MngDTO">
         SELECT
             r.reservation_id     AS resvId,
-            d.title              AS storeName,
+            n.user_id            AS userID,
             r.reservation_date   AS resvDate,
             r.reservation_time   AS resvTime,
             r.count_people       AS headCount,
@@ -27,8 +27,8 @@
         FROM
             reservation r
                 JOIN
-            restaurant_detail d ON r.restaurant_id = d.restaurant_id WHERE
-            r.restaurant_id = #{restaurant_id}
+            normal_user n ON n.user_id = r.user_id WHERE
+            r.user_id = #{user_id}
         ORDER BY
             r.reservation_date DESC
     </select>
