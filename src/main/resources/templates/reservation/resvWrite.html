@@ -138,6 +138,75 @@
             .premium-wrapper { margin: 50px auto; }
             .main-title { font-size: 26px; }
         }
+
+        /* 커스텀 컨펌창 레이아웃 */
+        .next-confirm-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 배경 투명도 조절 */
+            z-index: 10000;
+            backdrop-filter: blur(2px);
+        }
+
+        .next-confirm-box {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            width: 340px;
+            padding: 40px 20px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        .next-confirm-icon {
+            color: var(--next-gold);
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        .next-confirm-msg {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 400;
+            word-break: keep-all;
+        }
+
+        .next-confirm-btns {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .next-btn-sub {
+            background: #f8f8f8;
+            color: #888;
+            border: none;
+            padding: 12px 25px;
+            font-size: 13px;
+            cursor: pointer;
+            min-width: 80px;
+        }
+
+        .next-btn-main {
+            background: var(--next-dark);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 13px;
+            cursor: pointer;
+            min-width: 100px;
+            transition: 0.3s;
+        }
+
+        .next-btn-main:hover {
+            background: var(--next-gold);
+        }
     </style>
 </head>
 <body>
@@ -150,9 +219,11 @@
     </div>
 
     <div class="form-container">
-        <form action="/reservation/insert" method="post">
+        <form action="/reservation/insert" method="post" id="resvForm">
             <input type="hidden" name="restaurantId" th:value="${restaurantId}">
-            <input type="hidden" name="userId" value="test_user_01">
+            <input type="hidden" name="userId" th:value="${session.role == 'NORMAL' ? session.loginUser.userId : session.loginUser.businessId}">
+            <input type="hidden" name="reservationState" value="방문예정">
+
 
             <div class="form-section-title">01. 예약 식당</div>
             <div class="form-group">
@@ -188,7 +259,7 @@
 
             <div class="form-group">
                 <label class="form-label">인원 수</label>
-                <input type="number" name="countPeople" class="form-control" min="1" max="10" placeholder="인원 수를 입력하세요" required>
+                <input type="number" name="countPeople" class="form-control" min="1" max="10" value="2" placeholder="인원 수를 입력하세요" required>
             </div>
 
             <div class="form-section-title">03. 요청사항</div>
@@ -198,12 +269,53 @@
             </div>
 
             <div class="btn-box">
-                <button type="submit" class="btn-premium">예약 확정</button>
+                <button type="button" class="btn-premium" onclick="confirmReservation()">예약 확정</button>
                 <a href="javascript:history.back();" class="btn-cancel">취소</a>
             </div>
         </form>
     </div>
 </div>
+
+<div id="nextConfirm" class="next-confirm-overlay">
+    <div class="next-confirm-box">
+        <div class="next-confirm-icon">NEXT502</div>
+        <div class="next-confirm-msg">
+            입력하신 정보로<br>예약을 확정하시겠습니까?
+        </div>
+        <div class="next-confirm-btns">
+            <button type="button" class="next-btn-sub" onclick="closeNextConfirm()">취소</button>
+            <button type="button" class="next-btn-main" onclick="submitResvForm()">예약 확정</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const confirmPopup = document.getElementById("nextConfirm");
+    const resvForm = document.getElementById("resvForm");
+
+    // 예약하기 버튼 클릭 시 호출
+    function confirmReservation() {
+        confirmPopup.style.display = "block";
+    }
+
+    // 취소 버튼 클릭 시 호출
+    function closeNextConfirm() {
+        confirmPopup.style.display = "none";
+    }
+
+    // 예약 확정 버튼 클릭 시 실제 Form 제출
+    function submitResvForm() {
+        confirmPopup.style.display = "none";
+        resvForm.submit();
+    }
+
+    // 팝업 바깥 영역 클릭 시 닫기
+    window.onclick = function(event) {
+        if (event.target == confirmPopup) {
+            closeNextConfirm();
+        }
+    }
+</script>
 </body>
 </html>
 

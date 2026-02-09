@@ -93,6 +93,52 @@
           white-space: nowrap;
           color: var(--main-gold);
       }
+      /*예약페이지 관련 팝업 디자인 css 0209am 추가*/
+      .resv-modal {
+        display: none; position: fixed; z-index: 10000; left: 0; top: 0;
+        width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px); /* 배경을 더 고급스럽게 흐림 처리 */
+      }
+
+
+      .resv-modal-content {
+        background: #fff; width: 400px; position: absolute; left: 50%; top: 50%;
+        transform: translate(-50%, -50%); border-radius: 0;
+        border: 1px solid #eee;
+      }
+
+      .modal-gold-line { height: 3px; background: #C19A6B; width: 100%; }
+
+      .modal-body { padding: 50px 40px; text-align: center; }
+
+      .modal-icon-wrapper { font-size: 32px; color: #C19A6B; margin-bottom: 20px; font-weight: 100; }
+
+      .modal-title {
+        font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700;
+        letter-spacing: 3px; color: #111; margin-bottom: 15px;
+      }
+
+      .modal-text { font-size: 14px; color: #777; line-height: 1.8; margin-bottom: 40px; }
+      .modal-text span { color: #C19A6B; font-weight: bold; }
+
+
+      .modal-button-group { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+
+
+      .btn-cancel-minimal {
+        background: transparent; color: #999; border: 1px solid #ddd;
+        padding: 14px 0; flex: 1; font-size: 12px; letter-spacing: 1px;
+        transition: 0.3s;
+      }
+      .btn-cancel-minimal:hover { color: #111; border-color: #111; }
+
+
+      .btn-login-premium {
+        background: #111; color: #fff; border: 1px solid #111;
+        padding: 14px 0; flex: 1.2; font-size: 12px; letter-spacing: 1px;
+        font-weight: bold; transition: 0.3s;
+      }
+      .btn-login-premium:hover { background: #C19A6B; border-color: #C19A6B; }
   </style>
 </head>
 
@@ -266,7 +312,8 @@
             </div>
 
             <div class="d-flex gap-2 mb-4">
-              <!--              예약하기 페이지 연결 -->
+
+              <!--      예약하기 페이지 연결 여기부터 323행 까지 예약페이지 관련 0209 am 수정 -->
               <button type="button" class="btn btn-dark btn-lg flex-grow-1 fw-bold py-3" onclick="checkLoginAndGo()">예약하기</button>
 
               <button class="btn btn-bookmark btn-lg px-3" onclick="this.classList.toggle('active')">
@@ -282,6 +329,44 @@
         </div>
       </div>
     </aside>
+    <!--    팝업 디자인 -->
+    <div id="resvSuccessModal" class="resv-modal">
+      <div class="resv-modal-content">
+        <div class="modal-gold-line"></div>
+        <div class="modal-body">
+          <i class="bi bi-check2-circle mb-3 d-block" style="font-size: 40px; color: #C19A6B;"></i>
+          <h4 class="fw-bold mb-2">RESERVATION CONFIRMED</h4>
+          <p class="text-muted small mb-4">
+            예약이 정상적으로 접수되었습니다.<br>
+            정성스러운 요리로 맞이하겠습니다.
+          </p>
+          <button type="button" class="btn-modal-close" onclick="closeResvModal()">확인</button>
+        </div>
+      </div>
+    </div>
+    <!--    비로그인 팝업 디자인 -->
+    <div id="loginCheckModal" class="resv-modal">
+      <div class="resv-modal-content">
+        <div class="modal-gold-line"></div>
+
+        <div class="modal-body">
+          <div class="modal-icon-wrapper">
+            <i class="bi bi-shield-lock"></i>
+          </div>
+
+          <h5 class="modal-title">MEMBERSHIP ONLY</h5>
+          <p class="modal-text">
+            해당 서비스는 회원 전용 공간입니다.<br>
+            <span>NEXT502</span>의 멤버가 되어 특별한 혜택을 누리세요.
+          </p>
+
+          <div class="modal-button-group">
+            <button type="button" class="btn-cancel-minimal" onclick="closeLoginModal()">취소</button>
+            <button type="button" class="btn-login-premium" onclick="location.href='/login'">로그인 하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
 </main>
@@ -325,26 +410,24 @@
         }, { location: new kakao.maps.LatLng(lat, lng), radius: 2000 });
     };
 
-    // 비로그인 상황에서 예약하기 버튼눌렀을때 로그인 페이지로 보내주는 스크립트
+    // 비로그인 상황에서 예약하기 버튼눌렀을때 로그인 페이지로 보내주는 스크립트 0209 am  수정
 
     function checkLoginAndGo() {
+      const loginUser = '[[${session.loginUser}]]';
+      const restaurantId = '[[${restaurant.restaurantId}]]';
 
-        const loginUser = '[[${session.loginUser}]]';
-        const restaurantId = '[[${restaurant.restaurantId}]]';
-
-        console.log("세션 확인용:", loginUser);
-
-
-        if (!loginUser || loginUser === "" || loginUser === "null") {
-            if (confirm("예약은 로그인 후 이용 가능합니다.\n로그인 페이지로 이동하시겠습니까?")) {
-
-                location.href = "/login";
-            }
-        } else {
-
-            location.href = "/reservation/write?restaurantId=" + restaurantId;
-        }
+      if (!loginUser || loginUser === "" || loginUser === "null") {
+        document.getElementById("loginCheckModal").style.display = "block";
+      } else {
+        location.href = "/reservation/write?restaurantId=" + restaurantId;
+      }
     }
+
+    function closeLoginModal() {
+      document.getElementById("loginCheckModal").style.display = "none";
+    }
+
+
 </script>
 </body>
 </html>

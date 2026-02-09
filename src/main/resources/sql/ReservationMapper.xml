@@ -5,22 +5,19 @@
 
     <insert id="insertReservation" parameterType="bitc.next502.team_prj.dto.ReservationDTO">
         INSERT INTO reservation (
-            reservation_id,
             user_id,
-            restaurant_id,
-            reservation_date,
+            restaurant_id,  reservation_date,
             reservation_time,
             reservation_state,
             count_people
-        )
-        VALUES (
-                   #{reservationId},
-                   #{userId},
-                   #{restaurantId},
-                   #{reservationDate},
-                   #{reservationTime},
-                   '방문예정',           #{countPeople}
-               )
+        ) VALUES (
+                     #{userId},
+                     #{restaurantId}, #{reservationDate},
+                     #{reservationTime},
+                     '방문예정',
+                     #{countPeople}
+                 )
     </insert>
 
 </mapper>
+
