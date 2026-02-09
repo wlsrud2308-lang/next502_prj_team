@@ -94,18 +94,27 @@
         SELECT
             r.restaurant_id AS restaurantId,
             COALESCE(rd.title, r.place) AS restaurantName,
-            r.category,
-            r.addr1 AS address,
+            r.category AS category,
+            c.foods AS foods,                r.addr1 AS address,
             r.gugun_nm AS locationTag,
-            COALESCE(ROUND(AVG(rv.rating), 1), 0) AS rating,
+            r.main_img AS mainImg,           rd.main_img_thumb AS mainImgThumb, r.itemcntnts AS description,    COALESCE(ROUND(AVG(rv.rating), 1), 0) AS rating,
             COUNT(rv.review_idx) AS reviewCount
         FROM restaurant r
-                 LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
+                 JOIN category c ON r.category = c.category  LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
                  LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
         WHERE r.place LIKE CONCAT('%', #{keyword}, '%')
-           OR r.category LIKE CONCAT('%', #{keyword}, '%')
-           OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
-        GROUP BY r.restaurant_id
+           OR c.foods LIKE CONCAT('%', #{keyword}, '%')      OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
+        GROUP BY
+            r.restaurant_id,
+            rd.title,
+            r.place,
+            r.category,
+            c.foods,
+            r.addr1,
+            r.gugun_nm,
+            r.main_img,
+            rd.main_img_thumb,
+            r.itemcntnts
         ORDER BY rating DESC
     </select>
 

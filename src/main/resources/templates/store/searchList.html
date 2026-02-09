@@ -90,27 +90,26 @@
         <div class="row g-0 align-items-center">
           <div class="col-md-4">
             <div class="res-img-wrapper shadow-sm">
-              <img th:if="${res.mainImgThumb}" th:src="${res.mainImgThumb}" alt="식당이미지">
-              <span th:unless="${res.mainImgThumb}" class="text-muted small">No Image</span>
+              <img src="" th:src="${res.mainImg}" class="card-img-top" alt="식당">
             </div>
           </div>
           <div class="col-md-8">
             <div class="card-body py-0 ps-md-4">
               <div class="mb-2">
-                <span class="badge-category" th:text="${res.category}">카테고리</span>
+                <span class="badge-category" th:text="${res.foods}"></span>
                 <span class="ms-2 text-muted small"><i class="bi bi-geo-alt"></i> [[${res.locationTag}]]</span>
               </div>
               <h4 class="card-title fw-bold mb-2">
-                <a th:href="@{/detail(id=${res.restaurantId})}" class="text-decoration-none text-dark" th:text="${res.restaurantName}">식당 이름</a>
+                <a th:href="@{/detail(id=${res.restaurantId})}"
+                   class="text-decoration-none text-dark" th:text="${res.restaurantName}">식당명</a>
               </h4>
               <div class="mb-3">
                 <span class="text-gold fw-bold fs-5">★ [[${res.rating}]]</span>
-                <span class="text-muted ms-2 small">| 리뷰 [[${res.reviewCount ?: 0}]]</span>
               </div>
-              <p class="card-text text-secondary small mb-3 text-truncate-2" th:text="${res.description}">
-                식당 한 줄 소개가 들어가는 자리입니다.
+              <p class="card-text text-secondary small mb-3 text-truncate" th:text="${res.description}">
+                식당 소개글입니다.
               </p>
-              <a th:href="@{/detail(id=${res.restaurantId})}" class="btn btn-dark btn-sm px-4">상세보기 / 예약</a>
+              <a th:href="@{/detail(id=${res.restaurantId})}" class="btn btn-dark btn-sm px-4">예약하기</a>
             </div>
           </div>
         </div>
