@@ -19,11 +19,6 @@ public class MngController {
     @Autowired
     private MngService mngService;
 
-    @GetMapping("/mngstoreWrite")
-    public String mngstoreWrite() {
-        return "mng/mngstoreWrite";
-    }
-
     // 예약자 명단 관리
     @GetMapping("/mngmenu")
     public String mngMenu(Model model, HttpServletRequest request) {
@@ -51,6 +46,16 @@ public class MngController {
         model.addAttribute("resvList", resvList);
         
         return "mng/mngmenu";
+    }
+
+    @GetMapping("/mngstoreWrite")
+    public String mngstoreWrite() {
+        return "mng/mngstoreWrite";
+    }
+
+    @GetMapping("/mngreview")
+    public String mngreview() {
+        return "mng/mngreview";
     }
 
 //    // 식당 정보 등록
