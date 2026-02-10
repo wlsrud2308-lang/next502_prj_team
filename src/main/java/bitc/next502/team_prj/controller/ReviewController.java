@@ -46,19 +46,19 @@ public class ReviewController {
         mv.addObject("review", review);
         return mv;
     }
-<<<<<<< HEAD
+
 
     // 3. 내가 쓴 리뷰 (유저 정보 추가)
     @RequestMapping("/review/myreviewList")
     public ModelAndView myReviewList(@RequestParam("userId") String userId) throws Exception{
-=======
+
     //Mypage에서 조회하는 내가 쓴 댓글들 페이지처리
     @RequestMapping("/review/myreviewList")
     public ModelAndView myReviewList(@RequestParam(required = false,defaultValue="1",value="pageNum") int pageNum,
                                      @RequestParam("userId") String userId) throws Exception{
         int navigatePages = 5; //화면에 보여지는 페이지버튼수
         PageInfo<ReviewDTO> reviewList = new PageInfo<>( reviewService.selectMyReviewsList(pageNum,userId),navigatePages);
->>>>>>> be747b98cbe6ee7710df417ed557b627681c822b
+
         ModelAndView mv = new ModelAndView("review/myreviewList");
 
         // (1) 리뷰 목록 가져오기
@@ -107,13 +107,12 @@ public class ReviewController {
     }
 
     @PostMapping("/review/reviewUpdate")
-<<<<<<< HEAD
+
     public String reviewUpdate(ReviewDTO review, MultipartHttpServletRequest multipart, HttpServletRequest req) throws Exception{
         reviewService.updateReview(review, multipart);
         return "redirect:/mypage/main";
     }
 
-=======
     public String reviewUpdate(ReviewDTO review,
                                MultipartHttpServletRequest multipart,
                                HttpServletRequest req) throws Exception{
@@ -124,7 +123,6 @@ public class ReviewController {
     }
 
     //댓글 삭제
->>>>>>> be747b98cbe6ee7710df417ed557b627681c822b
     @RequestMapping("/review/delReview")
     public String delReview(@RequestParam("reviewIdx") int reviewIdx) throws Exception{
         reviewService.deleteReview(reviewIdx);
