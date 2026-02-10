@@ -12,14 +12,20 @@ public interface ReviewMapper {
     List<ReviewDTO> selectReviewsList(@Param("restaurantId") String restaurantId) throws Exception;
     //나의 리뷰리스트
     List<ReviewDTO> selectMyReviewsList(@Param("userId") String userId) throws Exception;
-    // 리뷰상세
-    public ReviewDTO selectReviewsDetail(@Param("reviewIdx") int reviewId) throws Exception;
+   // 리뷰상세
+    ReviewDTO selectReviewsDetail(@Param("reviewIdx") int reviewId) throws Exception;
     //리뷰 등록
-    public void insertReview(ReviewDTO review) throws Exception;
+    void insertReview(ReviewDTO review) throws Exception;
+
+    //방문완료 후 리뷰 등록
+    void insertReviewByResvId(ReviewDTO review) throws Exception;
+
+
     //리뷰 수정
-    public void updateReview(ReviewDTO review) throws Exception;
+    void updateReview(ReviewDTO review) throws Exception;
     //리뷰 삭제
-    public void deleteReview(@Param("reviewId") int reviewId) throws Exception;
+    void deleteReview(@Param("reviewIdx") int reviewId) throws Exception;
+
 
 }
 
