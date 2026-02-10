@@ -119,9 +119,45 @@ public class MngController {
     }
 
     @GetMapping("/mngreview")
-    public String mngreview(Model model) {
+    public String mngreview(Model model, HttpSession session) {
+
+        String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
+
+        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+            return "redirect:/login";
+        }
+
+        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        String businessId = businessUser.getBusinessId();
+
+        // ⭐ 리뷰 + 사장 댓글 같이 조회
+        List<ReviewDTO> reviewList = mngService.getReviewListByBusinessId(businessId);
+        int unansweredCount = (int) reviewList.stream()
+                .filter(r -> r.getReplyContent() == null || r.getReplyContent().isEmpty())
+                .count();
+
+        model.addAttribute("unansweredCount", unansweredCount);
         model.addAttribute("menuId", "review");
+        model.addAttribute("reviewList", reviewList);
+
         return "mng/mngreview";
+    }
+
+    @PostMapping("/mngreview/reply")
+    public String postReviewReply(@RequestParam int reviewIdx,
+                                  @RequestParam String replyContent,
+                                  HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
+
+        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+            return "redirect:/login";
+        }
+
+        mngService.updateReviewReply(reviewIdx, replyContent);
+
+        return "redirect:/mngreview";
     }
 
 //    // 식당 정보 등록

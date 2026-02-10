@@ -62,4 +62,34 @@
             r.reservation_time;
     </select>
 
+    <select id="selectReviewListByBusinessId" resultType="bitc.next502.team_prj.dto.ReviewDTO">
+        SELECT
+            rv.review_idx AS reviewIdx,
+            b.restaurant_id AS restaurantId,
+            rv.reservation_id AS reservationId,
+            b.business_name AS storeName,
+            rv.rating AS rating,
+            rv.img_url AS imgUrl,
+            rv.user_id AS userId,
+            rv.comment AS comment,
+            rv.create_date AS createDate,
+            rv.update_date AS updateDate,
+            rv.reply_content AS replyContent,
+            rv.reply_date AS replyDate
+        FROM
+            review rv
+                JOIN reservation r ON r.reservation_id = rv.reservation_id
+                JOIN business_user b ON b.restaurant_id = r.restaurant_id
+        WHERE
+            b.business_id = #{businessId}
+        ORDER BY
+            rv.create_date DESC;
+    </select>
+
+    <update id="updateReviewReply">
+        UPDATE review
+        SET reply_content = #{replyContent},
+            reply_date = NOW()
+        WHERE review_idx = #{reviewIdx};
+    </update>
 </mapper>

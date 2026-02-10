@@ -53,44 +53,39 @@
       <div class="card shadow-sm border-0 p-4 w-100">
         <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
           <h3 class="fw-bold mb-0">리뷰 답변 관리</h3>
-          <span class="badge bg-gold" th:text="'미답변 ' + ${unansweredCount ?: 0} + '건'">미답변 3건</span>
+          <span class="badge bg-gold" th:text="'미답변 ' + ${unansweredCount} + '건'"></span>
         </div>
 
-        <div class="card mb-4 review-card unanswered shadow-sm">
+        <div th:each="review : ${reviewList}"
+             th:class="'card mb-4 review-card shadow-sm ' + (review.replyContent == null ? 'unanswered' : 'opacity-75')">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
-                <span class="fw-bold fs-5">김미식님</span>
-                <span class="text-gold ms-2">★★★★★</span>
-                <div class="text-muted small">2026-02-01 | 디너 코스 방문</div>
+                <span class="fw-bold fs-5" th:text="${review.name} + '님'"></span>
+                <span class="text-gold ms-2" th:text="${'★'.repeat(review.rating)}"></span>
+                <div class="text-muted small" th:text="${#dates.format(review.createDate,'yyyy-MM-dd')} + ' | ' + ${review.visitType}"></div>
               </div>
-              <span class="badge rounded-pill bg-light text-dark border">미답변</span>
+              <span class="badge rounded-pill bg-light text-dark border"
+                    th:text="${review.replyContent == null ? '미답변' : '답변완료'}"></span>
             </div>
-            <p class="mb-3">음식이 너무 훌륭했습니다. 특히 관자 요리가 기억에 남네요. 기념일이라고 챙겨주신 디저트도 감사했습니다!</p>
+            <p class="mb-3" th:text="${review.comment}"></p>
 
-            <div class="reply-box">
-              <label class="form-label small fw-bold text-secondary">관리자 답변</label>
-              <textarea class="form-control mb-2" rows="3" placeholder="소중한 리뷰에 대한 감사의 마음을 전하세요."></textarea>
-              <div class="text-end">
-                <button class="btn bg-gold btn-sm px-4">답변 등록</button>
-              </div>
+            <div class="reply-box" th:if="${review.replyContent == null}">
+              <form th:action="@{/mngreview/reply}" method="post">
+                <input type="hidden" name="reviewIdx" th:value="${review.reviewIdx}" />
+                <textarea name="replyContent" class="form-control mb-2" rows="3"
+                          placeholder="소중한 리뷰에 대한 감사의 마음을 전하세요."></textarea>
+                <div class="text-end">
+                  <button type="submit" class="btn bg-gold btn-sm px-4">답변 등록</button>
+                </div>
+              </form>
+            </div>
+            <div th:if="${review.replyContent != null}"
+                 class="mt-3 p-2 border-start border-3 ps-3 italic small bg-light">
+              <strong>[Re]</strong> <span th:text="${review.replyContent}"></span>
             </div>
           </div>
         </div>
-
-        <div class="card mb-4 review-card opacity-75">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-bold">이영희님 <span class="text-gold">★★★★☆</span></span>
-              <span class="text-muted small">답변완료 (2026-01-28)</span>
-            </div>
-            <p class="mt-2 mb-0 small text-secondary">분위기가 좋아서 다시 방문하고 싶어요.</p>
-            <div class="mt-3 p-2 border-start border-3 ps-3 italic small bg-light">
-              <strong>[Re]</strong> 방문해주셔서 감사합니다. 다음에도 최고의 서비스로 모시겠습니다!
-            </div>
-          </div>
-        </div>
-
       </div> </main> </div> </div> <div th:replace="~{layout/footer :: footer}"></div>
 </body>
 </html>

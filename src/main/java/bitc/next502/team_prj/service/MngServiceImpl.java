@@ -1,5 +1,6 @@
 package bitc.next502.team_prj.service;
 
+import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.dto.MngDTO;
 import bitc.next502.team_prj.mapper.MngMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,14 @@ public class MngServiceImpl implements MngService{
     return mngMapper.selectResvListByDate(businessId, resvDate);
   }
 
+  @Override
+  public List<ReviewDTO> getReviewListByBusinessId(String businessId) {
+    return mngMapper.selectReviewListByBusinessId(businessId);
+  }
+
+  @Override
+  public void updateReviewReply(int reviewIdx, String replyContent) {
+    mngMapper.updateReviewReply(reviewIdx, replyContent);
+  }
 
 }
