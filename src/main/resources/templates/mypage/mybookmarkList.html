@@ -1,58 +1,53 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="~{layout/header :: header}"></div>
+    <th:block th:replace="~{layout/header :: header}"></th:block>
     <title>NEXT502 | 관심 식당</title>
+
     <style>
         :root { --main-gold: #b89255; --main-gold-hover: #9c7b46; }
-
         .text-gold { color: var(--main-gold) !important; }
-        .bg-gold-subtle { background-color: #fcf8f3; color: var(--main-gold); }
-
-        /* 사이드바 메뉴  */
-        .list-group-item.active {
-            background-color: transparent;
-            color: var(--main-gold);
-            font-weight: bold;
-            border-color: #eee;
-            border-left: 3px solid var(--main-gold); /* 왼쪽 강조 선 */
-        }
+        .list-group-item.active { background-color: transparent; color: var(--main-gold); font-weight: bold; border-color: #eee; border-left: 3px solid var(--main-gold); }
         .list-group-item { border-left: 3px solid transparent; transition: all 0.2s; }
         .list-group-item:hover { color: var(--main-gold); background-color: #f9f9f9; }
-
-        /* 버튼 커스텀 */
-        .btn-outline-gold {
-            color: var(--main-gold); border-color: var(--main-gold);
-        }
-        .btn-outline-gold:hover {
-            background-color: var(--main-gold); color: white;
-        }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+        .img-wrapper { height: 200px; overflow: hidden; position: relative; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .card-hover:hover .img-wrapper img { transform: scale(1.05); }
+        .btn-like { position: absolute; top: 15px; right: 15px; background: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 10; }
+        .btn-like i { color: #ff4d4d; font-size: 1.1rem; }
+        .btn-like:hover i { transform: scale(1.2); }
     </style>
 </head>
+
 <body class="d-flex flex-column min-vh-100 bg-light">
 
 <div th:replace="~{layout/navbar :: navbar}"></div>
 
 <main class="container my-5">
     <div class="row g-4">
+
         <aside class="col-lg-3">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body text-center p-4">
                     <div class="bg-secondary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
                         <i class="bi bi-person-fill fs-1 text-secondary"></i>
                     </div>
-                    <h5 class="fw-bold mb-1">홍길동님</h5>
-                    <p class="text-muted small mb-0">일반 회원</p>
+                    <h5 class="fw-bold mb-1" th:text="${userInfo.name + '님'}">사용자님</h5>
+                    <p class="text-muted small mb-0" th:text="${userInfo.grade}">일반 회원</p>
                 </div>
+
                 <div class="list-group list-group-flush small">
                     <a th:href="@{/mypage/main}" class="list-group-item list-group-item-action py-3 px-4">
-                        <i class="bi bi-calendar me-2"></i> 나의 예약 내역
+                        <i class="bi bi-calendar-check me-2"></i> 나의 예약 내역
                     </a>
-                    <a th:href="@{/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center active">
-                        <span><i class="bi bi-heart-fill me-2"></i> 관심 식당</span>
-                        <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill">5</span>
+                    <a th:href="@{/mypage/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center active">
+                        <span><i class="bi bi-heart me-2"></i> 관심 식당</span>
+                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill"
+                              th:text="${bookmarkList != null ? bookmarkList.size() : 0}">0</span>
                     </a>
-                    <a th:href="@{/myreviewList}" class="list-group-item list-group-item-action py-3 px-4">
+                    <a th:href="@{/review/myreviewList(userId=${userId})}" class="list-group-item list-group-item-action py-3 px-4">
                         <i class="bi bi-pencil-square me-2"></i> 내가 쓴 리뷰
                     </a>
                     <a th:href="@{/mypageList}" class="list-group-item list-group-item-action py-3 px-4">
@@ -61,37 +56,72 @@
                 </div>
             </div>
         </aside>
+
         <section class="col-lg-9">
             <div class="card shadow-sm border-0 min-vh-100">
                 <div class="card-body p-4 p-md-5">
+
                     <h4 class="fw-bold mb-4 pb-2 border-bottom">관심 식당</h4>
 
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
-                        <div class="col">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="position-relative">
-                                    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800" class="card-img-top img-cover" alt="식당">
-                                    <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow-sm text-danger">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:if="${bookmarkList != null and !bookmarkList.isEmpty()}">
+                        <div class="col" th:each="store : ${bookmarkList}">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
+                                <div class="img-wrapper rounded-top position-relative">
+                                    <img th:if="${store.mainImgThumb != null}" th:src="${store.mainImgThumb}" alt="식당 이미지">
+                                    <img th:unless="${store.mainImgThumb != null}" src="https://via.placeholder.com/300x200" alt="기본 이미지">
+
+                                    <button class="btn-like" type="button"
+                                            th:data-id="${store.restaurantId}" onclick="deleteBookmark(this)">
                                         <i class="bi bi-heart-fill"></i>
                                     </button>
                                 </div>
+
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge bg-light text-secondary border">한식</span>
-                                        <span class="small text-gold fw-bold">★ 4.8</span>
+                                        <span class="badge bg-light text-secondary border" th:text="${store.category}">카테고리</span>
+                                        <small class="fw-bold text-gold">
+                                            <i class="bi bi-star-fill text-warning me-1"></i>
+                                            <span th:text="${store.rating}">0.0</span>
+                                        </small>
                                     </div>
-                                    <h5 class="card-title fw-bold">맛있는 밥집 A</h5>
-                                    <p class="card-text text-muted small text-truncate">부산진구 중앙대로 123번길</p>
+                                    <h5 class="fw-bold mb-1">
+                                        <a th:href="@{/detail(id=${store.restaurantId})}" class="text-dark text-decoration-none stretched-link"
+                                           th:text="${store.restaurantName}">식당 이름</a>
+                                    </h5>
+                                    <p class="text-muted small mb-0 text-truncate" th:text="${store.address}">주소</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <div th:if="${bookmarkList == null or bookmarkList.isEmpty()}" class="text-center py-5">
+                        <div class="text-muted mb-3">
+                            <i class="bi bi-heart-break display-1 text-secondary opacity-25"></i>
+                        </div>
+                        <h5 class="fw-bold text-secondary">아직 찜한 식당이 없어요.</h5>
+                        <p class="text-muted small mb-4">마음에 드는 식당을 찾아 하트를 눌러보세요!</p>
+                        <a href="/" class="btn btn-outline-gold px-4 rounded-pill">식당 둘러보기</a>
+                    </div>
+
                 </div>
             </div>
         </section>
+
     </div>
 </main>
+
 <div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    function deleteBookmark(btn) {
+
+        const restaurantId = btn.getAttribute("data-id");
+
+        if (confirm("정말 관심 식당에서 삭제하시겠습니까?")) {
+            location.href = "/bookmark/delete?restaurantId=" + restaurantId;
+        }
+    }
+</script>
+
 </body>
 </html>
