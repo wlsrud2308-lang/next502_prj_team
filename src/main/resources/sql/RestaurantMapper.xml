@@ -44,7 +44,6 @@
             r.cntct_tel AS restaurantTel,
             r.gugun_nm AS locationTag,
             r.max_capacity AS seats,
-            rd.itemcntnts AS description,
             r.lat AS lat,
             r.lng AS lng,
             rd.main_img_thumb AS  mainImgThumb,
@@ -134,7 +133,12 @@
         LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
         LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
         WHERE (
-        r.place LIKE CONCAT('%', #{keyword}, '%')            OR rd.title LIKE CONCAT('%', #{keyword}, '%')        OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')   OR rd.itemcntnts LIKE CONCAT('%', #{keyword}, '%')  OR c.foods LIKE CONCAT('%', #{keyword}, '%')         OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')         OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')      )
+        r.place LIKE CONCAT('%', #{keyword}, '%')
+            OR rd.title LIKE CONCAT('%', #{keyword}, '%')
+            OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')
+            OR c.foods LIKE CONCAT('%', #{keyword}, '%')
+            OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
+            OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')      )
 
         <if test="locations != null and locations.size() > 0">
             AND r.gugun_nm IN
@@ -159,7 +163,6 @@
         r.addr1,
         r.gugun_nm,
         r.main_img,
-        rd.itemcntnts,
         r.itemcntnts
 
         <choose>
