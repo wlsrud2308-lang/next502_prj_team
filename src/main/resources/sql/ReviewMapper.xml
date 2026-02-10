@@ -10,23 +10,46 @@
         ORDER BY review_idx DESC
     </select>
     <select id="selectMyReviewsList" parameterType="String" resultType="bitc.next502.team_prj.dto.ReviewDTO" >
-        SELECT review_idx, user_id, restaurant_id, comment, create_date, img_url, rating
-        FROM review
-        WHERE user_id = #{userId}
-        ORDER BY review_idx DESC
+        SELECT
+            rw.review_idx        as reviewIdx,
+            rw.user_id           as userId,
+            rw.restaurant_id     as restaurantId,
+            rw.reservation_id    as reservationId,
+            d.title              as storeName ,
+            rw.comment           as comment ,
+            rw.create_date       as createDate,
+            rw.img_url           as imgUrl,
+            rw.rating            as rating
+        FROM review rw
+            JOIN restaurant_detail d ON rw.restaurant_id = d.restaurant_id
+        WHERE rw.user_id = #{userId}
+        ORDER BY rw.create_date DESC
     </select>
     <select id="selectReviewsDetail" parameterType="int" resultType="bitc.next502.team_prj.dto.ReviewDTO">
         SELECT review_idx, user_id, restaurant_id, comment, create_date, img_url, rating
         FROM review
         WHERE review_idx = #{reviewIdx}
     </select>
-    <insert id="insertReview" parameterType="bitc.next502.team_prj.dto.ReviewDTO">
-        INSERT INTO review (user_id, restaurant_id, comment, create_date, img_url, rating)
-        VALUES (#{userId},#{restaurantId}, #{comment}, now(), #{imgUrl}, #{rating} )
+    <insert id="insertReview" parameterType="bitc.next502.team_prj.dto.ReviewDTO" useGeneratedKeys="true" keyProperty="reviewIdx">
+        INSERT INTO review (user_id, restaurant_id, comment, create_date, img_url, rating, reservation_id)
+        VALUES (#{userId},#{restaurantId}, #{comment}, now(), #{imgUrl}, #{rating} ,#{reservationId} )
+    </insert>
+    <insert id="insertReviewByResvId" parameterType="bitc.next502.team_prj.dto.ReviewDTO" useGeneratedKeys="true" keyProperty="reviewIdx">
+        INSERT INTO review (user_id, restaurant_id, reservation_id, `comment`, create_date, img_url, rating)
+        SELECT
+            r.user_id,
+            r.restaurant_id,
+            r.reservation_id,
+            #{comment},
+            NOW(),
+            #{imgUrl},
+            #{rating}
+        FROM reservation r
+        WHERE r.reservation_id = #{reservationId};
     </insert>
     <update id="updateReview" parameterType="bitc.next502.team_prj.dto.ReviewDTO">
         UPDATE review
-        SET comment = #{comment} , img_url= #{imgUrl} , update_date=now()
+        SET rating =#{rating}, comment = #{comment} , img_url= #{imgUrl} , update_date=now()
         WHERE review_idx = #{reviewIdx}
     </update>
     <delete id="deleteReview" parameterType="int">

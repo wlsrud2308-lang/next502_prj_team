@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bitc.next502.team_prj.mapper.FileMapper">
+<!--    파일 목록 가져오기-->
+    <select id="selectFileList" parameterType="int" resultType="bitc.next502.team_prj.dto.FileDTO">
+        SELECT img_idx, restaurant_id,img_type, original_filename, stored_filename
+                ,FORMAT(ROUND(file_size /1024),0) as file_size
+        FROM FILE
+        WHERE restaurant_id=#{restaurantId} AND DELETE_YN ='N'
+    </select>
+<!--    파일 상세정보-->
+    <select id="selectFileDetail" parameterType="map" resultType="bitc.next502.team_prj.dto.FileDTO">
+        SELECT img_idx, restaurant_id, review_id, original_filename, stored_filename, file_size, create_date
+        FROM FILE
+        WHERE img_idx =#{imgIdx} AND restaurant_id = #{restaurantId} AND deleted_yn ='N'
+    </select>
+<!--    한번에 한개 등록-->
+    <insert id="insertFileOne" parameterType="bitc.next502.team_prj.dto.FileDTO">
+        INSERT INTO FILE (img_type,restaurant_id, review_id, original_filename, stored_filename, file_size, create_date )
+        VALUES ('2',#{restaurantId}, #{reviewId},#{originalFilename} ,#{storedFilename},#{fileSize},NOW())
+    </insert>
+<!--    첨부파일 등록 동시에 여러개(댓글 등록-->
+<!--    <insert id="insertFileList" parameterType="bitc.next502.team_prj.dto.FileDTO">-->
+<!--        INSERT INTO FILE (img_type,restaurant_id, original_filename, stored_filename, file_size, create_date,delete_yn, review_id )-->
+<!--        VALUES-->
+<!--        <foreach collection="list" item="item" separator=",">-->
+<!--            -->
+<!--            ('2', #{item.restaurantId} ,#{item.originalFilename} ,#{item.storedFilename} ,#{item.fileSize},NOW(),'N',#{item.reviewId})-->
+<!--        </foreach>-->
+<!--    </insert>-->
+    <insert id="insertFileList" parameterType="bitc.next502.team_prj.dto.FileDTO">
+        INSERT INTO FILE (img_type,restaurant_id, original_filename, stored_filename, file_size, create_date,delete_yn, review_id,reservation_id,create_id )
+        <foreach collection="list" item="item" separator=",">
+        SELECT
+            '2',
+            r.restaurant_id ,
+            #{item.originalFilename},
+            #{item.storedFilename},
+            #{item.fileSize},
+            NOW(),
+            'N',
+            r.review_idx ,
+            r.reservation_id,
+            r.user_id
+        FROM review r
+        WHERE r.review_idx = #{item.reviewId}
+        </foreach>
+    </insert>
+
+</mapper>

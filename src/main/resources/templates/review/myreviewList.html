@@ -29,12 +29,31 @@
         .btn-outline-gold:hover {
             background-color: var(--main-gold); color: white;
         }
+
+        /* 별점 */
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            font-size: 2rem;
+            color: #ddd;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .stars span:hover,
+        .stars span.active {
+            color: #f2b01e;
+        }
+
+
     </style>
 
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
 <div th:replace="~{layout/navbar :: navbar}"></div>
+
 
 <main class="container my-5">
     <div class="row g-4">
@@ -48,7 +67,7 @@
                     <p class="text-muted small mb-0">일반 회원</p>
                 </div>
                 <div class="list-group list-group-flush small">
-                    <a th:href="@{/mypage}" class="list-group-item list-group-item-action py-3 px-4">
+                    <a th:href="@{/mypage/main}" class="list-group-item list-group-item-action py-3 px-4">
                         <i class="bi bi-calendar me-2"></i> 나의 예약 내역
                     </a>
                     <a th:href="@{/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center">
@@ -56,7 +75,7 @@
                         <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill">5</span>
                     </a>
                     <a th:href="@{/review/myreviewList(userId=${session.loginUser.userId})}" class="list-group-item list-group-item-action py-3 px-4">
-                        <i class="bi bi-pencil-square me-2"></i> 내가 쓴 리뷰
+                        <i class="bi bi-pencil-square me-2"></i>내가 쓴 리뷰
                     </a>
                     <a th:href="@{/mypageList}" class="list-group-item list-group-item-action py-3 px-4">
                         <i class="bi bi-gear me-2"></i> 개인정보 수정
@@ -70,27 +89,24 @@
                 <div class="card-body p-4 p-md-5">
                     <h4 class="fw-bold mb-4 pb-2 border-bottom">내가 쓴 리뷰</h4>
 
-                    <div th:each="icnt,review : ${reviewList}">
-                        <form id="frm" action="#" method="post">
+                    <div th:each="review : ${reviewList}">
+
                             <div class="card mb-3 border-light-subtle shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between mb-2">
-                                        <h5 class="card-title fw-bold mb-0" >금수복국 해운대본점</h5>
+                                        <h5 class="card-title fw-bold mb-0" ><span th:text="${review.reviewIdx}"></span> <span th:text="${review.storeName}"></span></h5>
                                         <small class="text-muted" th:text="${review.createDate}">2026.02.01 작성</small>
                                     </div>
                                     <div class="mb-2 text-gold">평점: <span class="text-dark small ms-1" th:text="${review.rating}">5.0</span></div>
                                     <p class="card-text text-secondary"><span th:text="${review.comment}">국물이 정말 시원하고 맛있었어요. </span></p>
                                     <div class="text-end">
-                                        <button class="btn btn-sm btn-outline-secondary" id="btn-upt">수정</button>
-                                        <button class="btn btn-sm btn-outline-danger" id="btn-del">삭제</button>
-                                        <input type="hidden" id="urlValue" name="urlValue" th:value="/review/${review.reviewIdx}">
+                                        <button class="btn btn-outline-gold btn-sm px-3 btnuptate" th:attrappend="data-storeName=${review.storeName},
+                                                           data-reviewIdx=${review.reviewIdx},data-rating=${review.rating},data-comment=${review.comment}">리뷰수정</button>
+                                        <button class="btn btn-sm btn-outline-danger btndel2" id="" th:attrappend="id=${review.reviewIdx}">삭제</button>
 
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" id="method" name="_method">
-
-                        </form>
                     </div>
 
                 </div>
@@ -98,34 +114,147 @@
         </section>
     </div>
 </main>
-<div th:replace="~{layout/footer :: footer}"></div>
+
+<!------------------------------------------------------------------------------------->
+
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content rounded-4 shadow-lg border-0">
+
+            <div class="modal-header border-bottom-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold fs-5">리뷰 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body px-4 pb-4">
+                <h4 id="modalStoreName" class="text-center fw-bold mb-4 text-gold" style="font-size: 1.4rem;"></h4>
+                <form action="/review/reviewUpdate" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="modalReviewId" name="reviewIdx" value="">
+                    <input type="hidden" id="modalRatingValue" name="rating" value="0">
+                    <input type="hidden" id="modalImgUrl" name="imgUrl" value="" >
+
+                    <div class="mb-4 text-center">
+                        <p class="text-muted small mb-2">식사는 만족스러우셨나요?</p>
+                        <div class="stars">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <div class="hint">별을 클릭하여 점수를 매겨주세요.</div>
+
+
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control bg-light border-0" id="modalComment" name="comment" rows="4"
+                                  placeholder="솔직한 리뷰를 남겨주세요. (최소 10자 이상)" required style="resize: none; font-size: 0.9rem;"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small mb-1">📷 사진 첨부 (선택)</label>
+                        <input class="form-control form-control-sm" type="file" id="uploadFiles" name="uploadFiles" accept="image/*">
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-outline-gold py-2 fw-bold"
+                                style="background-color: var(--main-gold); color: white;">
+                            확 인
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     $(function (){
-        $("#btn-upt").on("click",function (){
-            location.href="/review/";
+
+        const stars = document.querySelectorAll('.stars .star');
+        const ratingInput = document.getElementById('modalRatingValue');
+        let selectedRating = 0;
+
+        stars.forEach(function (star) {
+            star.addEventListener('click', function () {
+                selectedRating = star.dataset.value;
+                ratingInput.value = selectedRating;
+                updateStars(selectedRating);
+            });
+            // 마우스 오버
+            star.addEventListener('mouseover', () => {
+                updateStars(star.dataset.value);
+            });
+
+            // 마우스 아웃
+            star.addEventListener('mouseout', () => {
+                updateStars(selectedRating);
+            });
+        });
+
+        //별점변경
+        function updateStars(val00) {
+            stars.forEach(function (star) {
+                star.classList.toggle(
+                    'active',
+                    star.dataset.value <= val00
+                );
+            });
+        }
+
+
+        $(".btnuptate").on("click",function (){
+            const test = $(this);
+            const dataValue1 = test.attr("data-storeName");
+            const dataValue2 = test.attr("data-reviewIdx");
+            const dataValue3 = test.attr("data-rating");
+            const dataValue4 = test.attr("data-comment");
+            openReviewModal(dataValue1,dataValue2,dataValue3,dataValue4);
 
         });
 
-        $("#btn-del").on("click",function (){
-
-            //const url=$("#urlValue").val() ;
-            $("#method").val("DELETE");
-            const frm = $("#frm")[0];
-            const boardIdx=$("#board-idx").val();
-            frm.action="/board/"+boardIdx;
-
-            frm.submit();
-
-
-            alert("삭제");
-            //location.href=$("#urlValue").val() ;
-            console.log("삭제할 변경 url") ;
+        //게시글 삭제
+        const btndels = document.querySelectorAll('.btndel2');
+        btndels.forEach(function (delno) {
+            delno.addEventListener('click', function () {
+                const val=this.id;
+                location.href="/review/delReview?reviewIdx="+ val ;
+            });
         });
+
+
+        function openReviewModal(storeName,reviewIdx,ratingVal,comment) {
+
+            const nameElement = document.getElementById('modalStoreName');
+            const idElement = document.getElementById('modalReviewId');
+            const starElement = document.getElementById('modalRatingValue');
+            const commElement = document.getElementById('modalComment');
+            if(nameElement) nameElement.innerText = storeName;
+            if(idElement) idElement.value = reviewIdx;
+
+            if(starElement) starElement.value = ratingVal;
+            if(commElement) commElement.value = comment;
+
+            updateStars(ratingVal);
+            let reviewModalElement = document.getElementById('reviewModal');
+            let reviewModal = bootstrap.Modal.getInstance(reviewModalElement);
+
+            if (!reviewModal) {
+
+                reviewModal = new bootstrap.Modal(reviewModalElement);
+            }
+
+            reviewModal.show();
+        }
+
+
 
 
     });
+//
+
 
 </script>
+<div th:replace="~{layout/footer :: footer}"></div>
 </body>
 </html>
