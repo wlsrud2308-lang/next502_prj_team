@@ -3,15 +3,21 @@ package bitc.next502.team_prj.controller;
 import bitc.next502.team_prj.dto.*;
 import bitc.next502.team_prj.service.MngService;
 import bitc.next502.team_prj.service.RestaurantService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class MngController {
@@ -19,38 +25,94 @@ public class MngController {
     @Autowired
     private MngService mngService;
 
+    @Autowired
+    private RestaurantService restaurantService;
+
     // 예약자 명단 관리
     @GetMapping("/mngmenu")
-    public String mngMenu(Model model, HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
-        Object userBoxing = session.getAttribute("loginUser");
-
-        String businessId = null;
+    public String mngMenu(Model model,
+                          HttpSession session,
+                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate resvDate) {
 
         String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
 
-        if (role.equals("BUSINESS")) {
-            BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-            businessId = businessUser.getBusinessId();
+        if (role == null || userBoxing == null) {
+            return "redirect:/login";
         }
-        else if (role.equals("NORMAL")) {
-            NormalUserDTO normalUser = (NormalUserDTO) userBoxing;
-            businessId = normalUser.getUserId();
+
+        if (!"BUSINESS".equals(role)) {
+            return "redirect:/login";
         }
+
+        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        String businessId = businessUser.getBusinessId();
 
         MngDTO mng = mngService.getMngInfo(businessId);
-        List<MngDTO> resvList = mngService.getResvList(businessId);
+        List<MngDTO> resvList;
+
+        if (resvDate != null) {
+            resvList = mngService.getResvListByDate(businessId, resvDate);
+        } else {
+            resvList = mngService.getResvList(businessId);
+            resvDate = LocalDate.now();
+        }
+
+        int totalCount = resvList.size();
+        int visitCount = (int) resvList.stream().filter(r -> "방문 완료".equals(r.getStatus())).count();
+        int waitingCount = totalCount - visitCount;
 
         model.addAttribute("mng", mng);
         model.addAttribute("resvList", resvList);
-        
+        model.addAttribute("resvDate", resvDate);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("visitCount", visitCount);
+        model.addAttribute("waitingCount", waitingCount);
+
         return "mng/mngmenu";
     }
 
     @GetMapping("/mngstoreWrite")
     public String mngstoreWrite() {
         return "mng/mngstoreWrite";
+    }
+
+    // POST: 가게 등록 처리
+    @PostMapping("/mngstoreWrite")
+    public String registerStore(@ModelAttribute RestaurantDTO restaurantDTO,
+                                @RequestParam("mainImgFile") MultipartFile mainImgFile,
+                                HttpSession session,
+                                Model model) throws IOException {
+
+        // 세션 검증
+        String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
+
+        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+            return "redirect:/login";
+        }
+
+        // 이미지 파일 처리
+        if (!mainImgFile.isEmpty()) {
+            String fileName = saveFile(mainImgFile);
+            restaurantDTO.setMainImg(fileName);
+        }
+
+        // 서비스 호출
+        restaurantService.registerRestaurant(restaurantDTO);
+
+        model.addAttribute("message", "가게 등록이 완료되었습니다!");
+        return "mng/mngstoreWrite";
+    }
+
+    // 파일 저장 메서드
+    private String saveFile(MultipartFile file) throws IOException {
+        String uploadDir = "uploads/";
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path path = Paths.get(uploadDir + fileName);
+        Files.createDirectories(path.getParent());
+        Files.write(path, file.getBytes());
+        return "/uploads/" + fileName;
     }
 
     @GetMapping("/mngreview")

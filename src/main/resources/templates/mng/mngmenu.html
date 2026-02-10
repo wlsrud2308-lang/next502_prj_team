@@ -22,6 +22,97 @@
       .table thead th { background-color: #f8f9fa; color: #666; font-weight: 600; border-top: none; }
       .status-completed { background-color: #fcfcfc; color: #bbb; }
   </style>
+
+  <script>
+    // DOM이 준비되면 바로 실행
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('resvDateInput');
+      if (dateInput) {
+        dateInput.addEventListener('change', () => {
+          const selectedDate = dateInput.value;
+          if (selectedDate) {
+            // 선택된 날짜로 GET 요청
+            window.location.href = `/mngmenu?resvDate=${selectedDate}`;
+          }
+        });
+      }
+
+      document.querySelectorAll('.resv-row').forEach(row => {
+        const statusCell = row.querySelector('.status-cell');
+        const cancelBtn = statusCell.querySelector('.cancel-btn');
+
+        // 취소 버튼 클릭
+        if(cancelBtn){
+          cancelBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 행 클릭 이벤트 방지
+            if(confirm('예약을 취소하시겠습니까?')){
+              const resvId = row.getAttribute('data-resvid');
+              fetch(`/mngmenu/cancel/${resvId}`, { method: 'DELETE' })
+                      .then(res => {
+                        if(res.ok){
+                          row.remove(); // 테이블에서 제거
+                        } else {
+                          alert('취소 실패');
+                        }
+                      });
+            }
+          });
+        }
+
+        // 방문예정 행 클릭 시 버튼 생성
+        row.addEventListener('click', () => {
+          const currentStatus = row.getAttribute('data-status');
+
+          if (currentStatus === '방문예정' && !statusCell.querySelector('.status-btn')) {
+            statusCell.querySelector('.status-label').style.display = 'none';
+
+            const visitBtn = document.createElement('button');
+            visitBtn.textContent = '방문확인';
+            visitBtn.className = 'btn btn-sm btn-outline-success status-btn mx-1';
+
+            const noshowBtn = document.createElement('button');
+            noshowBtn.textContent = '노쇼처리';
+            noshowBtn.className = 'btn btn-sm btn-outline-warning noshow-btn mx-1';
+
+            // 취소 버튼 뒤에 삽입
+            statusCell.insertBefore(visitBtn, cancelBtn);
+            statusCell.insertBefore(noshowBtn, cancelBtn);
+
+            // 방문확인 클릭
+            visitBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const resvId = row.getAttribute('data-resvid');
+              fetch(`/mngmenu/confirm/${resvId}`, { method: 'PATCH' })
+                      .then(res => {
+                        if(res.ok){
+                          statusCell.innerHTML = `<span class="badge bg-success">방문 완료</span>`;
+                          row.setAttribute('data-status', '방문완료');
+                        } else {
+                          alert('상태 변경 실패');
+                        }
+                      });
+            });
+
+            // 노쇼 처리 클릭
+            noshowBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const resvId = row.getAttribute('data-resvid');
+              fetch(`/mngmenu/noshow/${resvId}`, { method: 'PATCH' })
+                      .then(res => {
+                        if(res.ok){
+                          statusCell.innerHTML = `<span class="badge bg-danger">노쇼</span>`;
+                          row.setAttribute('data-status', '노쇼');
+                          row.classList.add('status-completed');
+                        } else {
+                          alert('노쇼 처리 실패');
+                        }
+                      });
+            });
+          }
+        });
+      });
+    });
+  </script>
 </head>
 <body class="bg-light">
 
@@ -29,8 +120,6 @@
 
 <div class="container my-5">
   <div class="row g-4">
-    <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org">
     <aside th:fragment="adminSidebar" class="col-lg-3">
       <div class="card shadow-sm border-0 mb-4 sticky-top" style="top: 20px;">
         <div class="card-header bg-dark text-white py-3 text-center">
@@ -58,7 +147,6 @@
         </div>
       </div>
     </aside>
-    </html>
 
     <main class="col-lg-9">
       <div class="card shadow-sm border-0 p-4">
@@ -67,7 +155,8 @@
           <h3 class="fw-bold mb-0">예약자 명단 관리</h3>
           <div class="d-flex align-items-center gap-2">
             <span class="small text-muted">조회 일자:</span>
-            <input type="date" class="form-control form-control-sm" th:text="${mng.resvDate}" value="2026-02-06">
+            <input type="date" id="resvDateInput" class="form-control form-control-sm"
+                   th:value="${resvDate ?: mng.resvDate}">
           </div>
         </div>
 
@@ -103,34 +192,39 @@
               <th class="text-center">상태 및 관리</th>
             </tr>
             </thead>
-            <tbody th:each="mng, iterStat : ${resvList}">
-            <tr>
-              <td class="ps-3 fw-bold" th:text="${iterStat.resvTime}">18:00</td>
-              <td><a href="#" class="text-dark fw-bold" th:text="${iterStat.userId + '님'}">김철수님</a></td>
-              <td th:text="${iterStat.headCount}">2명</td>
-              <td class="text-muted">010-1111-2222</td>
-              <td class="text-center">
-                <button class="btn btn-sm bg-gold px-3" th:text="${iterStat.status}">방문확인</button>
-                <button class="btn btn-sm btn-outline-secondary px-3">취소</button>
+            <tbody th:each="mng : ${resvList}">
+            <tr class="resv-row" th:data-resvid="${mng.resvId}" th:data-status="${mng.status}">
+              <td class="ps-3 fw-bold" th:text="${mng.resvTime}">18:00</td>
+              <td><a href="#" class="text-dark fw-bold" th:text="${mng.name + '님'}">김철수님</a></td>
+              <td th:text="${mng.headCount}">2명</td>
+              <td class="text-muted" th:text="${mng.phone}">010-1111-2222</td>
+              <td class="text-center status-cell">
+                <span th:switch="${mng.status}">
+                  <span th:case="'방문예정'" class="btn btn-sm status-label bg-gold px-3">방문예정</span>
+                  <span th:case="'방문완료'" class="badge bg-success">방문 완료</span>
+                  <span th:case="'노쇼'" class="badge bg-danger">노쇼</span>
+                </span>
+                <!-- 방문예정 상태일 때만 취소 버튼 -->
+                <button class="btn btn-sm btn-outline-secondary cancel-btn" th:if="${mng.status == '방문예정'}">취소</button>
               </td>
             </tr>
-            <tr>
-              <td class="ps-3 fw-bold">19:00</td>
-              <td><a href="#" class="text-dark fw-bold">이영희님</a></td>
-              <td>4명</td>
-              <td class="text-muted">010-3333-4444</td>
-              <td class="text-center">
-                <button class="btn btn-sm bg-gold px-3">방문확인</button>
-                <button class="btn btn-sm btn-outline-danger px-3">노쇼처리</button>
-              </td>
-            </tr>
-            <tr class="status-completed">
-              <td class="ps-3">13:00</td>
-              <td>박미식님</td>
-              <td>2명</td>
-              <td>010-5555-6666</td>
-              <td class="text-center small"><i class="bi bi-check2-all"></i> 방문 완료</td>
-            </tr>
+<!--            <tr>-->
+<!--              <td class="ps-3 fw-bold">19:00</td>-->
+<!--              <td><a href="#" class="text-dark fw-bold">이영희님</a></td>-->
+<!--              <td>4명</td>-->
+<!--              <td class="text-muted">010-3333-4444</td>-->
+<!--              <td class="text-center">-->
+<!--                <button class="btn btn-sm bg-gold px-3">방문확인</button>-->
+<!--                <button class="btn btn-sm btn-outline-danger px-3">노쇼처리</button>-->
+<!--              </td>-->
+<!--            </tr>-->
+<!--            <tr class="status-completed">-->
+<!--              <td class="ps-3">13:00</td>-->
+<!--              <td>박미식님</td>-->
+<!--              <td>2명</td>-->
+<!--              <td>010-5555-6666</td>-->
+<!--              <td class="text-center small"><i class="bi bi-check2-all"></i> 방문 완료</td>-->
+<!--            </tr>-->
             </tbody>
           </table>
         </div>

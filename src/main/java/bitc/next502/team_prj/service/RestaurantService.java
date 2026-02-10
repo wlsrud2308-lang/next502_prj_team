@@ -19,4 +19,6 @@ public interface RestaurantService {
 
 
     List<RestaurantDTO> searchByFilter(String keyword, List<String> locations, List<String> categories, String sort);
+
+    public void registerRestaurant(RestaurantDTO dto);
 }

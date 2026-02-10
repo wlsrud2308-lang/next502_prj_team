@@ -14,11 +14,11 @@ public class RestaurantDTO {
     private String mainImg;
     private String itemCntnts;
 
-
     private String locationTag;
     private String seats;
     private String description;
     private String lat;
     private String lng;
     private String mainImgThumb;
+    private String price;
 }
