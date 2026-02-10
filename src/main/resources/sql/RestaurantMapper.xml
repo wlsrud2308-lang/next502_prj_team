@@ -170,8 +170,8 @@
 
     <insert id="insertRestaurant" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         INSERT INTO restaurant (
-            place, category, addr1, cntct_tel, usage_day_week_and_time, main_img, itemcntnts, gugun_nm, max_capacity)
-        VALUES ( #{restaurantName}, #{category}, #{addr1}, #{cntct_tel}, #{usage_day_week_and_time}, 'img', '전통 국밥집', '부산진구', '100');
+            place, category, addr1, main_img, itemcntnts, gugun_nm, max_capacity)
+        VALUES ( #{restaurantName}, #{category}, #{address}, #{mainImgFile}, #{description}, #{locationTag}, #{seats});
 
     </insert>
 

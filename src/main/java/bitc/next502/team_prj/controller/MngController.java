@@ -48,15 +48,16 @@ public class MngController {
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
-        MngDTO mng = mngService.getMngInfo(businessId);
-        List<MngDTO> resvList;
-
-        if (resvDate != null) {
-            resvList = mngService.getResvListByDate(businessId, resvDate);
-        } else {
-            resvList = mngService.getResvList(businessId);
+        // ⭐ 핵심: 날짜 없으면 오늘로 세팅
+        if (resvDate == null) {
             resvDate = LocalDate.now();
         }
+
+        // ⭐ 무조건 날짜 기준 조회
+        List<MngDTO> resvList =
+            mngService.getResvListByDate(businessId, resvDate);
+
+        MngDTO mng = mngService.getMngInfo(businessId);
 
         int totalCount = resvList.size();
         int visitCount = (int) resvList.stream().filter(r -> "방문 완료".equals(r.getStatus())).count();
