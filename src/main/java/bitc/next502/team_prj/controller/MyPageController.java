@@ -1,9 +1,7 @@
 package bitc.next502.team_prj.controller;
 
-import bitc.next502.team_prj.dto.BusinessUserDTO;
-import bitc.next502.team_prj.dto.MyInfoDTO;
-import bitc.next502.team_prj.dto.MyResvDTO;
-import bitc.next502.team_prj.dto.NormalUserDTO;
+import bitc.next502.team_prj.dto.*;
+import bitc.next502.team_prj.service.BookmarkService;
 import bitc.next502.team_prj.service.MyPageServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -23,48 +21,79 @@ public class MyPageController {
     @Autowired
     private MyPageServiceImpl myPageService;
 
-    // 1. 메인 화면 보여주기
+    @Autowired
+    private BookmarkService bookmarkService;
+
+    // 1. 메인 화면
     @GetMapping("/main")
     public String myPageMain(Model model, HttpServletRequest request) {
-
-        // [나중에 합칠 때] 밑에꺼로
         HttpSession session = request.getSession();
         Object userBoxing = session.getAttribute("loginUser");
-
+        String role = (String) session.getAttribute("role");
         String userId = null;
 
-        String role = (String) session.getAttribute("role");
+        if (userBoxing == null) return "redirect:/user/login";
 
-        if (role.equals("NORMAL")) {
-            NormalUserDTO normalUser = (NormalUserDTO) userBoxing;
-            userId = normalUser.getUserId();
+        if (role != null && role.equals("NORMAL")) {
+            userId = ((NormalUserDTO) userBoxing).getUserId();
+        } else if (role != null && role.equals("BUSINESS")) {
+            userId = ((BusinessUserDTO) userBoxing).getBusinessId();
         }
-        else if (role.equals("BUSINESS")) {
-            BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-            userId = businessUser.getBusinessId();
-        }
-        // -------------------------------------------------------
-//        String userId = "2"; // 현재는 2번 회원으로 고정 테스트  합치면 이거 삭제
 
-        // 데이터 가져오기
+        model.addAttribute("userId", userId); // 아이디 전달
+
         MyInfoDTO userInfo = myPageService.getMyInfo(userId);
-        List<MyResvDTO> resvList = myPageService.getMyResvList(userId);
-
-        // 화면으로 보내기
+        if (userInfo == null) {
+            userInfo = new MyInfoDTO();
+            userInfo.setName("회원");
+            userInfo.setGrade("일반");
+        }
         model.addAttribute("userInfo", userInfo);
+
+        List<MyResvDTO> resvList = myPageService.getMyResvList(userId);
         model.addAttribute("resvList", resvList);
 
+        List<BookmarkDTO> bookmarkList = bookmarkService.getBookmarkList(userId);
+        model.addAttribute("bookmarkList", bookmarkList);
         return "mypage/mypage";
     }
 
-    // 2. 예약 취소 기능
+    // 2. 예약 취소
     @GetMapping("/delete")
     public String deleteReservation(@RequestParam("resvId") int resvId) {
-
-        // 서비스에게 삭제 명령
         myPageService.cancelReservation(resvId);
-
-        // 삭제 후 메인으로 돌아가기
         return "redirect:/mypage/main";
+    }
+
+    // 3. 관심 식당
+    @GetMapping("/mybookmarkList")
+    public String myBookmarkList(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object userBoxing = session.getAttribute("loginUser");
+        String role = (String) session.getAttribute("role");
+        String userId = null;
+
+        if (userBoxing == null) return "redirect:/user/login";
+
+        if (role != null && role.equals("NORMAL")) {
+            userId = ((NormalUserDTO) userBoxing).getUserId();
+        } else if (role != null && role.equals("BUSINESS")) {
+            userId = ((BusinessUserDTO) userBoxing).getBusinessId();
+        }
+
+        model.addAttribute("userId", userId); // 아이디 전달
+
+        MyInfoDTO userInfo = myPageService.getMyInfo(userId);
+        if (userInfo == null) {
+            userInfo = new MyInfoDTO();
+            userInfo.setName("회원");
+            userInfo.setGrade("일반");
+        }
+        model.addAttribute("userInfo", userInfo);
+
+        List<BookmarkDTO> bookmarkList = bookmarkService.getBookmarkList(userId);
+        model.addAttribute("bookmarkList", bookmarkList);
+
+        return "mypage/mybookmarkList";
     }
 }
