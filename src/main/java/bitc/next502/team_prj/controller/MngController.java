@@ -105,7 +105,7 @@ public class MngController {
         restaurantService.registerRestaurant(restaurantDTO);
 
         model.addAttribute("message", "가게 등록이 완료되었습니다!");
-        return "redirect:/mng/mngmene";
+        return "redirect:/mng/mngmenu";
     }
 
     // 파일 저장 메서드
