@@ -2,6 +2,8 @@ package bitc.next502.team_prj.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class ReviewDTO {
     private int reviewIdx;
@@ -15,5 +17,8 @@ public class ReviewDTO {
     private String createDate;
     private String updateDate;
 
+    private boolean replied;
+    private String replyContent;
+    private String replyDate;
 
 }

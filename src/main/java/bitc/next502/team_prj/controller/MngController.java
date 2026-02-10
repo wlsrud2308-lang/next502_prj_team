@@ -36,6 +36,7 @@ public class MngController {
 
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
+        model.addAttribute("menuId", "menu");
 
         if (role == null || userBoxing == null) {
             return "redirect:/login";
@@ -48,18 +49,19 @@ public class MngController {
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
-        MngDTO mng = mngService.getMngInfo(businessId);
-        List<MngDTO> resvList;
-
-        if (resvDate != null) {
-            resvList = mngService.getResvListByDate(businessId, resvDate);
-        } else {
-            resvList = mngService.getResvList(businessId);
+        // ⭐ 핵심: 날짜 없으면 오늘로 세팅
+        if (resvDate == null) {
             resvDate = LocalDate.now();
         }
 
+        // ⭐ 무조건 날짜 기준 조회
+        List<MngDTO> resvList =
+            mngService.getResvListByDate(businessId, resvDate);
+
+        MngDTO mng = mngService.getMngInfo(businessId);
+
         int totalCount = resvList.size();
-        int visitCount = (int) resvList.stream().filter(r -> "방문 완료".equals(r.getStatus())).count();
+        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
         int waitingCount = totalCount - visitCount;
 
         model.addAttribute("mng", mng);
@@ -87,6 +89,7 @@ public class MngController {
         // 세션 검증
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
+        model.addAttribute("menuId", "store");
 
         if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
             return "redirect:/login";
@@ -102,7 +105,7 @@ public class MngController {
         restaurantService.registerRestaurant(restaurantDTO);
 
         model.addAttribute("message", "가게 등록이 완료되었습니다!");
-        return "mng/mngstoreWrite";
+        return "redirect:/mng/mngmenu";
     }
 
     // 파일 저장 메서드
@@ -116,7 +119,8 @@ public class MngController {
     }
 
     @GetMapping("/mngreview")
-    public String mngreview() {
+    public String mngreview(Model model) {
+        model.addAttribute("menuId", "review");
         return "mng/mngreview";
     }
 

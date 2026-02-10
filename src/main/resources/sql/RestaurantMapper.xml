@@ -44,9 +44,12 @@
             r.cntct_tel AS restaurantTel,
             r.gugun_nm AS locationTag,
             r.max_capacity AS seats,
+<<<<<<< HEAD
 
             r.itemcntnts AS description,
 
+=======
+>>>>>>> be747b98cbe6ee7710df417ed557b627681c822b
             r.lat AS lat,
             r.lng AS lng,
             rd.main_img_thumb AS mainImgThumb,
@@ -145,12 +148,20 @@
         LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
         WHERE (
         r.place LIKE CONCAT('%', #{keyword}, '%')
+<<<<<<< HEAD
         OR rd.title LIKE CONCAT('%', #{keyword}, '%')
         OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')
         OR c.foods LIKE CONCAT('%', #{keyword}, '%')
         OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
         OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')
         )
+=======
+            OR rd.title LIKE CONCAT('%', #{keyword}, '%')
+            OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')
+            OR c.foods LIKE CONCAT('%', #{keyword}, '%')
+            OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
+            OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')      )
+>>>>>>> be747b98cbe6ee7710df417ed557b627681c822b
 
         <if test="locations != null and locations.size() > 0">
             AND r.gugun_nm IN
@@ -185,8 +196,14 @@
 
     <insert id="insertRestaurant" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         INSERT INTO restaurant (
+<<<<<<< HEAD
             place, category, addr1, cntct_tel, usage_day_week_and_time, main_img, itemcntnts, gugun_nm, max_capacity)
         VALUES ( #{restaurantName}, #{category}, #{addr1}, #{cntct_tel}, #{usage_day_week_and_time}, 'img', '전통 국밥집', '부산진구', '100');
+=======
+            place, category, addr1, main_img, itemcntnts, gugun_nm, max_capacity)
+        VALUES ( #{restaurantName}, #{category}, #{address}, #{mainImgFile}, #{description}, #{locationTag}, #{seats});
+
+>>>>>>> be747b98cbe6ee7710df417ed557b627681c822b
     </insert>
 
 </mapper>

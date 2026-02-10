@@ -7,8 +7,34 @@
       :root { --main-gold: #b89255; }
       .bg-gold { background-color: var(--main-gold) !important; color: white; }
       .text-gold { color: var(--main-gold) !important; }
-      /* 사이드바  */
-      .list-group-item.active { background-color: #f8f9fa !important; color: var(--main-gold) !important; border-left: 4px solid var(--main-gold); font-weight: bold; }
+
+      .list-group-item {
+        text-decoration: none !important;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      .list-group-item.active {
+        background-color: #f8f9fa !important;
+        color: var(--main-gold) !important;
+        border-left: 4px solid var(--main-gold) !important;
+        border-top: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid #eee !important;
+        outline: none !important;
+      }
+
+      .list-group-item-action:focus,
+      .list-group-item-action:active {
+        z-index: 1;
+        color: var(--main-gold) !important;
+        text-decoration: none !important;
+        background-color: #f8f9fa !important;
+        box-shadow: none !important;
+        outline: none !important;
+        border-left: 4px solid var(--main-gold) !important;
+      }
+      
       /* 리뷰 카드 */
       .review-card { border-left: 4px solid #dee2e6; transition: 0.3s; }
       .review-card.unanswered { border-left-color: var(--main-gold); }

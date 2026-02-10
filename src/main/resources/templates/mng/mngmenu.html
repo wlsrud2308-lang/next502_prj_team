@@ -8,10 +8,32 @@
       .text-gold { color: var(--main-gold) !important; }
       .bg-gold { background-color: var(--main-gold) !important; color: white; }
 
-      /* 사이드바 메뉴 */
-      .list-group-item { border: none; border-bottom: 1px solid #eee; padding: 1.25rem; font-size: 0.95rem; }
-      .list-group-item.active { background-color: #f8f9fa !important; color: var(--main-gold) !important; border-left: 4px solid var(--main-gold); font-weight: bold; }
-      .list-group-item:hover:not(.active) { background-color: #fcfcfc; color: var(--main-gold); }
+      .list-group-item {
+        text-decoration: none !important;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      .list-group-item.active {
+        background-color: #f8f9fa !important;
+        color: var(--main-gold) !important;
+        border-left: 4px solid var(--main-gold) !important;
+        border-top: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid #eee !important;
+        outline: none !important;
+      }
+
+      .list-group-item-action:focus,
+      .list-group-item-action:active {
+        z-index: 1;
+        color: var(--main-gold) !important;
+        text-decoration: none !important;
+        background-color: #f8f9fa !important;
+        box-shadow: none !important;
+        outline: none !important;
+        border-left: 4px solid var(--main-gold) !important;
+      }
 
       /* 카드 */
       .summary-card { border: 1px solid #eee; border-radius: 8px; transition: 0.3s; }
@@ -78,6 +100,9 @@
             statusCell.insertBefore(visitBtn, cancelBtn);
             statusCell.insertBefore(noshowBtn, cancelBtn);
 
+            // **취소 버튼 숨기기**
+            if(cancelBtn) cancelBtn.style.display = 'none';
+
             // 방문확인 클릭
             visitBtn.addEventListener('click', (e) => {
               e.stopPropagation();
@@ -141,9 +166,6 @@
              th:classappend="${menuId == 'review' ? 'active' : ''}">
             <i class="bi bi-chat-dots me-3"></i> 리뷰 답변 관리
           </a>
-          <a href="#" class="list-group-item list-group-item-action text-danger d-flex align-items-center py-3">
-            <i class="bi bi-box-arrow-right me-3"></i> 로그아웃
-          </a>
         </div>
       </div>
     </aside>
@@ -201,30 +223,13 @@
               <td class="text-center status-cell">
                 <span th:switch="${mng.status}">
                   <span th:case="'방문예정'" class="btn btn-sm status-label bg-gold px-3">방문예정</span>
-                  <span th:case="'방문완료'" class="badge bg-success">방문 완료</span>
+                  <span th:case="'방문완료'" class="badge bg-success bi bi-check2-all">방문 완료</span>
                   <span th:case="'노쇼'" class="badge bg-danger">노쇼</span>
                 </span>
                 <!-- 방문예정 상태일 때만 취소 버튼 -->
                 <button class="btn btn-sm btn-outline-secondary cancel-btn" th:if="${mng.status == '방문예정'}">취소</button>
               </td>
             </tr>
-<!--            <tr>-->
-<!--              <td class="ps-3 fw-bold">19:00</td>-->
-<!--              <td><a href="#" class="text-dark fw-bold">이영희님</a></td>-->
-<!--              <td>4명</td>-->
-<!--              <td class="text-muted">010-3333-4444</td>-->
-<!--              <td class="text-center">-->
-<!--                <button class="btn btn-sm bg-gold px-3">방문확인</button>-->
-<!--                <button class="btn btn-sm btn-outline-danger px-3">노쇼처리</button>-->
-<!--              </td>-->
-<!--            </tr>-->
-<!--            <tr class="status-completed">-->
-<!--              <td class="ps-3">13:00</td>-->
-<!--              <td>박미식님</td>-->
-<!--              <td>2명</td>-->
-<!--              <td>010-5555-6666</td>-->
-<!--              <td class="text-center small"><i class="bi bi-check2-all"></i> 방문 완료</td>-->
-<!--            </tr>-->
             </tbody>
           </table>
         </div>
