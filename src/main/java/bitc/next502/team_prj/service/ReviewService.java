@@ -1,6 +1,7 @@
 package bitc.next502.team_prj.service;
 
 import bitc.next502.team_prj.dto.ReviewDTO;
+import com.github.pagehelper.Page;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
@@ -9,7 +10,8 @@ public interface ReviewService {
 
 //식당별 리뷰리스트
     List<ReviewDTO> selectReviewsList(String restaurantId) throws Exception;
-    List<ReviewDTO> selectMyReviewsList(String restaurantId) throws Exception;
+//나의 댓글리스트
+    Page<ReviewDTO> selectMyReviewsList(int pageNum, String userId) throws Exception;
 // 리뷰상세
     ReviewDTO selectReviewsDetail(int reviewId) throws Exception;
 //리뷰 등록

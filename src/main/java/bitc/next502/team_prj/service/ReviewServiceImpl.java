@@ -5,6 +5,8 @@ import bitc.next502.team_prj.dto.FileDTO;
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.mapper.FileMapper;
 import bitc.next502.team_prj.mapper.ReviewMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -34,9 +36,14 @@ public class ReviewServiceImpl implements ReviewService {
         //댓글 조회 레스토랑으로 조회
         return reviewMapper.selectReviewsList(restaurantId);
     }
-
+//나의 댓글 리스트
     @Override
-    public List<ReviewDTO> selectMyReviewsList(String userId) throws Exception {
+    public Page<ReviewDTO> selectMyReviewsList(int pageNum, String userId) throws Exception {
+        //    첫번째 매개변수 : 현재 페이지 번호를 입력
+        //    두번째 매개변수 : 한 페이지에 표시할 게시물 수를 설정
+        int pageSize = 3;
+        PageHelper.startPage(pageNum, pageSize);
+
         //나의 댓글 조회 등록ID로 조회
         return reviewMapper.selectMyReviewsList(userId);
     }

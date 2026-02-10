@@ -2,6 +2,7 @@ package bitc.next502.team_prj.controller;
 
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.service.ReviewService;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,12 @@ public class ReviewController {
         return mv;
 
     }
-    //Mypage에서 조회하는 내가 쓴 댓글들
+    //Mypage에서 조회하는 내가 쓴 댓글들 페이지처리
     @RequestMapping("/review/myreviewList")
-    public ModelAndView myReviewList(@RequestParam("userId") String userId) throws Exception{
-
-        List<ReviewDTO> reviewList = reviewService.selectMyReviewsList(userId);
+    public ModelAndView myReviewList(@RequestParam(required = false,defaultValue="1",value="pageNum") int pageNum,
+                                     @RequestParam("userId") String userId) throws Exception{
+        int navigatePages = 5; //화면에 보여지는 페이지버튼수
+        PageInfo<ReviewDTO> reviewList = new PageInfo<>( reviewService.selectMyReviewsList(pageNum,userId),navigatePages);
         ModelAndView mv = new ModelAndView("review/myreviewList");
         mv.addObject("reviewList", reviewList);
         return mv;
@@ -65,9 +67,7 @@ public class ReviewController {
    //댓글 등록처리
     @PostMapping("/review/reviewWrite")
     public String writeReview(ReviewDTO review) throws Exception{
-
         reviewService.insertReview(review);
-
         return "redirect:/mypage/main";
     }
     //댓글 등록처리 파일 포함
@@ -97,20 +97,12 @@ public class ReviewController {
                                MultipartHttpServletRequest multipart,
                                HttpServletRequest req) throws Exception{
 
-
         reviewService.updateReview(review,multipart);
 
         return "redirect:/mypage/main";
     }
+
     //댓글 삭제
-//    @DeleteMapping("/review/{reviewIdx}")
-//    public String deleteReview(@PathVariable("reviewIdx") int reviewIdx) throws Exception{
-//        reviewService.deleteReview(reviewIdx);
-//        return "redirect:/review/myreviewList";
-//    }
-//
-
-
     @RequestMapping("/review/delReview")
     public String delReview(@RequestParam("reviewIdx") int reviewIdx) throws Exception{
 
