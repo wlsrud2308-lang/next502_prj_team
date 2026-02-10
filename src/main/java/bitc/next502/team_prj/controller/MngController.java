@@ -61,7 +61,7 @@ public class MngController {
         MngDTO mng = mngService.getMngInfo(businessId);
 
         int totalCount = resvList.size();
-        int visitCount = (int) resvList.stream().filter(r -> "방문 완료".equals(r.getStatus())).count();
+        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
         int waitingCount = totalCount - visitCount;
 
         model.addAttribute("mng", mng);
@@ -105,7 +105,7 @@ public class MngController {
         restaurantService.registerRestaurant(restaurantDTO);
 
         model.addAttribute("message", "가게 등록이 완료되었습니다!");
-        return "mng/mngstoreWrite";
+        return "redirect:/mng/mngmene";
     }
 
     // 파일 저장 메서드
