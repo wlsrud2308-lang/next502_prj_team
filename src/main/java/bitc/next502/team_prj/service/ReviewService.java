@@ -1,6 +1,7 @@
 package bitc.next502.team_prj.service;
 
 import bitc.next502.team_prj.dto.ReviewDTO;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
 
@@ -13,8 +14,11 @@ public interface ReviewService {
     ReviewDTO selectReviewsDetail(int reviewId) throws Exception;
 //리뷰 등록
     void insertReview(ReviewDTO review) throws Exception;
-//리뷰 수정
-    void updateReview(ReviewDTO review) throws Exception;
+//리뷰파일 포함 등록
+    void insertReviewFile(ReviewDTO review, MultipartHttpServletRequest multipart) throws Exception;
+
+    //리뷰 수정(파일포함)
+    void updateReview(ReviewDTO review,MultipartHttpServletRequest multipart) throws Exception;
 //리뷰 삭제
     void deleteReview(int reviewId) throws Exception;
 

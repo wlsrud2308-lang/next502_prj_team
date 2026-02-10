@@ -2,14 +2,16 @@ package bitc.next502.team_prj.controller;
 
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.service.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-//  RESTful 방식의 전체 URL 설정사용
 
 @Controller
 public class ReviewController {
@@ -44,11 +46,11 @@ public class ReviewController {
 
     }
     //Mypage에서 조회하는 내가 쓴 댓글들
-    @GetMapping("/review/myreviewList")
+    @RequestMapping("/review/myreviewList")
     public ModelAndView myReviewList(@RequestParam("userId") String userId) throws Exception{
 
         List<ReviewDTO> reviewList = reviewService.selectMyReviewsList(userId);
-        ModelAndView mv = new ModelAndView("review/reviewList");
+        ModelAndView mv = new ModelAndView("review/myreviewList");
         mv.addObject("reviewList", reviewList);
         return mv;
 
@@ -66,20 +68,55 @@ public class ReviewController {
 
         reviewService.insertReview(review);
 
-        return "redirect:/main";
+        return "redirect:/mypage/main";
+    }
+    //댓글 등록처리 파일 포함
+    @PostMapping("/review/reviewWriteFile")
+    public String writeReviewFile(ReviewDTO review,
+                              MultipartHttpServletRequest multipart,
+                              HttpServletRequest req) throws Exception{
+
+        reviewService.insertReviewFile(review,multipart);
+
+        return "redirect:/mypage/main";
+    }
+    //예약 방운후 댓글 등록처리 파일 포함
+    @PostMapping("/review/reviewWriteReservation")
+    public String reviewWriteReservation(ReviewDTO review,
+                                  MultipartHttpServletRequest multipart,
+                                  HttpServletRequest req) throws Exception{
+
+        reviewService.insertReviewFile(review,multipart);
+
+        return "redirect:/mypage/main";
     }
 
     //댓글 수정
-    @PutMapping("/review/{reviewIdx}")
-    public String reviwqWrite(ReviewDTO review) throws Exception{
-        reviewService.updateReview(review);
-        return "redirect:/review/reviewList";
+    @PostMapping("/review/reviewUpdate")
+    public String reviewUpdate(ReviewDTO review,
+                               MultipartHttpServletRequest multipart,
+                               HttpServletRequest req) throws Exception{
+
+
+        reviewService.updateReview(review,multipart);
+
+        return "redirect:/mypage/main";
     }
     //댓글 삭제
-    @DeleteMapping("/review/{reviewIdx}")
-    public String deleteReview(@PathVariable("reviewIdx") int reviewIdx) throws Exception{
+//    @DeleteMapping("/review/{reviewIdx}")
+//    public String deleteReview(@PathVariable("reviewIdx") int reviewIdx) throws Exception{
+//        reviewService.deleteReview(reviewIdx);
+//        return "redirect:/review/myreviewList";
+//    }
+//
+
+
+    @RequestMapping("/review/delReview")
+    public String delReview(@RequestParam("reviewIdx") int reviewIdx) throws Exception{
+
         reviewService.deleteReview(reviewIdx);
-        return "redirect:/review/myreviewList";
+        return "redirect:/mypage/main";
+
     }
 
 
