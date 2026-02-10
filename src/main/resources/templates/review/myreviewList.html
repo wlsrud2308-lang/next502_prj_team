@@ -22,8 +22,28 @@
         .list-group-item { border-left: 3px solid transparent; transition: all 0.2s; }
         .list-group-item:hover { color: var(--main-gold); background-color: #f9f9f9; }
 
+        /* 페이지 표시*/
+        .page-link {
+            color: var(--main-gold); border-color: var(--main-gold);
+            border: none;
+        }
+        .page-link:hover {
+            background-color: var(--main-gold); color: white;
+        }
+        .active>.page-link {
+            background-color: var(--main-gold);
+            color:white;
+            font-weight: bold;
+            border-color: var(--main-gold);
+        }
+        .page-link.active {
+            background-color: transparent;
+            color:var(--main-gold);
+            font-weight: bold;
+            border-color: transparent;
+        }
         /* 버튼 커스텀 */
-        .btn-outline-gold {
+        .btn-outline-gold{
             color: var(--main-gold); border-color: var(--main-gold);
         }
         .btn-outline-gold:hover {
@@ -117,7 +137,6 @@
                                                 <h5 class="card-title fw-bold mb-0" ><span th:text="${review.reviewIdx}"></span><span th:text="${review.storeName}"></span></h5>
                                                 <small class="text-muted" th:text="${review.createDate}">2026.02.01 작성</small>
                                             </div>
-                                            <div class="mb-2 text-gold">평점: <span class="text-dark small ms-1" th:text="${review.rating}">5.0</span></div>
                                             <div class="star-meter mb-2">
                                                 <div class="stars-bg">★★★★★</div>
                                                 <div class="stars-fill" th:style="'width:' + (${review.rating} * 20) + '%'">★★★★★</div>

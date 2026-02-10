@@ -5,6 +5,7 @@ import bitc.next502.team_prj.dto.MyInfoDTO;
 import bitc.next502.team_prj.dto.MyResvDTO;
 import bitc.next502.team_prj.dto.NormalUserDTO;
 import bitc.next502.team_prj.service.MyPageServiceImpl;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class MyPageController {
 
     // 1. 메인 화면 보여주기
     @GetMapping("/main")
-    public String myPageMain(Model model, HttpServletRequest request) {
+    public String myPageMain(@RequestParam(required = false,defaultValue="1",value="pageNum") int pageNum,
+                             Model model, HttpServletRequest request) {
 
         // [나중에 합칠 때] 밑에꺼로
         HttpSession session = request.getSession();
@@ -48,7 +50,10 @@ public class MyPageController {
 
         // 데이터 가져오기
         MyInfoDTO userInfo = myPageService.getMyInfo(userId);
-        List<MyResvDTO> resvList = myPageService.getMyResvList(userId);
+
+        //페이징처리
+        int navigatePages = 5; //화면에 보여지는 페이지버튼수
+        PageInfo<MyResvDTO> resvList = new PageInfo<>( myPageService.getMyResvList(pageNum,userId), navigatePages);
 
         // 화면으로 보내기
         model.addAttribute("userInfo", userInfo);

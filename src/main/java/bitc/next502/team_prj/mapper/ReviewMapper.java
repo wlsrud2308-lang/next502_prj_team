@@ -12,7 +12,6 @@ public interface ReviewMapper {
     //식당별 리뷰리스트
     List<ReviewDTO> selectReviewsList(@Param("restaurantId") String restaurantId) throws Exception;
     //나의 리뷰리스트
-    //List<ReviewDTO> selectMyReviewsList(@Param("userId") String userId) throws Exception;
     Page<ReviewDTO> selectMyReviewsList(@Param("userId") String userId) throws Exception;
     // 리뷰상세
     ReviewDTO selectReviewsDetail(@Param("reviewIdx") int reviewId) throws Exception;
