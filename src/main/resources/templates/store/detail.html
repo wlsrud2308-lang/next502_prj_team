@@ -316,7 +316,11 @@
               <!--      예약하기 페이지 연결 여기부터 323행 까지 예약페이지 관련 0209 am 수정 -->
               <button type="button" class="btn btn-dark btn-lg flex-grow-1 fw-bold py-3" onclick="checkLoginAndGo()">예약하기</button>
 
-              <button class="btn btn-bookmark btn-lg px-3" onclick="this.classList.toggle('active')">
+              <button type="button" class="btn btn-bookmark btn-lg px-3"
+                      th:classappend="${isBookmarked == 1} ? 'active'"
+                      th:data-restaurant-id="${restaurant.restaurantId}"
+                      th:data-restaurant-name="${restaurant.restaurantName}"
+                      onclick="toggleLike(this)">
                 <i class="bi bi-heart-fill"></i>
               </button>
             </div>
@@ -373,6 +377,7 @@
 
 <div th:replace="~{layout/footer :: footer}"></div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<KAKAO_APP_KEY>&libraries=services"></script>
 <script th:inline="javascript">
     window.onload = function() {
@@ -429,6 +434,43 @@
       }
     }
 
+
+    // ************ 찜하기(하트) 기능**********
+    function toggleLike(btn) {
+      const restaurantId = $(btn).data("restaurant-id");
+      const restaurantName = $(btn).data("restaurant-name");
+
+      const $btn = $(btn);
+
+      $.ajax({
+        url: "/bookmark/toggle",
+        type: "POST",
+        data: {
+          restaurantId: restaurantId,
+          restaurantName: restaurantName
+        },
+        success: function(result) {
+          if (result === "login-required") {
+            // 로그인 모달 띄우기
+            const modal = document.getElementById("loginCheckModal");
+            if(modal) modal.style.display = "block";
+
+          } else if (result === "1") {
+
+            $btn.addClass("active");
+            alert("관심 식당에 추가되었습니다! ");
+
+          } else if (result === "0") {
+
+            $btn.removeClass("active");
+            alert("관심 식당에서 삭제되었습니다.");
+          }
+        },
+        error: function() {
+          alert("서버 통신 오류가 발생했습니다.");
+        }
+      });
+    }
 
 </script>
 </body>

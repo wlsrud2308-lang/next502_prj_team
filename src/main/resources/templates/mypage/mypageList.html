@@ -48,11 +48,11 @@
                     <a th:href="@{/mypage/main}" class="list-group-item list-group-item-action py-3 px-4">
                         <i class="bi bi-calendar me-2"></i> 나의 예약 내역
                     </a>
-                    <a th:href="@{/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center">
+                    <a th:href="@{/mypage/mybookmarkList}" class="list-group-item list-group-item-action py-3 px-4 d-flex justify-content-between align-items-center">
                         <span><i class="bi bi-heart me-2"></i> 관심 식당</span>
-                        <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill">5</span>
+                        <span class="badge bg-secondary bg-opacity-10 text-dark rounded-pill" th:text="${bookmarkList != null ? #lists.size(bookmarkList) : 0}">0</span>
                     </a>
-                    <a th:href="@{/myreviewList}" class="list-group-item list-group-item-action py-3 px-4">
+                    <a th:href="@{/review/myreviewList}" class="list-group-item list-group-item-action py-3 px-4">
                         <i class="bi bi-pencil-square me-2"></i> 내가 쓴 리뷰
                     </a>
                     <a th:href="@{/mypageList}" class="list-group-item list-group-item-action py-3 px-4 active">
