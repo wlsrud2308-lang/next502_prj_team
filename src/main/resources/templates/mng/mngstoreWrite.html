@@ -51,9 +51,18 @@
     <div class="col-lg-9">
       <div class="card shadow-sm border-0">
         <div class="card-body p-5">
+
+          <!-- ✅ 알림 메시지 -->
+          <div th:if="${alertMessage}" class="mb-4">
+            <div th:class="'alert alert-' + ${alertType} + ' alert-dismissible fade show'" role="alert">
+              <span th:text="${alertMessage}"></span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+
           <h3 class="fw-bold mb-4 pb-2 border-bottom">신규 식당 등록 <span class="fs-6 text-muted fw-normal ms-2">Admin Only</span></h3>
 
-          <form th:action="@{#}" method="post" enctype="multipart/form-data">
+          <form th:action="@{/mngstoreWrite}" method="post" enctype="multipart/form-data">
 
             <h5 class="section-title">기본 정보</h5>
             <div class="row g-3 mb-4">

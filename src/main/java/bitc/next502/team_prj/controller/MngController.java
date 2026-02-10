@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -84,12 +85,10 @@ public class MngController {
     public String registerStore(@ModelAttribute RestaurantDTO restaurantDTO,
                                 @RequestParam("mainImg") MultipartFile mainImgFile,
                                 HttpSession session,
-                                Model model) throws IOException {
+                                RedirectAttributes redirectAttributes) throws IOException {
 
-        // 세션 검증
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
-        model.addAttribute("menuId", "store");
 
         if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
             return "redirect:/login";
@@ -101,11 +100,19 @@ public class MngController {
             restaurantDTO.setMainImg(fileName);
         }
 
-        // 서비스 호출
-        restaurantService.registerRestaurant(restaurantDTO);
+        try {
+            restaurantService.registerRestaurant(restaurantDTO);
+            // 성공 메시지
+            redirectAttributes.addFlashAttribute("alertMessage", "가게 등록이 완료되었습니다!");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 실패 메시지
+            redirectAttributes.addFlashAttribute("alertMessage", "가게 등록 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("alertType", "danger");
+        }
 
-        model.addAttribute("message", "가게 등록이 완료되었습니다!");
-        return "redirect:/mng/mngmenu";
+        return "redirect:/mngmenu";  // 리다이렉트
     }
 
     // 파일 저장 메서드
