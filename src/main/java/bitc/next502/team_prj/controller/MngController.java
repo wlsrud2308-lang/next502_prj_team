@@ -36,6 +36,7 @@ public class MngController {
 
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
+        model.addAttribute("menuId", "menu");
 
         if (role == null || userBoxing == null) {
             return "redirect:/login";
@@ -87,6 +88,7 @@ public class MngController {
         // 세션 검증
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
+        model.addAttribute("menuId", "store");
 
         if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
             return "redirect:/login";
@@ -116,7 +118,8 @@ public class MngController {
     }
 
     @GetMapping("/mngreview")
-    public String mngreview() {
+    public String mngreview(Model model) {
+        model.addAttribute("menuId", "review");
         return "mng/mngreview";
     }
 
