@@ -7,6 +7,7 @@ import bitc.next502.team_prj.mapper.RestaurantMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -49,5 +50,15 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public void registerRestaurant(RestaurantDTO dto) {
         restaurantMapper.insertRestaurant(dto);
+    }
+
+    @Override
+    public void updateRestaurantInfo(RestaurantDTO dto) throws IOException {
+        restaurantMapper.updateRestaurant(dto);
+    }
+
+    @Override
+    public RestaurantDTO getRestaurantById(String restaurantId) {
+        return restaurantMapper.selectRestaurantById(restaurantId);
     }
 }

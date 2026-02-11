@@ -2,6 +2,7 @@ package bitc.next502.team_prj.mapper;
 
 import bitc.next502.team_prj.dto.MyInfoDTO;
 import bitc.next502.team_prj.dto.MyResvDTO;
+import bitc.next502.team_prj.dto.NormalUserDTO;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,4 +19,10 @@ public interface MypageMapper {
 
     // XML id="deleteReservation"
     int deleteReservation(int resvId);
+
+    // 신규: 일반 유저 계정 조회
+    NormalUserDTO selectNormalUserById(String userId);
+
+    // 신규: 일반 유저 계정 삭제
+    int deleteNormalUser(String userId);
 }

@@ -38,4 +38,16 @@
         WHERE reservation_id = #{resvId}
     </delete>
 
+    <!-- 일반 유저 조회 -->
+    <select id="selectNormalUserById" resultType="bitc.next502.team_prj.dto.NormalUserDTO">
+        SELECT *
+        FROM normal_user
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 일반 유저 삭제 -->
+    <delete id="deleteNormalUser">
+        DELETE FROM normal_user
+        WHERE user_id = #{userId}
+    </delete>
 </mapper>
