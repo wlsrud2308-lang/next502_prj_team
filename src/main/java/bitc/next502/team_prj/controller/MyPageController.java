@@ -3,6 +3,7 @@ package bitc.next502.team_prj.controller;
 import bitc.next502.team_prj.dto.*;
 import bitc.next502.team_prj.service.BookmarkService;
 import bitc.next502.team_prj.service.MyPageServiceImpl;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,8 @@ public class MyPageController {
 
     // 1. 메인 화면
     @GetMapping("/main")
-    public String myPageMain(Model model, HttpServletRequest request) {
+    public String myPageMain(@RequestParam(required = false,defaultValue="1",value="pageNum") int pageNum,
+                             Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Object userBoxing = session.getAttribute("loginUser");
         String role = (String) session.getAttribute("role");
@@ -50,7 +52,13 @@ public class MyPageController {
         }
         model.addAttribute("userInfo", userInfo);
 
-        List<MyResvDTO> resvList = myPageService.getMyResvList(userId);
+        //List<MyResvDTO> resvList = myPageService.getMyResvList(userId);
+        //페이징처리
+        int navigatePages = 5; //화면에 보여지는 페이지버튼수
+        PageInfo<MyResvDTO> resvList = new PageInfo<>( myPageService.getMyResvList(pageNum,userId), navigatePages);
+
+
+
         model.addAttribute("resvList", resvList);
 
         List<BookmarkDTO> bookmarkList = bookmarkService.getBookmarkList(userId);
