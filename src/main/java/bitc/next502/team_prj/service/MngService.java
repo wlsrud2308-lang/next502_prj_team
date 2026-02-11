@@ -1,5 +1,6 @@
 package bitc.next502.team_prj.service;
 
+import bitc.next502.team_prj.dto.BusinessUserDTO;
 import bitc.next502.team_prj.dto.MngDTO;
 import bitc.next502.team_prj.dto.ReviewDTO;
 
@@ -25,4 +26,10 @@ public interface MngService {
   void cancelReservation(int resvId);
 
   List<MngDTO> getResvListByDateExcludeCanceled(String businessId, LocalDate resvDate);
+
+  BusinessUserDTO getBusinessById(String businessId);
+
+  void updateBusinessInfo(String businessId, String businessName, String businessPhone, String newPassword);
+
+  boolean deleteBusinessAccount(String businessId, String password);
 }

@@ -17,4 +17,6 @@ public class NormalUserDTO {
     private LocalDateTime createDate;
     private LocalDateTime lastLoginTime;
     private String userFavorite;
+    private String status;
+    private LocalDateTime deleteReserveDate;
 }

@@ -1,5 +1,6 @@
 package bitc.next502.team_prj.mapper;
 
+import bitc.next502.team_prj.dto.BusinessUserDTO;
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.dto.MngDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,4 +29,14 @@ public interface MngMapper {
   List<MngDTO> selectResvListByDateExcludeCanceled(@Param("businessId") String businessId,
                                                    @Param("resvDate") LocalDate resvDate);
 
+  // 사업자 정보 조회
+  BusinessUserDTO selectBusinessById(@Param("businessId") String businessId);
+
+  // 사업자 정보 수정
+  void updateBusiness(BusinessUserDTO business);
+
+  // 사업자 계정 삭제
+  void deleteReservations(@Param("businessId") String businessId);
+  void deleteRestaurant(@Param("businessId") String businessId);
+  void deleteBusiness(@Param("businessId") String businessId);
 }

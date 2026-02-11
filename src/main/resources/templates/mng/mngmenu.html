@@ -43,120 +43,100 @@
       /* 테이블 */
       .table thead th { background-color: #f8f9fa; color: #666; font-weight: 600; border-top: none; }
       .status-completed { background-color: #fcfcfc; color: #bbb; }
-      .status-cell {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-          min-height: 40px;
-          transition: height 0.3s ease;
-      }
   </style>
 
   <script>
-      document.addEventListener('DOMContentLoaded', () => {
-
-          const totalCountEl = document.getElementById('totalCount');
-          const visitCountEl = document.getElementById('visitCount');
-          const waitingCountEl = document.getElementById('waitingCount');
-
-          // 카드 숫자 갱신 함수
-          const updateCards = ({total=0, visit=0, waiting=0}) => {
-              totalCountEl.textContent = parseInt(totalCountEl.textContent) + total;
-              visitCountEl.textContent = parseInt(visitCountEl.textContent) + visit;
-              waitingCountEl.textContent = parseInt(waitingCountEl.textContent) + waiting;
-          };
-
-          // 날짜 변경 시 페이지 이동
-          const dateInput = document.getElementById('resvDateInput');
-          if(dateInput){
-              dateInput.addEventListener('change', () => {
-                  const selectedDate = dateInput.value;
-                  if(selectedDate) window.location.href = `/mngmenu?resvDate=${selectedDate}`;
-              });
+    // DOM이 준비되면 바로 실행
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('resvDateInput');
+      if (dateInput) {
+        dateInput.addEventListener('change', () => {
+          const selectedDate = dateInput.value;
+          if (selectedDate) {
+            // 선택된 날짜로 GET 요청
+            window.location.href = `/mngmenu?resvDate=${selectedDate}`;
           }
+        });
+      }
 
-          // 각 예약 행 처리
-          document.querySelectorAll('.resv-row').forEach(row => {
-              const statusCell = row.querySelector('.status-cell');
-              const cancelBtn = statusCell.querySelector('.cancel-btn');
+      document.querySelectorAll('.resv-row').forEach(row => {
+        const statusCell = row.querySelector('.status-cell');
+        const cancelBtn = statusCell.querySelector('.cancel-btn');
 
-              // ====== 취소 버튼 ======
-              if(cancelBtn){
-                  cancelBtn.addEventListener('click', e => {
-                      e.stopPropagation();
-                      if(!confirm('예약을 취소하시겠습니까?')) return;
-
-                      const resvId = row.getAttribute('data-resvid');
-                      fetch(`/mngmenu/cancel/${resvId}`, { method: 'DELETE' })
-                          .then(res => res.json())
-                          .then(data => {
-                              if(data.success){
-                                  row.remove();
-                                  updateCards({ total: -1, waiting: -1 });
-                              } else alert('취소 실패');
-                          });
-                  });
-              }
-
-              // ====== 방문예정 클릭 시 버튼 생성 ======
-              row.addEventListener('click', () => {
-                  const status = row.getAttribute('data-status');
-                  if(status !== '방문예정' || statusCell.querySelector('.status-btn')) return;
-
-                  // 기존 라벨 숨기기
-                  const statusLabel = statusCell.querySelector('.status-label');
-                  if(statusLabel) statusLabel.style.display = 'none';
-                  if(cancelBtn) cancelBtn.style.display = 'none';
-
-                  // 버튼 생성
-                  const visitBtn = document.createElement('button');
-                  visitBtn.textContent = '방문확인';
-                  visitBtn.className = 'btn btn-sm btn-outline-success status-btn mx-1';
-
-                  const noshowBtn = document.createElement('button');
-                  noshowBtn.textContent = '노쇼처리';
-                  noshowBtn.className = 'btn btn-sm btn-outline-warning status-btn mx-1';
-
-                  statusCell.insertBefore(visitBtn, cancelBtn);
-                  statusCell.insertBefore(noshowBtn, cancelBtn);
-
-                  // ====== 방문확인 ======
-                  visitBtn.addEventListener('click', e => {
-                      e.stopPropagation();
-                      const resvId = row.getAttribute('data-resvid');
-                      fetch(`/mngmenu/confirm/${resvId}`, { method: 'PATCH' })
-                          .then(res => res.json())
-                          .then(data => {
-                              if(data.success){
-                                  statusCell.innerHTML = `<span class="badge bg-success">방문 완료</span>`;
-                                  row.setAttribute('data-status', '방문완료');
-                                  updateCards({ visit: 1, waiting: -1 });
-                              } else alert('상태 변경 실패');
-                          });
-                  });
-
-                  // ====== 노쇼 ======
-                  noshowBtn.addEventListener('click', e => {
-                      e.stopPropagation();
-                      const resvId = row.getAttribute('data-resvid');
-                      fetch(`/mngmenu/noshow/${resvId}`, { method: 'PATCH' })
-                          .then(res => res.json())
-                          .then(data => {
-                              if(data.success){
-                                  statusCell.innerHTML = `<span class="badge bg-danger">노쇼</span>`;
-                                  row.setAttribute('data-status', '노쇼');
-                                  row.classList.add('status-completed');
-                                  updateCards({ waiting: -1 });
-                              } else alert('노쇼 처리 실패');
-                          });
-                  });
-
-              });
+        // 취소 버튼 클릭
+        if(cancelBtn){
+          cancelBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 행 클릭 이벤트 방지
+            if(confirm('예약을 취소하시겠습니까?')){
+              const resvId = row.getAttribute('data-resvid');
+              fetch(`/mngmenu/cancel/${resvId}`, { method: 'DELETE' })
+                      .then(res => {
+                        if(res.ok){
+                          row.remove(); // 테이블에서 제거
+                        } else {
+                          alert('취소 실패');
+                        }
+                      });
+            }
           });
+        }
 
+        // 방문예정 행 클릭 시 버튼 생성
+        row.addEventListener('click', () => {
+          const currentStatus = row.getAttribute('data-status');
+
+          if (currentStatus === '방문예정' && !statusCell.querySelector('.status-btn')) {
+            statusCell.querySelector('.status-label').style.display = 'none';
+
+            const visitBtn = document.createElement('button');
+            visitBtn.textContent = '방문확인';
+            visitBtn.className = 'btn btn-sm btn-outline-success status-btn mx-1';
+
+            const noshowBtn = document.createElement('button');
+            noshowBtn.textContent = '노쇼처리';
+            noshowBtn.className = 'btn btn-sm btn-outline-warning noshow-btn mx-1';
+
+            // 취소 버튼 뒤에 삽입
+            statusCell.insertBefore(visitBtn, cancelBtn);
+            statusCell.insertBefore(noshowBtn, cancelBtn);
+
+            // **취소 버튼 숨기기**
+            if(cancelBtn) cancelBtn.style.display = 'none';
+
+            // 방문확인 클릭
+            visitBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const resvId = row.getAttribute('data-resvid');
+              fetch(`/mngmenu/confirm/${resvId}`, { method: 'PATCH' })
+                      .then(res => {
+                        if(res.ok){
+                          statusCell.innerHTML = `<span class="badge bg-success">방문 완료</span>`;
+                          row.setAttribute('data-status', '방문완료');
+                        } else {
+                          alert('상태 변경 실패');
+                        }
+                      });
+            });
+
+            // 노쇼 처리 클릭
+            noshowBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const resvId = row.getAttribute('data-resvid');
+              fetch(`/mngmenu/noshow/${resvId}`, { method: 'PATCH' })
+                      .then(res => {
+                        if(res.ok){
+                          statusCell.innerHTML = `<span class="badge bg-danger">노쇼</span>`;
+                          row.setAttribute('data-status', '노쇼');
+                          row.classList.add('status-completed');
+                        } else {
+                          alert('노쇼 처리 실패');
+                        }
+                      });
+            });
+          }
+        });
       });
+    });
   </script>
 </head>
 <body class="bg-light">
@@ -179,12 +159,21 @@
           <a th:href="@{/mngstoreWrite}"
              class="list-group-item list-group-item-action d-flex align-items-center py-3"
              th:classappend="${menuId == 'store' ? 'active' : ''}">
-            <i class="bi bi-house-gear me-3"></i> 식당 정보 수정
+            <i class="bi bi-house-gear me-3"></i> 식당 정보 등록
           </a>
           <a th:href="@{/mngreview}"
              class="list-group-item list-group-item-action d-flex align-items-center py-3"
              th:classappend="${menuId == 'review' ? 'active' : ''}">
             <i class="bi bi-chat-dots me-3"></i> 리뷰 답변 관리
+          </a>
+          <a href="/mng/store/edit"
+             th:class="'list-group-item list-group-item-action ' + (${menuId} == 'storeEdit' ? 'active' : '')">
+            식당 정보 수정
+
+          </a>
+          <a href="/mng/account"
+             th:class="'list-group-item list-group-item-action ' + (${menuId} == 'account' ? 'active' : '')">
+            계정 관리
           </a>
         </div>
       </div>
@@ -205,19 +194,19 @@
         <div class="row g-3 mb-5">
           <div class="col-md-4">
             <div class="summary-card bg-white p-4 text-center">
-              <div class="card-num" id="totalCount" th:text="${totalCount ?: 12}">12</div>
+              <div class="card-num" th:text="${totalCount ?: 12}">12</div>
               <div class="small text-muted mt-1">오늘 총 예약</div>
             </div>
           </div>
           <div class="col-md-4">
             <div class="summary-card bg-white p-4 text-center">
-              <div class="card-num" id="visitCount" th:text="${visitCount ?: 8}">8</div>
+              <div class="card-num" th:text="${visitCount ?: 8}">8</div>
               <div class="small text-muted mt-1 text-success">방문 완료</div>
             </div>
           </div>
           <div class="col-md-4">
             <div class="summary-card bg-white p-4 text-center">
-              <div class="card-num" id="waitingCount" th:text="${waitingCount ?: 4}">4</div>
+              <div class="card-num" th:text="${waitingCount ?: 4}">4</div>
               <div class="small text-muted mt-1 text-warning">대기 중</div>
             </div>
           </div>
@@ -231,7 +220,7 @@
               <th>예약자명</th>
               <th>인원</th>
               <th>연락처</th>
-              <th class="text-center" style="width: 20%">상태 및 관리</th>
+              <th class="text-center">상태 및 관리</th>
             </tr>
             </thead>
             <tbody th:each="mng : ${resvList}">

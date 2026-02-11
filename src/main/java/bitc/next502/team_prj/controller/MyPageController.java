@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -103,5 +105,29 @@ public class MyPageController {
         model.addAttribute("bookmarkList", bookmarkList);
 
         return "mypage/mybookmarkList";
+    }
+    // 4. 일반 유저 계정 삭제
+    @PostMapping("/deleteAccount")
+    public String deleteNormalUserAccount(HttpSession session, @RequestParam String password, RedirectAttributes redirectAttributes) {
+        Object userBoxing = session.getAttribute("loginUser");
+        String role = (String) session.getAttribute("role");
+
+        if (userBoxing == null || role == null || !"NORMAL".equals(role)) {
+            return "redirect:/user/login"; // 일반 유저가 아니면 로그인으로
+        }
+
+        NormalUserDTO normalUser = (NormalUserDTO) userBoxing;
+        boolean deleted = myPageService.deleteNormalUserAccount(normalUser.getUserId(), password);
+
+        if (deleted) {
+            session.invalidate(); // 로그아웃 처리
+            redirectAttributes.addFlashAttribute("alertMessage", "회원 탈퇴가 완료되었습니다.");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+            return "redirect:/main";
+        } else {
+            redirectAttributes.addFlashAttribute("alertMessage", "비밀번호가 올바르지 않습니다.");
+            redirectAttributes.addFlashAttribute("alertType", "danger");
+            return "redirect:/mypage/main";
+        }
     }
 }

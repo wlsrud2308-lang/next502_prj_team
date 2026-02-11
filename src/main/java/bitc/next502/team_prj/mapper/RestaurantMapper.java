@@ -31,4 +31,20 @@ public interface RestaurantMapper {
 
     void insertRestaurant(RestaurantDTO dto);
 
+//    식당 정보 수정
+    void updateRestaurantInfo(@Param("restaurantId") String restaurantId,
+                              @Param("restaurantName") String restaurantName,
+                              @Param("category") String category,
+                              @Param("address") String address,
+                              @Param("locationTag") String locationTag,
+                              @Param("seats") int seats,
+                              @Param("description") String description,
+                              @Param("mainImg") String mainImg);
+
+//    식당 삭제 (선택, 관리자 계정 삭제와 연동 가능)
+    void deleteRestaurant(String restaurantId);
+//
+    void updateRestaurant(RestaurantDTO dto);
+
+    RestaurantDTO selectRestaurantById(String restaurantId);
 }

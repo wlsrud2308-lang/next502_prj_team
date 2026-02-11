@@ -18,5 +18,8 @@ public interface MypageService {
 
   // 예약 취소
   void cancelReservation(int resvId);
+
+//  유저 계정 삭제
+  boolean deleteNormalUserAccount(String userId, String password);
 }
 
