@@ -133,83 +133,9 @@
                               } else alert('노쇼 처리 실패');
                           });
                   });
-
               });
-
-        // 취소 버튼 클릭
-        if(cancelBtn){
-          cancelBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // 행 클릭 이벤트 방지
-            if(confirm('예약을 취소하시겠습니까?')){
-              const resvId = row.getAttribute('data-resvid');
-              fetch(`/mngmenu/cancel/${resvId}`, { method: 'DELETE' })
-                      .then(res => {
-                        if(res.ok){
-                          row.remove(); // 테이블에서 제거
-                        } else {
-                          alert('취소 실패');
-                        }
-                      });
-            }
-          });
-        }
-
-        // 방문예정 행 클릭 시 버튼 생성
-        row.addEventListener('click', () => {
-          const currentStatus = row.getAttribute('data-status');
-
-          if (currentStatus === '방문예정' && !statusCell.querySelector('.status-btn')) {
-            statusCell.querySelector('.status-label').style.display = 'none';
-
-            const visitBtn = document.createElement('button');
-            visitBtn.textContent = '방문확인';
-            visitBtn.className = 'btn btn-sm btn-outline-success status-btn mx-1';
-
-            const noshowBtn = document.createElement('button');
-            noshowBtn.textContent = '노쇼처리';
-            noshowBtn.className = 'btn btn-sm btn-outline-warning noshow-btn mx-1';
-
-            // 취소 버튼 뒤에 삽입
-            statusCell.insertBefore(visitBtn, cancelBtn);
-            statusCell.insertBefore(noshowBtn, cancelBtn);
-
-            // **취소 버튼 숨기기**
-            if(cancelBtn) cancelBtn.style.display = 'none';
-
-            // 방문확인 클릭
-            visitBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const resvId = row.getAttribute('data-resvid');
-              fetch(`/mngmenu/confirm/${resvId}`, { method: 'PATCH' })
-                      .then(res => {
-                        if(res.ok){
-                          statusCell.innerHTML = `<span class="badge bg-success">방문 완료</span>`;
-                          row.setAttribute('data-status', '방문완료');
-                        } else {
-                          alert('상태 변경 실패');
-                        }
-                      });
-            });
-
-            // 노쇼 처리 클릭
-            noshowBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const resvId = row.getAttribute('data-resvid');
-              fetch(`/mngmenu/noshow/${resvId}`, { method: 'PATCH' })
-                      .then(res => {
-                        if(res.ok){
-                          statusCell.innerHTML = `<span class="badge bg-danger">노쇼</span>`;
-                          row.setAttribute('data-status', '노쇼');
-                          row.classList.add('status-completed');
-                        } else {
-                          alert('노쇼 처리 실패');
-                        }
-                      });
-            });
-          }
         });
       });
-    });
   </script>
 </head>
 <body class="bg-light">
