@@ -3,6 +3,7 @@
 <head>
   <div th:replace="~{layout/header :: header}"></div>
   <title>NEXT502 | [[${restaurant.restaurantName}]]</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
       :root { --main-gold: #b89255; }
@@ -323,11 +324,16 @@
                       onclick="toggleLike(this)">
                 <i class="bi bi-heart-fill"></i>
               </button>
+              <input type="hidden" th:value="${restaurant.lat}" id="val-lat">
+              <input type="hidden" th:value="${restaurant.lng}" id="val-lng">
+              <input type="hidden" th:value="${restaurant.restaurantName}" id="val-restName">
+
             </div>
 
             <div class="pt-4 border-top">
               <h6 class="fw-bold mb-3 small"><i class="bi bi-compass me-1"></i> 주변 관광 명소 (2km 이내)</h6>
-              <div id="tourMap" class="map-box" style="height: 180px;"></div>
+<!--              <div id="tourMap" class="map-box" style="height: 180px;"></div>-->
+              <div id="tourMapTest" class="map-box" style="height: 180px;"></div>
             </div>
           </div>
         </div>
@@ -381,38 +387,40 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<KAKAO_APP_KEY>&libraries=services"></script>
 <script th:inline="javascript">
     window.onload = function() {
-        // restaurant.lat/lng가 문자열이어도 숫자로 변환해서 안전하게 사용
-        const latRaw = /*[[${restaurant.lat}]]*/ "35.1796";
-        const lngRaw = /*[[${restaurant.lng}]]*/ "129.0756";
-        const lat = parseFloat(latRaw) || 35.1796;
-        const lng = parseFloat(lngRaw) || 129.0756;
 
-        // 1. 메인 지도 설정
-        const mapContainer = document.getElementById('map');
-        const mapOption = { center: new kakao.maps.LatLng(lat, lng), level: 3 };
-        const map = new kakao.maps.Map(mapContainer, mapOption);
+        // // restaurant.lat/lng가 문자열이어도 숫자로 변환해서 안전하게 사용
+        // const latRaw = /*[[${restaurant.lat}]]*/ "35.1796";
+        // const lngRaw = /*[[${restaurant.lng}]]*/ "129.0756";
+        // const lat = parseFloat(latRaw) || 35.1796;
+        // const lng = parseFloat(lngRaw) || 129.0756;
+        //
+        // // 1. 메인 지도 설정
+        // const mapContainer = document.getElementById('map');
+        // const mapOption = { center: new kakao.maps.LatLng(lat, lng), level: 3 };
+        // const map = new kakao.maps.Map(mapContainer, mapOption);
+        //
+        // new kakao.maps.Marker({
+        //     position: new kakao.maps.LatLng(lat, lng),
+        //     map: map
+        // });
+        //
+        // // 2. 관광지 지도 설정
+        // const tourMapContainer = document.getElementById('tourMap');
+        // const tourMapOption = { center: new kakao.maps.LatLng(lat, lng), level: 5 };
+        // const tourMap = new kakao.maps.Map(tourMapContainer, tourMapOption);
+        //
+        // const ps = new kakao.maps.services.Places();
+        // ps.categorySearch('AT4', (data, status) => {
+        //     if (status === kakao.maps.services.Status.OK) {
+        //         data.forEach(place => {
+        //             new kakao.maps.Marker({
+        //                 position: new kakao.maps.LatLng(place.y, place.x),
+        //                 map: tourMap
+        //             });
+        //         });
+        //     }
+        // }, { location: new kakao.maps.LatLng(lat, lng), radius: 2000 });
 
-        new kakao.maps.Marker({
-            position: new kakao.maps.LatLng(lat, lng),
-            map: map
-        });
-
-        // 2. 관광지 지도 설정
-        const tourMapContainer = document.getElementById('tourMap');
-        const tourMapOption = { center: new kakao.maps.LatLng(lat, lng), level: 5 };
-        const tourMap = new kakao.maps.Map(tourMapContainer, tourMapOption);
-
-        const ps = new kakao.maps.services.Places();
-        ps.categorySearch('AT4', (data, status) => {
-            if (status === kakao.maps.services.Status.OK) {
-                data.forEach(place => {
-                    new kakao.maps.Marker({
-                        position: new kakao.maps.LatLng(place.y, place.x),
-                        map: tourMap
-                    });
-                });
-            }
-        }, { location: new kakao.maps.LatLng(lat, lng), radius: 2000 });
     };
 
     // 비로그인 상황에서 예약하기 버튼눌렀을때 로그인 페이지로 보내주는 스크립트 0209 am  수정
@@ -471,6 +479,82 @@
         }
       });
     }
+
+</script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+  const restaurant = {
+    name: $("#val-restName").val(),
+    lat: $("#val-lat").val(),
+    lng: $("#val-lng").val()
+  };
+
+  // 지도 생성
+  const map = L.map('tourMapTest').setView([restaurant.lat, restaurant.lng],15);
+
+  // OSM 타일
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // 식당 마커
+  L.marker([restaurant.lat, restaurant.lng])
+          .addTo(map)
+          .bindPopup(`🍽️ ${restaurant.name} `)
+          .openPopup();
+
+  // 반경 (미터)
+  const radius = 2000;
+
+  // Overpass API 쿼리 (관광지)
+  const query = `
+        [out:json];
+        (
+          node["tourism"](around:${radius},${restaurant.lat},${restaurant.lng});
+          way["tourism"](around:${radius},${restaurant.lat},${restaurant.lng});
+        );
+        out center tags;
+    `;
+
+  fetch("https://overpass-api.de/api/interpreter", {
+    method: "POST",
+    body: query
+  })
+          .then(res => res.json())
+          .then(data => {
+            data.elements.forEach(place => {
+              const lat = place.lat || place.center.lat;
+              const lng = place.lon || place.center.lon;
+              const type = place.tags?.type;
+              const name = place.tags?.name || "";
+
+              //const osmType = place.type; // node / way / relation
+              const osmType = type;
+              const osmId = place.id;
+
+              //const detailUrl = `https://www.openstreetmap.org/${type}/${osmId}`
+              const marker=L.marker([lat, lng], {
+                icon: L.icon({
+                  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                  iconSize: [25, 25]
+                })
+              })
+                      .addTo(map)
+                      .bindTooltip(`📍${name}`, {
+                        direction: 'top',
+                        offset: [0, -10],
+                        opacity: 0.9
+                      });
+              marker.on("click",function (){
+                const url="https://search.naver.com/search.naver?query="+ name;
+                window.open(url,"new");
+
+              });
+            });
+          });
 
 </script>
 </body>
