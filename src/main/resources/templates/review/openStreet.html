@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>식당 주변 관광지 지도</title>
+
+  <!-- Leaflet CSS -->
+  <link
+          rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    #map {
+      width: 400px;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>식당 주변 관광지</h2>
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  // 🍽️ 식당 위치 (예: 서울 시청 근처)
+  const restaurant = {
+    name: "맛있는 식당",
+    lat: 37.5665,
+    lng: 126.9780
+  };
+
+  // 지도 생성
+  const map = L.map('map').setView([restaurant.lat, restaurant.lng],15);
+
+  // OSM 타일
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // 식당 마커
+  L.marker([restaurant.lat, restaurant.lng])
+          .addTo(map)
+          .bindPopup(`🍽️00 ${restaurant.name}`)
+          .openPopup();
+
+  // 반경 (미터)
+  const radius = 500;
+
+  // Overpass API 쿼리 (관광지)
+  const query = `
+        [out:json];
+        (
+          node["tourism"](around:${radius},${restaurant.lat},${restaurant.lng});
+          way["tourism"](around:${radius},${restaurant.lat},${restaurant.lng});
+        );
+        out center tags;
+    `;
+
+  fetch("https://overpass-api.de/api/interpreter", {
+    method: "POST",
+    body: query
+  })
+          .then(res => res.json())
+          .then(data => {
+            data.elements.forEach(place => {
+              const lat = place.lat || place.center.lat;
+              const lng = place.lon || place.center.lon;
+              const type = place.tags?.tourism;
+              const name = place.tags?.name || "";
+
+              //const osmType = place.type; // node / way / relation
+              const osmType = type;
+              const osmId = place.id;
+
+             // const detailUrl = `/tourism/detail?type=${osmType}&id=${osmId}`;
+              //const detailUrl2 =  `https://www.openstreetmap.org/${place.type}/${place.id}`;
+              const detailUrl = `https://www.openstreetmap.org/${type}/${osmId}`
+              const marker=L.marker([lat, lng], {
+                icon: L.icon({
+                  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                  iconSize: [25, 25]
+                })
+              })
+                      .addTo(map)
+                      .bindTooltip(`📍 ${name}`, {
+                          direction: 'top',
+                          offset: [0, -10],
+                          opacity: 0.9
+                        });
+              marker.on("click",function (){
+                const url="https://search.naver.com/search.naver?query="+ name;
+                window.open(url,"new");
+                //window.location.href = "https://search.naver.com/search.naver?query="+ name;
+
+                //window.location.href = detailUrl;
+              });
+            });
+          });
+
+</script>
+
+</body>
+</html>
