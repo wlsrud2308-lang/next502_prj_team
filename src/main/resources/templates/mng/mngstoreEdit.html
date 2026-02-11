@@ -4,55 +4,53 @@
   <div th:replace="~{layout/header :: header}"></div>
   <title>NEXT502 | 식당 정보 수정</title>
   <style>
-    .form-control, .form-select {
-      border-color: #eee;
-      color: #333;
-    }
+    :root { --main-gold: #b89255; }
 
+    body { background-color: #f8f9fa; }
+
+    .form-control, .form-select {
+      border-color: #eee; color: #333;
+    }
     .form-control:focus, .form-select:focus {
       border-color: var(--main-gold);
       box-shadow: 0 0 0 0.25rem rgba(184, 146, 85, 0.1);
     }
+    .form-control::placeholder { color: #bbb !important; font-weight: 300; font-size: 0.9rem; transition: all 0.3s ease; }
+    .form-control:focus::placeholder { opacity: 0; transform: translateX(10px); }
 
-    .form-control::placeholder {
-      color: #bbb !important;
-      font-weight: 300 !important;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-    }
+    .btn-gold { background-color: var(--main-gold); color: white; border: none; }
+    .btn-gold:hover { background-color: #a6834d; }
 
-    .form-control:focus::placeholder {
-      opacity: 0;
-      transform: translateX(10px);
+    .aside-menu {
+      background: #fff; border-right: 1px solid #eee; min-height: 100vh; padding-top: 2rem;
     }
+    .aside-menu a { display: block; padding: 0.75rem 1rem; color: #555; text-decoration: none; }
+    .aside-menu a.active, .aside-menu a:hover { background-color: #f8f9fa; color: var(--main-gold); font-weight: bold; border-left: 4px solid var(--main-gold); }
 
-    .form-control-lg::placeholder {
-      font-size: 1rem;
-    }
-
-    input[type="number"] {
-      text-align: right;
-    }
-
-    .btn-gold {
-      background-color: #b89255;
-      color: white;
-      border: none;
-      transition: 0.3s;
-    }
+    .preview-img { max-height: 250px; border-radius: 4px; }
   </style>
 </head>
-<body class="bg-light">
+<body>
 
 <div th:replace="~{layout/navbar :: navbar}"></div>
 
-<main class="container my-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-9">
+<main class="container-fluid my-5">
+  <div class="row">
+    <!-- 사이드바 -->
+    <aside class="col-md-3 aside-menu">
+      <a href="/mng/mngmenu" class="active">예약 관리</a>
+      <a href="/mng/mngreview">리뷰 관리</a>
+      <a href="/mng/mngmypage">내 정보</a>
+      <a href="/mng/store/edit">식당 정보 수정</a>
+      <a href="/mng/account">계정 관리</a>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <section class="col-md-9">
       <div class="card shadow-sm border-0">
         <div class="card-body p-5">
 
-          <!-- ✅ 알림 메시지 -->
+          <!-- 알림 메시지 -->
           <div th:if="${alertMessage}" class="mb-4">
             <div th:class="'alert alert-' + ${alertType} + ' alert-dismissible fade show'" role="alert">
               <span th:text="${alertMessage}"></span>
@@ -60,21 +58,22 @@
             </div>
           </div>
 
-          <h3 class="fw-bold mb-4 pb-2 border-bottom">식당 정보 수정 <span class="fs-6 text-muted fw-normal ms-2">Admin Only</span></h3>
+          <h3 class="fw-bold mb-4 pb-2 border-bottom">식당 정보 수정</h3>
 
           <form th:action="@{/mng/store/update}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="restaurantId" th:value="${restaurant != null ? restaurant.id : 0}" />
 
-            <h5 class="section-title">기본 정보</h5>
+            <!-- 기본 정보 -->
+            <h5 class="mb-3">기본 정보</h5>
             <div class="row g-3 mb-4">
               <div class="col-md-6">
-                <label for="restaurantName" class="form-label">식당 이름</label>
-                <input type="text" class="form-control form-control-lg" id="restaurantName" name="restaurantName"
-                       th:value="${restaurant != null ? restaurant.name : ''}" placeholder="예: 레스토랑 NEXT502" required>
+                <label class="form-label">식당 이름</label>
+                <input type="text" class="form-control form-control-lg" name="restaurantName"
+                       th:value="${restaurant != null ? restaurant.name : ''}" required>
               </div>
               <div class="col-md-6">
-                <label for="category" class="form-label">카테고리</label>
-                <select class="form-select form-select-lg" id="category" name="category">
+                <label class="form-label">카테고리</label>
+                <select class="form-select form-select-lg" name="category">
                   <option th:value="1" th:selected="${restaurant.category == 1}">한식</option>
                   <option th:value="2" th:selected="${restaurant.category == 2}">일식</option>
                   <option th:value="3" th:selected="${restaurant.category == 3}">양식</option>
@@ -82,8 +81,8 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <label for="locationTag" class="form-label">지역(구)</label>
-                <select class="form-select" id="locationTag" name="locationTag">
+                <label class="form-label">지역(구)</label>
+                <select class="form-select" name="locationTag">
                   <option th:value="연제구" th:selected="${restaurant.locationTag == '연제구'}">연제구</option>
                   <option th:value="해운대구" th:selected="${restaurant.locationTag == '해운대구'}">해운대구</option>
                   <option th:value="부산진구" th:selected="${restaurant.locationTag == '부산진구'}">부산진구</option>
@@ -91,81 +90,69 @@
                 </select>
               </div>
               <div class="col-md-8">
-                <label for="address" class="form-label">상세 주소</label>
-                <input type="text" class="form-control" id="address" name="address" placeholder="전체 주소를 입력하세요"
-                       th:value="${restaurant.address}">
+                <label class="form-label">상세 주소</label>
+                <input type="text" class="form-control" name="address" th:value="${restaurant.address}">
               </div>
             </div>
 
-            <h5 class="section-title mt-5">운영 정보</h5>
+            <!-- 운영 정보 -->
+            <h5 class="mb-3">운영 정보</h5>
             <div class="row g-3 mb-4">
               <div class="col-md-6">
-                <label for="seats" class="form-label">최대 수용 인원 (명)</label>
-                <div class="input-group">
-                  <input type="number" class="form-control" id="seats" name="seats" placeholder="40" th:value="${restaurant.seats}">
-                  <span class="input-group-text">명</span>
-                </div>
+                <label class="form-label">최대 수용 인원</label>
+                <input type="number" class="form-control" name="seats" th:value="${restaurant.seats}">
               </div>
               <div class="col-md-6">
-                <label for="price" class="form-label">대표 가격 (1인 기준)</label>
-                <div class="input-group">
-                  <input type="number" class="form-control" id="price" name="price" placeholder="150,000" th:value="${restaurant.price}">
-                  <span class="input-group-text">원</span>
-                </div>
+                <label class="form-label">대표 가격 (1인 기준)</label>
+                <input type="number" class="form-control" name="price" th:value="${restaurant.price}">
               </div>
               <div class="col-12">
-                <label for="description" class="form-label">식당 소개글</label>
-                <textarea class="form-control" id="description" name="description" rows="5"
-                          placeholder="상세 페이지 상단에 노출될 매력적인 소개글을 적어주세요." th:text="${restaurant.description}"></textarea>
+                <label class="form-label">식당 소개글</label>
+                <textarea class="form-control" name="description" rows="5" th:text="${restaurant.description}"></textarea>
               </div>
             </div>
 
-            <h5 class="section-title mt-5">이미지 수정</h5>
+            <!-- 이미지 수정 -->
+            <h5 class="mb-3">대표 이미지</h5>
             <div class="mb-5">
-              <label class="form-label">대표 이미지 (배경용)</label>
               <input type="file" id="mainImg" name="mainImg" class="d-none" accept="image/*" onchange="previewImage(this)">
-              <label for="mainImg" class="photo-upload-wrapper d-block">
+              <label for="mainImg" class="d-block">
                 <div id="preview-container">
                   <div th:if="${restaurant.mainImg != null}">
-                    <img th:src="@{${restaurant.mainImg}}" style="max-height: 250px; border-radius: 4px;" class="img-fluid shadow-sm">
-                    <p class="mt-2 mb-0 text-gold fw-bold">기존 이미지입니다. 다시 클릭하면 변경 가능합니다.</p>
+                    <img th:src="${restaurant.mainImg}" class="preview-img">
+                    <p class="text-gold fw-bold mt-2">기존 이미지입니다. 클릭하면 변경 가능합니다.</p>
                   </div>
                   <div th:if="${restaurant.mainImg == null}">
                     <i class="bi bi-image fs-1 text-muted"></i>
-                    <p class="mt-2 mb-0 text-muted">클릭하여 대표 이미지를 업로드하세요</p>
+                    <p class="text-muted mt-2 mb-0">클릭하여 이미지 업로드</p>
                     <small class="text-secondary">JPG, PNG (최대 5MB)</small>
                   </div>
                 </div>
               </label>
             </div>
 
-            <div class="d-grid gap-2 mt-5">
-              <button type="submit" class="btn btn-gold btn-lg shadow d-flex align-items-center justify-content-center py-3 border-0 transition-all">
-                <i class="bi bi-check-circle-fill me-2"></i> <span>식당 정보 수정 완료</span>
-              </button>
-
-              <a href="/mngmenu" class="btn btn-outline-secondary border-0 mt-2">
-                <i class="bi bi-arrow-left me-1"></i> 취소하고 목록으로 돌아가기
-              </a>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-gold btn-lg">식당 정보 수정 완료</button>
+              <a href="/mng/mngmenu" class="btn btn-outline-secondary mt-2">취소하고 목록으로 돌아가기</a>
             </div>
           </form>
+
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </main>
 
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
-  // 이미지 미리보기
   function previewImage(input) {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
       reader.onload = function(e) {
-        const container = document.getElementById('preview-container');
-        container.innerHTML = `<img src="${e.target.result}" style="max-height: 250px; border-radius: 4px;" class="img-fluid shadow-sm">
-                                       <p class="mt-2 mb-0 text-gold fw-bold">이미지가 선택되었습니다. 다시 클릭하면 변경 가능합니다.</p>`;
+        document.getElementById('preview-container').innerHTML = `
+          <img src="${e.target.result}" class="preview-img">
+          <p class="text-gold fw-bold mt-2">이미지가 선택되었습니다. 다시 클릭하면 변경 가능합니다.</p>`;
       }
       reader.readAsDataURL(input.files[0]);
     }
