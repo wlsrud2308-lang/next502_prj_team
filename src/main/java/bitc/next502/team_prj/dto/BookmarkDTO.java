@@ -13,4 +13,5 @@ public class BookmarkDTO {
     private String address;
     private double rating;
     private String category;
+    private String foods;
 }
