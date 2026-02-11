@@ -134,8 +134,7 @@
         r.addr1 AS address,
         r.gugun_nm AS locationTag,
         r.main_img AS mainImg,
-        r.itemcntnts AS description,
-        COALESCE(ROUND(AVG(rv.rating), 1), 0) AS rating,
+        r.itemcntnts AS description, COALESCE(ROUND(AVG(rv.rating), 1), 0) AS rating,
         COUNT(rv.review_idx) AS reviewCount
         FROM restaurant r
         JOIN category c ON r.category = c.category
@@ -144,16 +143,10 @@
         WHERE (
         r.place LIKE CONCAT('%', #{keyword}, '%')
         OR rd.title LIKE CONCAT('%', #{keyword}, '%')
-        OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')
-        OR c.foods LIKE CONCAT('%', #{keyword}, '%')
+        OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%') OR c.foods LIKE CONCAT('%', #{keyword}, '%')
         OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
         OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')
         )
-            OR rd.title LIKE CONCAT('%', #{keyword}, '%')
-            OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%')
-            OR c.foods LIKE CONCAT('%', #{keyword}, '%')
-            OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
-            OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')      )
 
         <if test="locations != null and locations.size() > 0">
             AND r.gugun_nm IN
