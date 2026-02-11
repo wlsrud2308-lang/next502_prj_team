@@ -31,8 +31,14 @@ public class MngServiceImpl implements MngService{
   }
 
   @Override
-  public List<ReviewDTO> getReviewListByBusinessId(String businessId) {
-    return mngMapper.selectReviewListByBusinessId(businessId);
+  public List<ReviewDTO> getReviewListByBusinessId(String businessId, int page, int size) {
+    int offset = page * size; // 페이징 오프셋 계산
+    return mngMapper.selectReviewListByBusinessIdWithPaging(businessId, offset, size);
+  }
+
+  @Override
+  public int countReviewByBusinessId(String businessId) {
+    return mngMapper.countReviewByBusinessId(businessId);
   }
 
   @Override

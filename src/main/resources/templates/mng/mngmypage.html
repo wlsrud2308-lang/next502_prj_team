@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{layout/header :: header}"></div>
+    <title>관리자 정보 수정 | NEXT502</title>
+    <style>
+        :root { --main-gold: #b89255; }
+        .text-gold { color: var(--main-gold) !important; }
+        .btn-gold { background-color: var(--main-gold); color: white; border: none; }
+        .btn-gold:hover { background-color: #a6834d; color: white; }
+
+        .list-group-item { text-decoration: none !important; border: none; border-bottom: 1px solid #eee; }
+        .list-group-item.active {
+            background-color: #f8f9fa !important;
+            color: var(--main-gold) !important;
+            border-left: 4px solid var(--main-gold) !important;
+            font-weight: bold;
+        }
+
+        .form-label { font-weight: 600; color: #555; font-size: 0.9rem; }
+        .form-control:focus { border-color: var(--main-gold); box-shadow: 0 0 0 0.2rem rgba(184, 146, 85, 0.25); }
+        .profile-img-sec { position: relative; width: 120px; height: 120px; margin: 0 auto; }
+        .admin-badge { position: absolute; bottom: 0; right: 0; background: #212529; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+    </style>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout/navbar :: navbar}"></div>
+
+<div class="container my-5">
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <div class="card shadow-sm border-0 mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white py-3 text-center">
+                    <h6 class="mb-0 fw-bold">ADMIN PANEL</h6>
+                </div>
+                <div class="list-group list-group-flush w-100">
+                    <a th:href="@{/mngmenu}"
+                       class="list-group-item list-group-item-action d-flex align-items-center py-3"
+                       th:classappend="${menuId == 'menu' ? 'active' : ''}">
+                        <i class="bi bi-calendar-check me-3"></i> 예약자 관리
+                    </a>
+                    <a th:href="@{/mngstoreWrite}"
+                       class="list-group-item list-group-item-action d-flex align-items-center py-3"
+                       th:classappend="${menuId == 'store' ? 'active' : ''}">
+                        <i class="bi bi-house-gear me-3"></i> 식당 정보 수정
+                    </a>
+                    <a th:href="@{/mngreview}"
+                       class="list-group-item list-group-item-action d-flex align-items-center py-3"
+                       th:classappend="${menuId == 'review' ? 'active' : ''}">
+                        <i class="bi bi-chat-dots me-3"></i> 리뷰 답변 관리
+                    </a>
+                    <a th:href="@{/mng/mypage}"
+                       class="list-group-item list-group-item-action d-flex align-items-center py-3"
+                       th:classappend="${menuId == 'profile' ? 'active' : ''}">
+                        <i class="bi bi-person-gear me-3"></i> 개인정보 수정
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="col-lg-9">
+            <div class="card shadow-sm border-0 p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <h3 class="fw-bold mb-0">관리자 정보 수정</h3>
+                    <span class="badge bg-dark px-3 py-2">Business Member</span>
+                </div>
+
+                <form action="/mng/updateProfile" method="post">
+                    <div class="row">
+                        <div class="col-12 text-center mb-5">
+                            <div class="profile-img-sec mb-3">
+                                <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center w-100 h-100">
+                                    <i class="bi bi-person-badge-fill fs-1 text-secondary"></i>
+                                </div>
+                                <span class="admin-badge">Admin</span>
+                            </div>
+                            <h5 class="fw-bold" th:text="${userInfo.businessName}">관리자 이름</h5>
+                            <p class="text-muted small" th:text="${userInfo.businessId}">business_id</p>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">관리자 성함 (상호명)</label>
+                            <input type="text" class="form-control py-2" name="businessName" th:value="${userInfo.businessName}" required>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">식당 고유 코드</label>
+                            <input type="text" class="form-control py-2 bg-light" th:value="${userInfo.restaurantId}" readonly>
+                            <small class="text-muted">식당 ID는 시스템에서 자동 부여됩니다.</small>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">연락처</label>
+                            <input type="tel" class="form-control py-2" name="businessPhone" th:value="${userInfo.businessPhone}" placeholder="010-0000-0000">
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">사업자 등록번호</label>
+                            <input type="text" class="form-control py-2 bg-light" th:value="${userInfo.businessNumber}" readonly>
+                            <small class="text-muted">사업자 정보는 변경이 불가합니다.</small>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">새 비밀번호</label>
+                            <input type="password" class="form-control py-2" name="businessPwd" placeholder="변경 시에만 입력">
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">비밀번호 확인</label>
+                            <input type="password" id="confirmPwd" class="form-control py-2" placeholder="비밀번호 재입력">
+                        </div>
+
+                        <div class="col-12 text-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary px-4 me-2" onclick="history.back()">취소</button>
+                            <button type="submit" class="btn btn-gold px-5">정보 업데이트</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const pwd = document.querySelector('input[name="businessPwd"]').value;
+        const confirm = document.getElementById('confirmPwd').value;
+
+        if(pwd && pwd !== confirm) {
+            e.preventDefault();
+            alert('새 비밀번호가 일치하지 않습니다.');
+        }
+    });
+</script>
+
+</body>
+</html>

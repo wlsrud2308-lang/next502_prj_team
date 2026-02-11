@@ -17,7 +17,15 @@ public interface MngMapper {
 
   List<MngDTO> selectResvListByDate(String businessId, LocalDate resvDate);
 
-  List<ReviewDTO> selectReviewListByBusinessId(String businessId);
+  // 페이징 리뷰 조회
+  List<ReviewDTO> selectReviewListByBusinessIdWithPaging(
+      @Param("businessId") String businessId,
+      @Param("offset") int offset,
+      @Param("limit") int limit
+  );
+
+  // 총 리뷰 개수 조회
+  int countReviewByBusinessId(@Param("businessId") String businessId);
 
   void updateReviewReply(@Param("reviewIdx") int reviewIdx,
                          @Param("replyContent") String replyContent);

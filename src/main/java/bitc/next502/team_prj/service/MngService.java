@@ -14,10 +14,13 @@ public interface MngService {
 
   List<MngDTO> getResvListByDate(String businessId, LocalDate resvDate);
 
-  // ⭐ 리뷰 + 사장 댓글 조회
-  List<ReviewDTO> getReviewListByBusinessId(String businessId);
+  // 리뷰 + 사장 댓글 조회
+  List<ReviewDTO> getReviewListByBusinessId(String businessId, int page, int size);
 
-  // ⭐ 사장 댓글 등록/수정
+  // 총 리뷰 수 조회
+  int countReviewByBusinessId(String businessId);
+
+  // 사장 댓글 등록/수정
   void updateReviewReply(int reviewIdx, String replyContent);
 
   void updateReservationState(int resvId, String newState);

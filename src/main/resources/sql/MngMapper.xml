@@ -62,7 +62,7 @@
             r.reservation_time;
     </select>
 
-    <select id="selectReviewListByBusinessId" resultType="bitc.next502.team_prj.dto.ReviewDTO">
+    <select id="selectReviewListByBusinessIdWithPaging" resultType="bitc.next502.team_prj.dto.ReviewDTO">
         SELECT
             rv.review_idx AS reviewIdx,
             b.restaurant_id AS restaurantId,
@@ -84,7 +84,16 @@
         WHERE
             b.business_id = #{businessId}
         ORDER BY
-            rv.create_date DESC;
+            rv.create_date DESC
+            LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countReviewByBusinessId" resultType="int">
+        SELECT COUNT(*)
+        FROM review rv
+                 JOIN reservation r ON r.reservation_id = rv.reservation_id
+                 JOIN business_user b ON b.restaurant_id = r.restaurant_id
+        WHERE b.business_id = #{businessId}
     </select>
 
     <update id="updateReviewReply">

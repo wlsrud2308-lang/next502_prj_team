@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -130,7 +131,10 @@ public class MngController {
     }
 
     @GetMapping("/mngreview")
-    public String mngreview(Model model, HttpSession session) {
+    public String mngreview(Model model,
+                            HttpSession session,
+                            @RequestParam(defaultValue = "0") int page,   // 현재 페이지
+                            @RequestParam(defaultValue = "3") int size) { // 한 페이지 리뷰 수
 
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
@@ -142,15 +146,26 @@ public class MngController {
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
-        // 리뷰 + 사장 댓글 같이 조회
-        List<ReviewDTO> reviewList = mngService.getReviewListByBusinessId(businessId);
+        // 페이징 리뷰 조회
+        List<ReviewDTO> reviewList = mngService.getReviewListByBusinessId(businessId, page, size);
+
+        // 총 리뷰 수 조회
+        int totalReviews = mngService.countReviewByBusinessId(businessId);
+
+        // 총 페이지 계산
+        int totalPages = (int) Math.ceil((double) totalReviews / size);
+
+        // 미답변 개수 (현재 페이지 기준)
         int unansweredCount = (int) reviewList.stream()
-                .filter(r -> r.getReplyContent() == null || r.getReplyContent().isEmpty())
-                .count();
+            .filter(r -> r.getReplyContent() == null || r.getReplyContent().isEmpty())
+            .count();
 
         model.addAttribute("unansweredCount", unansweredCount);
         model.addAttribute("menuId", "review");
         model.addAttribute("reviewList", reviewList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("pageSize", size); // optional, 페이지 UI에서 필요할 수도 있음
 
         return "mng/mngreview";
     }
@@ -264,6 +279,17 @@ public class MngController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false));
         }
+    }
+
+    @GetMapping("/mngmypage")
+    public ModelAndView mngMyPage(HttpSession session) {
+        ModelAndView mv = new ModelAndView("mng/mngmypage");
+        Object userInfo = session.getAttribute("loginUser");
+        mv.addObject("userInfo", userInfo);
+
+        mv.addObject("menuId", "profile");
+
+        return mv;
     }
 
 //    // 식당 정보 등록
