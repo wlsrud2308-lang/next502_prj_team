@@ -50,4 +50,9 @@ public class MngServiceImpl implements MngService{
     mngMapper.updateReservationState(resvId, "취소");
   }
 
+  @Override
+  public List<MngDTO> getResvListByDateExcludeCanceled(String businessId, LocalDate resvDate) {
+    return mngMapper.selectResvListByDateExcludeCanceled(businessId, resvDate);
+  }
+
 }

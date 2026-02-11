@@ -101,4 +101,28 @@
         WHERE reservation_id = #{resvId}
     </update>
 
+    <!-- 날짜별 예약 조회 (취소 제외) -->
+    <select id="selectResvListByDateExcludeCanceled" resultType="bitc.next502.team_prj.dto.MngDTO">
+        SELECT
+        r.reservation_id AS resvId,
+        b.restaurant_id AS restaurantId,
+        r.reservation_date AS resvDate,
+        r.reservation_time AS resvTime,
+        r.count_people AS headCount,
+        r.reservation_state AS status,
+        n.user_id AS userId,
+        n.user_name AS name,
+        n.user_tel AS phone
+        FROM
+        reservation r
+        JOIN business_user b ON b.restaurant_id = r.restaurant_id
+        JOIN normal_user n ON r.user_id = n.user_id
+        WHERE
+        b.business_id = #{businessId}
+        AND r.reservation_date = #{resvDate}
+        AND r.reservation_state != '취소'
+        ORDER BY
+        r.reservation_time;
+    </select>
+
 </mapper>

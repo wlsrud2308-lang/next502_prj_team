@@ -53,20 +53,21 @@ public class MngController {
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
-        // ⭐ 핵심: 날짜 없으면 오늘로 세팅
+        // 날짜 없으면 오늘로 세팅
         if (resvDate == null) {
             resvDate = LocalDate.now();
         }
 
-        // ⭐ 무조건 날짜 기준 조회
-        List<MngDTO> resvList =
-            mngService.getResvListByDate(businessId, resvDate);
+        // 무조건 날짜 기준 조회
+        List<MngDTO> resvList = mngService.getResvListByDateExcludeCanceled(businessId, resvDate);
 
         MngDTO mng = mngService.getMngInfo(businessId);
 
         int totalCount = resvList.size();
         int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-        int waitingCount = totalCount - visitCount;
+        int waitingCount = (int) resvList.stream()
+            .filter(r -> "방문예정".equals(r.getStatus()))
+            .count();
 
         model.addAttribute("mng", mng);
         model.addAttribute("resvList", resvList);
@@ -141,7 +142,7 @@ public class MngController {
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
-        // ⭐ 리뷰 + 사장 댓글 같이 조회
+        // 리뷰 + 사장 댓글 같이 조회
         List<ReviewDTO> reviewList = mngService.getReviewListByBusinessId(businessId);
         int unansweredCount = (int) reviewList.stream()
                 .filter(r -> r.getReplyContent() == null || r.getReplyContent().isEmpty())
@@ -188,7 +189,9 @@ public class MngController {
 
         int totalCount = resvList.size();
         int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-        int waitingCount = totalCount - visitCount;
+        int waitingCount = (int) resvList.stream()
+            .filter(r -> "방문예정".equals(r.getStatus()))
+            .count();
 
         return ResponseEntity.ok(Map.of(
             "success", true,
@@ -216,7 +219,9 @@ public class MngController {
 
         int totalCount = resvList.size();
         int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-        int waitingCount = totalCount - visitCount;
+        int waitingCount = (int) resvList.stream()
+            .filter(r -> "방문예정".equals(r.getStatus()))
+            .count();
 
         return ResponseEntity.ok(Map.of(
             "success", true,
@@ -245,7 +250,9 @@ public class MngController {
 
             int totalCount = resvList.size();
             int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-            int waitingCount = totalCount - visitCount;
+            int waitingCount = (int) resvList.stream()
+                .filter(r -> "방문예정".equals(r.getStatus()))
+                .count();
 
             return ResponseEntity.ok(Map.of(
                 "success", true,

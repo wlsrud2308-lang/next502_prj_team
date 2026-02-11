@@ -25,4 +25,7 @@ public interface MngMapper {
   void updateReservationState(@Param("resvId") int resvId,
                               @Param("newState") String newState);
 
+  List<MngDTO> selectResvListByDateExcludeCanceled(@Param("businessId") String businessId,
+                                                   @Param("resvDate") LocalDate resvDate);
+
 }

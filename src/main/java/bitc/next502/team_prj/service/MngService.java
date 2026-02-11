@@ -23,4 +23,6 @@ public interface MngService {
   void updateReservationState(int resvId, String newState);
 
   void cancelReservation(int resvId);
+
+  List<MngDTO> getResvListByDateExcludeCanceled(String businessId, LocalDate resvDate);
 }
