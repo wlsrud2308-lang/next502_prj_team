@@ -73,7 +73,7 @@
             rv.user_id AS userId,
             rv.comment AS comment,
             rv.create_date AS createDate,
-            rv.update_date AS updateDate,
+            rv.update_date AS updateDate
             rv.reply_content AS replyContent,
             rv.reply_date AS replyDate
         FROM

@@ -83,7 +83,7 @@ public class MngController {
     // POST: 가게 등록 처리
     @PostMapping("/mngstoreWrite")
     public String registerStore(@ModelAttribute RestaurantDTO restaurantDTO,
-                                @RequestParam("mainImg") MultipartFile mainImgFile,
+                                @RequestParam("mainImgFile") MultipartFile mainImgFile,
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) throws IOException {
 
