@@ -1,5 +1,6 @@
 package bitc.next502.team_prj.service;
 
+import bitc.next502.team_prj.dto.BusinessUserDTO;
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.dto.MngDTO;
 import bitc.next502.team_prj.mapper.MngMapper;
@@ -61,4 +62,8 @@ public class MngServiceImpl implements MngService{
     return mngMapper.selectResvListByDateExcludeCanceled(businessId, resvDate);
   }
 
+  @Override
+  public void updateBusinessUserInfo(BusinessUserDTO userDTO) {
+    mngMapper.updateBusinessUserInfo(userDTO);
+  }
 }

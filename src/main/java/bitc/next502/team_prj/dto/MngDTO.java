@@ -17,7 +17,7 @@ public class MngDTO {
   private String resvTime;
   private int headCount;
   private String status;
-
+  private String businessNumber;
 
   private String userId;
   private String userEmail;

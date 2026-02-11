@@ -1,5 +1,6 @@
 package bitc.next502.team_prj.mapper;
 
+import bitc.next502.team_prj.dto.BusinessUserDTO;
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.dto.MngDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -35,5 +36,7 @@ public interface MngMapper {
 
   List<MngDTO> selectResvListByDateExcludeCanceled(@Param("businessId") String businessId,
                                                    @Param("resvDate") LocalDate resvDate);
+
+  void updateBusinessUserInfo(BusinessUserDTO userDTO);
 
 }

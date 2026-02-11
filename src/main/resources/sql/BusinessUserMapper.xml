@@ -66,4 +66,15 @@
         SET business_pwd = #{pw}
         WHERE business_id = #{id}
     </update>
+
+    <update id="updateBusinessUserInfo" parameterType="bitc.next502.team_prj.dto.BusinessUserDTO">
+        UPDATE business_user
+        SET
+        business_name = #{businessName},
+        business_tel = #{businessPhone}
+        <if test="businessPwd != null and businessPwd != ''">
+            , business_pwd = #{businessPwd}
+        </if>
+        WHERE business_id = #{businessId}
+    </update>
 </mapper>

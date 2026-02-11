@@ -284,12 +284,40 @@ public class MngController {
     @GetMapping("/mngmypage")
     public ModelAndView mngMyPage(HttpSession session) {
         ModelAndView mv = new ModelAndView("mng/mngmypage");
-        Object userInfo = session.getAttribute("loginUser");
-        mv.addObject("userInfo", userInfo);
+        BusinessUserDTO loginUser = (BusinessUserDTO) session.getAttribute("loginUser");
 
+        if (loginUser == null) {
+            mv.setViewName("redirect:/login");
+            return mv;
+        }
+
+        MngDTO userInfo = mngService.getMngInfo(loginUser.getBusinessId());
+        mv.addObject("userInfo", userInfo);
         mv.addObject("menuId", "profile");
 
         return mv;
+    }
+
+    @PostMapping("/mng/updateProfile")
+    public String updateProfile(@ModelAttribute BusinessUserDTO userDTO, RedirectAttributes ra, HttpSession session) {
+        // 1. 실제 DB 업데이트 수행
+        // MngService에 이 메서드를 추가해야 합니다 (아래 2, 3단계 참고)
+        mngService.updateBusinessUserInfo(userDTO);
+
+        // 2. 세션 정보 갱신 (로그인 세션이 옛날 정보를 들고 있으면 화면이 안 바뀜)
+        BusinessUserDTO loginUser = (BusinessUserDTO) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            loginUser.setBusinessName(userDTO.getBusinessName());
+            loginUser.setBusinessPhone(userDTO.getBusinessPhone());
+            // 비밀번호를 입력했을 때만 세션/DB에 반영
+            if (userDTO.getBusinessPwd() != null && !userDTO.getBusinessPwd().isEmpty()) {
+                loginUser.setBusinessPwd(userDTO.getBusinessPwd());
+            }
+            session.setAttribute("loginUser", loginUser);
+        }
+
+        ra.addFlashAttribute("alertMessage", "정보가 성공적으로 수정되었습니다.");
+        return "redirect:/mngmypage";
     }
 
 //    // 식당 정보 등록
