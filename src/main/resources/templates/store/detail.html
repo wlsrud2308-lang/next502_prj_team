@@ -503,11 +503,11 @@
   // 식당 마커
   L.marker([restaurant.lat, restaurant.lng])
           .addTo(map)
-          .bindPopup(`🍽️*${restaurant.name} `)
+          .bindPopup(`🍽️ ${restaurant.name} `)
           .openPopup();
 
   // 반경 (미터)
-  const radius = 1000;
+  const radius = 2000;
 
   // Overpass API 쿼리 (관광지)
   const query = `
@@ -528,14 +528,14 @@
             data.elements.forEach(place => {
               const lat = place.lat || place.center.lat;
               const lng = place.lon || place.center.lon;
-              const type = place.tags?.tourism;
+              const type = place.tags?.type;
               const name = place.tags?.name || "";
 
               //const osmType = place.type; // node / way / relation
               const osmType = type;
               const osmId = place.id;
 
-              const detailUrl = `https://www.openstreetmap.org/${type}/${osmId}`
+              //const detailUrl = `https://www.openstreetmap.org/${type}/${osmId}`
               const marker=L.marker([lat, lng], {
                 icon: L.icon({
                   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
