@@ -26,27 +26,20 @@ public class BookmarkController {
         // 1. 세션에서 로그인 정보 가져오기
         Object user = session.getAttribute("loginUser");
 
-
         if (user == null) {
             return "login-required";
         }
-
 
         String userId = null;
         if (user instanceof NormalUserDTO) {
             userId = ((NormalUserDTO) user).getUserId();
         }
 
-
         if (userId == null) {
             return "error";
         }
 
-
-
         int result = bookmarkService.toggleBookmark(userId, restaurantId, restaurantName);
-
-
         return String.valueOf(result);
     }
     @GetMapping("/bookmark/delete")
