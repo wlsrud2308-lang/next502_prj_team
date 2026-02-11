@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
@@ -264,6 +265,17 @@ public class MngController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false));
         }
+    }
+
+    @GetMapping("/mngmypage")
+    public ModelAndView mngMyPage(HttpSession session) {
+        ModelAndView mv = new ModelAndView("mng/mngmypage");
+        Object userInfo = session.getAttribute("loginUser");
+        mv.addObject("userInfo", userInfo);
+
+        mv.addObject("menuId", "profile");
+
+        return mv;
     }
 
 //    // 식당 정보 등록
