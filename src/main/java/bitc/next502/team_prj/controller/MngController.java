@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -25,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/mng")
 public class MngController {
 
     @Autowired
@@ -33,25 +33,34 @@ public class MngController {
     @Autowired
     private RestaurantService restaurantService;
 
+    private Map<String, Object> getResvStats(String businessId) {
+        List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
+        int totalCount = resvList.size();
+        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
+        int waitingCount = (int) resvList.stream().filter(r -> "방문예정".equals(r.getStatus())).count();
+        return Map.of(
+                "success", true,
+                "totalCount", totalCount,
+                "visitCount", visitCount,
+                "waitingCount", waitingCount
+        );
+    }
+
     // 예약자 명단 관리
     @GetMapping("/mngmenu")
     public String mngMenu(Model model,
                           HttpSession session,
-                          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate resvDate) {
+                          @RequestParam(required = false)
+                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                          LocalDate resvDate) {
 
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        model.addAttribute("menuId", "menu");
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
 
-        if (role == null || userBoxing == null) {
-            return "redirect:/login";
+        // 가게 미등록 시 등록 페이지로 강제 이동
+        if (businessUser.getRestaurantId() == null) {
+            return "redirect:/mngstoreWrite";
         }
 
-        if (!"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
-
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
         // 날짜 없으면 오늘로 세팅
@@ -61,7 +70,6 @@ public class MngController {
 
         // 무조건 날짜 기준 조회
         List<MngDTO> resvList = mngService.getResvListByDateExcludeCanceled(businessId, resvDate);
-
         MngDTO mng = mngService.getMngInfo(businessId);
 
         int totalCount = resvList.size();
@@ -92,13 +100,6 @@ public class MngController {
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) throws IOException {
 
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
-
         // 이미지 파일 처리
         if (!mainImgFile.isEmpty()) {
             String fileName = saveFile(mainImgFile);
@@ -107,6 +108,10 @@ public class MngController {
 
         try {
             restaurantService.registerRestaurant(restaurantDTO);
+
+            BusinessUserDTO loginUser = (BusinessUserDTO) session.getAttribute("loginUser");
+            loginUser.setRestaurantId(restaurantDTO.getRestaurantId());
+            session.setAttribute("loginUser", loginUser);
             // 성공 메시지
             redirectAttributes.addFlashAttribute("alertMessage", "가게 등록이 완료되었습니다!");
             redirectAttributes.addFlashAttribute("alertType", "success");
@@ -117,7 +122,7 @@ public class MngController {
             redirectAttributes.addFlashAttribute("alertType", "danger");
         }
 
-        return "redirect:/mngmenu";  // 리다이렉트
+        return "redirect:/mng/mngmenu";  // 리다이렉트
     }
 
     // 파일 저장 메서드
@@ -136,14 +141,7 @@ public class MngController {
                             @RequestParam(defaultValue = "0") int page,   // 현재 페이지
                             @RequestParam(defaultValue = "3") int size) { // 한 페이지 리뷰 수
 
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
-
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
         String businessId = businessUser.getBusinessId();
 
         // 페이징 리뷰 조회
@@ -172,17 +170,9 @@ public class MngController {
 
     @PostMapping("/mngreview/reply")
     public String postReviewReply(@RequestParam int reviewIdx,
-                                  @RequestParam String replyContent,
-                                  HttpSession session) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
+                                  @RequestParam String replyContent) {
 
         mngService.updateReviewReply(reviewIdx, replyContent);
-
         return "redirect:/mngreview";
     }
 
@@ -190,91 +180,34 @@ public class MngController {
     @PatchMapping("/mngmenu/confirm/{resvId}")
     @ResponseBody
     public ResponseEntity<?> confirmVisit(@PathVariable int resvId, HttpSession session) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if(role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false));
-        }
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
 
         mngService.updateReservationState(resvId, "방문완료");
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-        String businessId = businessUser.getBusinessId();
-        List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
-
-        int totalCount = resvList.size();
-        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-        int waitingCount = (int) resvList.stream()
-            .filter(r -> "방문예정".equals(r.getStatus()))
-            .count();
-
-        return ResponseEntity.ok(Map.of(
-            "success", true,
-            "totalCount", totalCount,
-            "visitCount", visitCount,
-            "waitingCount", waitingCount
-        ));
+        return ResponseEntity.ok(getResvStats(businessUser.getBusinessId()));
     }
 
     // 노쇼 처리
     @PatchMapping("/mngmenu/noshow/{resvId}")
     @ResponseBody
     public ResponseEntity<?> handleNoShow(@PathVariable int resvId, HttpSession session) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if(role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false));
-        }
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
 
         mngService.updateReservationState(resvId, "노쇼");
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-        String businessId = businessUser.getBusinessId();
-        List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
-
-        int totalCount = resvList.size();
-        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-        int waitingCount = (int) resvList.stream()
-            .filter(r -> "방문예정".equals(r.getStatus()))
-            .count();
-
-        return ResponseEntity.ok(Map.of(
-            "success", true,
-            "totalCount", totalCount,
-            "visitCount", visitCount,
-            "waitingCount", waitingCount
-        ));
+        return ResponseEntity.ok(getResvStats(businessUser.getBusinessId()));
     }
 
     // 예약 취소
     @DeleteMapping("/mngmenu/cancel/{resvId}")
     @ResponseBody
     public ResponseEntity<?> cancelReservation(@PathVariable int resvId, HttpSession session) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if(role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false));
-        }
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
 
         try {
             mngService.cancelReservation(resvId);
 
-            BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-            String businessId = businessUser.getBusinessId();
-            List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
-
-            int totalCount = resvList.size();
-            int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
-            int waitingCount = (int) resvList.stream()
-                .filter(r -> "방문예정".equals(r.getStatus()))
-                .count();
-
-            return ResponseEntity.ok(Map.of(
-                "success", true,
-                "totalCount", totalCount,
-                "visitCount", visitCount,
-                "waitingCount", waitingCount
-            ));
+            return ResponseEntity.ok(getResvStats(businessUser.getBusinessId()));
         } catch(Exception e){
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false));
@@ -285,11 +218,6 @@ public class MngController {
     public ModelAndView mngMyPage(HttpSession session) {
         ModelAndView mv = new ModelAndView("mng/mngmypage");
         BusinessUserDTO loginUser = (BusinessUserDTO) session.getAttribute("loginUser");
-
-        if (loginUser == null) {
-            mv.setViewName("redirect:/login");
-            return mv;
-        }
 
         MngDTO userInfo = mngService.getMngInfo(loginUser.getBusinessId());
         mv.addObject("userInfo", userInfo);
@@ -320,30 +248,11 @@ public class MngController {
         return "redirect:/mngmypage";
     }
 
-//    // 식당 정보 등록
-//    @GetMapping("/mngstoreWrite")
-//    public String mngStoreWrite(Model model) {
-//        model.addAttribute("menuId", "store"); // 'store'라는 별명을 붙임
-//        return "mng/mngstoreWrite";
-//    }
-//
-//    // 리뷰 답변 관리
-//    @GetMapping("/mngreview")
-//    public String mngReview(Model model) {
-//        model.addAttribute("menuId", "review"); // 'review'라는 별명을 붙임
-//        return "mng/mngreview";
-//    }
-
 //    관리자 정보 수정 페이지
-    @GetMapping("/mng/account")
+    @GetMapping("/account")
     public String editBusinessAccount(Model model, HttpSession session) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
         BusinessUserDTO business = mngService.getBusinessById(businessUser.getBusinessId());
 
         model.addAttribute("business", business);
@@ -352,19 +261,14 @@ public class MngController {
     }
 
     // POST: 정보 수정 처리
-    @PostMapping("/mng/account/update")
+    @PostMapping("/account/update")
     public String updateBusinessAccount(@RequestParam String businessName,
                                         @RequestParam String businessPhone,
                                         @RequestParam(required = false) String newPassword,
                                         HttpSession session,
                                         RedirectAttributes redirectAttributes) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
         mngService.updateBusinessInfo(businessUser.getBusinessId(), businessName, businessPhone, newPassword);
 
         redirectAttributes.addFlashAttribute("alertMessage", "계정 정보가 수정되었습니다.");
@@ -377,13 +281,8 @@ public class MngController {
     public String deleteBusinessAccount(@RequestParam String password,
                                         HttpSession session,
                                         RedirectAttributes redirectAttributes) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
         boolean deleted = mngService.deleteBusinessAccount(businessUser.getBusinessId(), password);
 
         if (deleted) {
@@ -399,13 +298,8 @@ public class MngController {
     // GET: 식당 정보 수정 페이지
     @GetMapping("/mng/store/edit")
     public String editRestaurant(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
         RestaurantDTO restaurant = restaurantService.getRestaurantById(businessUser.getRestaurantId());
 
         if (restaurant == null) {
@@ -416,7 +310,7 @@ public class MngController {
 
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("menuId", "store");
-        return "mng/mngStoreEdit";
+        return "/mngStoreEdit";
     }
 
     // POST: 식당 정보 수정 처리
@@ -425,11 +319,6 @@ public class MngController {
                                    @RequestParam("mainImgFile") MultipartFile mainImgFile,
                                    HttpSession session,
                                    RedirectAttributes redirectAttributes) throws IOException {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
 
         if (!mainImgFile.isEmpty()) {
             String fileName = saveFile(mainImgFile);
@@ -439,6 +328,6 @@ public class MngController {
         restaurantService.updateRestaurantInfo(restaurantDTO);
         redirectAttributes.addFlashAttribute("alertMessage", "식당 정보가 수정되었습니다.");
         redirectAttributes.addFlashAttribute("alertType", "success");
-        return "redirect:/mng/store/edit";
+        return "redirect:/store/edit";
     }
 }
