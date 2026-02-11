@@ -10,6 +10,7 @@ public class MngDTO {
   private String restaurantId;
   private String businessId;
   private String businessPhone;
+  private String businessName;
   private int resvId;
   private String storeName;
   private String resvDate;

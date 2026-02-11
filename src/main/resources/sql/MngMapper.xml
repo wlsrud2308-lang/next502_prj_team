@@ -6,13 +6,15 @@
     <!-- 사업자 정보 조회 -->
     <select id="selectMngById" resultType="bitc.next502.team_prj.dto.MngDTO">
         SELECT
-            restaurant_id AS restaurantId,
-            business_id AS businessId,
-            business_tel AS businessPhone,
-            business_name AS storeName,
-            business_number AS businessNumber
+            b.restaurant_id AS restaurantId,
+            b.business_id AS businessId,
+            b.business_tel AS businessPhone,
+            b.business_name AS businessName,
+            b.business_number AS businessNumber,
+            r.place AS storeName
         FROM
-            business_user
+            business_user b
+                JOIN restaurant r ON b.restaurant_id = r.restaurant_id
         WHERE
             business_id = #{businessId}
     </select>
