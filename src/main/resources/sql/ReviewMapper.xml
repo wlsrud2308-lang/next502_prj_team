@@ -19,7 +19,9 @@
             rw.comment           as comment ,
             rw.create_date       as createDate,
             rw.img_url           as imgUrl,
-            rw.rating            as rating
+            rw.rating            as rating,
+            rw.reply_content     as replyContent,
+            rw.reply_date        as replyDate
         FROM review rw
             JOIN restaurant_detail d ON rw.restaurant_id = d.restaurant_id
         WHERE rw.user_id = #{userId}

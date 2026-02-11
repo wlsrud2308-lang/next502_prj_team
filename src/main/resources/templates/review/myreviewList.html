@@ -144,13 +144,16 @@
 
                                                 <small class="text-muted" th:text="${review.createDate}">2026.02.01 작성</small>
                                             </div>
-<!--                                            <div class="mb-2 text-gold">평점: <span class="text-dark small ms-1" th:text="${review.rating}">5.0</span></div>-->
                                             <div class="star-meter mb-2">
                                                 <div class="stars-bg">★★★★★</div>
                                                 <div class="stars-fill" th:style="'width:' + (${review.rating} * 20) + '%'">★★★★★</div>
 
                                             </div>
                                             <p class="card-text text-secondary"><span th:text="${review.comment}">국물이 정말 시원하고 맛있었어요. </span></p>
+                                            <div th:if="${review.replyContent != null}"
+                                                 class="mt-3 mb-3 p-2 border-start border-3 ps-3 italic small bg-light">
+                                                <strong>[Re]</strong> <span th:text="${review.replyContent}"></span>
+                                            </div>
                                             <div class="text-end">
                                                 <button class="btn btn-outline-gold btn-sm px-3 btnuptate" th:attrappend="data-storeName=${review.storeName},
                                                                    data-reviewIdx=${review.reviewIdx},data-rating=${review.rating},data-comment=${review.comment}">리뷰수정</button>
