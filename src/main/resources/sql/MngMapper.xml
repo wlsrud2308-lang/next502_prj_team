@@ -136,8 +136,9 @@
         r.reservation_time;
     </select>
 
-
     <update id="updateBusinessUserInfo" parameterType="bitc.next502.team_prj.dto.BusinessUserDTO">
+        WHERE business_id = #{businessId};
+    </update>
 
     <!-- 사업자 정보 조회 -->
     <select id="selectBusinessById" resultType="bitc.next502.team_prj.dto.BusinessUserDTO">
@@ -156,7 +157,6 @@
 
     <!-- 관리자 계정 정보 수정 -->
     <update id="updateBusiness">
-
         UPDATE business_user
         SET
         business_name = #{businessName},
@@ -164,7 +164,7 @@
         <if test="businessPwd != null and businessPwd != ''">
             , business_pwd = #{businessPwd}
         </if>
-        WHERE business_id = #{businessId};
+        WHERE business_id = #{businessId}
     </update>
 
     <!-- 1. 예약 삭제 -->
