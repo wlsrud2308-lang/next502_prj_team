@@ -30,15 +30,11 @@ public interface MngService {
 
   List<MngDTO> getResvListByDateExcludeCanceled(String businessId, LocalDate resvDate);
 
-<<<<<<< HEAD
   void updateBusinessUserInfo(BusinessUserDTO userDTO);
 
-
-=======
   BusinessUserDTO getBusinessById(String businessId);
 
   void updateBusinessInfo(String businessId, String businessName, String businessPhone, String newPassword);
 
   boolean deleteBusinessAccount(String businessId, String password);
->>>>>>> sch/mng
 }

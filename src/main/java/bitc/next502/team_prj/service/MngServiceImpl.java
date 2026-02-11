@@ -62,11 +62,11 @@ public class MngServiceImpl implements MngService{
     return mngMapper.selectResvListByDateExcludeCanceled(businessId, resvDate);
   }
 
-<<<<<<< HEAD
   @Override
   public void updateBusinessUserInfo(BusinessUserDTO userDTO) {
     mngMapper.updateBusinessUserInfo(userDTO);
-=======
+  }
+
   // 사업자 정보 조회
   @Override
   public BusinessUserDTO getBusinessById(String businessId) {
@@ -89,7 +89,7 @@ public class MngServiceImpl implements MngService{
     mngMapper.updateBusiness(business); // Mapper에서 update 처리
   }
 
-  // 사업자 계정 삭제
+  //  // 사업자 계정 삭제
   @Override
   public boolean deleteBusinessAccount(String businessId, String password) {
     BusinessUserDTO business = mngMapper.selectBusinessById(businessId);
@@ -101,6 +101,5 @@ public class MngServiceImpl implements MngService{
 
     mngMapper.deleteBusiness(businessId); // Mapper에서 delete 처리
     return true;
->>>>>>> sch/mng
   }
 }

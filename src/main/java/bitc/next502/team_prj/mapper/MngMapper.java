@@ -36,11 +36,8 @@ public interface MngMapper {
 
   List<MngDTO> selectResvListByDateExcludeCanceled(@Param("businessId") String businessId,
                                                    @Param("resvDate") LocalDate resvDate);
-
-<<<<<<< HEAD
   void updateBusinessUserInfo(BusinessUserDTO userDTO);
 
-=======
   // 사업자 정보 조회
   BusinessUserDTO selectBusinessById(@Param("businessId") String businessId);
 
@@ -51,5 +48,4 @@ public interface MngMapper {
   void deleteReservations(@Param("businessId") String businessId);
   void deleteRestaurant(@Param("businessId") String businessId);
   void deleteBusiness(@Param("businessId") String businessId);
->>>>>>> sch/mng
 }
