@@ -61,9 +61,10 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-3">
               <div>
-                <span class="fw-bold fs-5" th:text="${review.name} + '님'"></span>
+                <span class="fw-bold fs-5" th:text="${review.userId} + '님'"></span>
                 <span class="text-gold ms-2" th:text="${'★'.repeat(review.rating)}"></span>
-                <div class="text-muted small" th:text="${#dates.format(review.createDate,'yyyy-MM-dd')} + ' | ' + ${review.visitType}"></div>
+                <div class="text-muted small"
+                     th:text="${review.createDate != null ? review.createDate.substring(0,10) : ''} + ' | 방문 정보 없음'"></div>
               </div>
               <span class="badge rounded-pill bg-light text-dark border"
                     th:text="${review.replyContent == null ? '미답변' : '답변완료'}"></span>

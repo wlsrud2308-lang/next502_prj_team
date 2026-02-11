@@ -6,6 +6,8 @@ import bitc.next502.team_prj.service.RestaurantService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @Controller
 public class MngController {
@@ -165,6 +168,95 @@ public class MngController {
         mngService.updateReviewReply(reviewIdx, replyContent);
 
         return "redirect:/mngreview";
+    }
+
+    // 방문확인
+    @PatchMapping("/mngmenu/confirm/{resvId}")
+    @ResponseBody
+    public ResponseEntity<?> confirmVisit(@PathVariable int resvId, HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
+        if(role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false));
+        }
+
+        mngService.updateReservationState(resvId, "방문완료");
+
+        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        String businessId = businessUser.getBusinessId();
+        List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
+
+        int totalCount = resvList.size();
+        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
+        int waitingCount = totalCount - visitCount;
+
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "totalCount", totalCount,
+            "visitCount", visitCount,
+            "waitingCount", waitingCount
+        ));
+    }
+
+    // 노쇼 처리
+    @PatchMapping("/mngmenu/noshow/{resvId}")
+    @ResponseBody
+    public ResponseEntity<?> handleNoShow(@PathVariable int resvId, HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
+        if(role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false));
+        }
+
+        mngService.updateReservationState(resvId, "노쇼");
+
+        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+        String businessId = businessUser.getBusinessId();
+        List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
+
+        int totalCount = resvList.size();
+        int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
+        int waitingCount = totalCount - visitCount;
+
+        return ResponseEntity.ok(Map.of(
+            "success", true,
+            "totalCount", totalCount,
+            "visitCount", visitCount,
+            "waitingCount", waitingCount
+        ));
+    }
+
+    // 예약 취소
+    @DeleteMapping("/mngmenu/cancel/{resvId}")
+    @ResponseBody
+    public ResponseEntity<?> cancelReservation(@PathVariable int resvId, HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        Object userBoxing = session.getAttribute("loginUser");
+        if(role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("success", false));
+        }
+
+        try {
+            mngService.cancelReservation(resvId);
+
+            BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+            String businessId = businessUser.getBusinessId();
+            List<MngDTO> resvList = mngService.getResvListByDate(businessId, LocalDate.now());
+
+            int totalCount = resvList.size();
+            int visitCount = (int) resvList.stream().filter(r -> "방문완료".equals(r.getStatus())).count();
+            int waitingCount = totalCount - visitCount;
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "totalCount", totalCount,
+                "visitCount", visitCount,
+                "waitingCount", waitingCount
+            ));
+        } catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false));
+        }
     }
 
 //    // 식당 정보 등록

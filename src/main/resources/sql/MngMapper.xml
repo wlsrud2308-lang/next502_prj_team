@@ -73,9 +73,10 @@
             rv.user_id AS userId,
             rv.comment AS comment,
             rv.create_date AS createDate,
-            rv.update_date AS updateDate
+            rv.update_date AS updateDate,
             rv.reply_content AS replyContent,
-            rv.reply_date AS replyDate
+            rv.reply_date AS replyDate,
+            CASE WHEN rv.reply_content IS NULL THEN false ELSE true END AS replied
         FROM
             review rv
                 JOIN reservation r ON r.reservation_id = rv.reservation_id
@@ -92,4 +93,12 @@
             reply_date = NOW()
         WHERE review_idx = #{reviewIdx};
     </update>
+
+    <!-- 예약 상태 변경 -->
+    <update id="updateReservationState">
+        UPDATE reservation
+        SET reservation_state = #{newState}
+        WHERE reservation_id = #{resvId}
+    </update>
+
 </mapper>

@@ -19,4 +19,8 @@ public interface MngService {
 
   // ⭐ 사장 댓글 등록/수정
   void updateReviewReply(int reviewIdx, String replyContent);
+
+  void updateReservationState(int resvId, String newState);
+
+  void cancelReservation(int resvId);
 }

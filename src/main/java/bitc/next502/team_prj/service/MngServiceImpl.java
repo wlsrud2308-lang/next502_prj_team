@@ -40,4 +40,14 @@ public class MngServiceImpl implements MngService{
     mngMapper.updateReviewReply(reviewIdx, replyContent);
   }
 
+  @Override
+  public void updateReservationState(int resvId, String newState) {
+    mngMapper.updateReservationState(resvId, newState);
+  }
+
+  @Override
+  public void cancelReservation(int resvId) {
+    mngMapper.updateReservationState(resvId, "취소");
+  }
+
 }

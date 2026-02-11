@@ -21,4 +21,8 @@ public interface MngMapper {
 
   void updateReviewReply(@Param("reviewIdx") int reviewIdx,
                          @Param("replyContent") String replyContent);
+
+  void updateReservationState(@Param("resvId") int resvId,
+                              @Param("newState") String newState);
+
 }
