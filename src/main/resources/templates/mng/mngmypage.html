@@ -32,7 +32,6 @@
         <div th:replace="~{mng/mngmenu :: adminSidebar}"></div>
 
         <main class="col-lg-9">
-            <!-- 관리자 정보 수정 폼 -->
             <div class="card shadow-sm border-0 p-4 p-md-5">
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
                     <h3 class="fw-bold mb-0">관리자 정보 수정</h3>
@@ -40,10 +39,9 @@
                 </div>
 
                 <form th:action="@{/mng/updateProfile}" method="post">
-                    <input type="hidden" name="businessId" th:value="${userInfo.businessId}">
-                    <input type="hidden" name="restaurantId" th:value="${userInfo.restaurantId}">
+                    <input type="hidden" name="businessId" th:value="${userInfo?.businessId ?: ''}">
+                    <input type="hidden" name="restaurantId" th:value="${userInfo?.restaurantId ?: ''}">
 
-                    <!-- 프로필, 이름, 연락처, 비밀번호 등 입력 -->
                     <div class="row">
                         <div class="col-12 text-center mb-5">
                             <div class="profile-img-sec mb-3">
@@ -52,30 +50,32 @@
                                 </div>
                                 <span class="admin-badge">Admin</span>
                             </div>
-                            <h5 class="fw-bold" th:text="${userInfo.businessName}">관리자 이름</h5>
-                            <p class="text-muted small" th:text="${userInfo.businessId}">business_id</p>
+                            <h5 class="fw-bold" th:text="${userInfo?.businessName ?: '등록 필요'}">관리자 이름</h5>
+                            <p class="text-muted small" th:text="${userInfo?.businessId ?: '식당 등록 후 확인 가능'}">business_id</p>
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">관리자 성함 (상호명)</label>
-                            <input type="text" class="form-control py-2" name="businessName" th:value="${userInfo.businessName}" required>
+                            <input type="text" class="form-control py-2" name="businessName"
+                                   th:value="${userInfo?.businessName ?: ''}" required>
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">식당 고유 코드</label>
-                            <input type="text" class="form-control py-2 bg-light" th:value="${userInfo.restaurantId}" readonly disabled>
-                            <small class="text-muted">식당 ID는 시스템에서 자동 부여됩니다.</small>
+                            <input type="text" class="form-control py-2 bg-light"
+                                   th:value="${userInfo?.restaurantId ?: '식당 등록 후 자동 생성'}" readonly disabled>
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">연락처</label>
-                            <input type="tel" class="form-control py-2" name="businessPhone" th:value="${userInfo.businessPhone}" placeholder="010-0000-0000">
+                            <input type="tel" class="form-control py-2" name="businessPhone"
+                                   th:value="${userInfo?.businessPhone ?: ''}" placeholder="010-0000-0000">
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">사업자 등록번호</label>
-                            <input type="text" class="form-control py-2 bg-light" name="businessNumber" th:value="${userInfo.businessNumber}" readonly disabled>
-                            <small class="text-muted">사업자 정보는 변경이 불가합니다.</small>
+                            <input type="text" class="form-control py-2 bg-light" name="businessNumber"
+                                   th:value="${userInfo?.businessNumber ?: '미등록'}" readonly disabled>
                         </div>
 
                         <hr class="my-4 text-muted opacity-25">
@@ -96,52 +96,6 @@
                     </div>
                 </form>
             </div>
-
-            <!-- 계정 삭제 버튼과 모달 -->
-            <div class="mt-5">
-                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                    계정 삭제
-                </button>
-            </div>
-
-            <div class="modal fade" id="deleteAccountModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content rounded-4 shadow border-0">
-                        <form th:action="@{mngmypage/deleteAccount}" method="post">
-                            <input type="hidden" name="businessId" th:value="${userInfo.businessId}">
-                            <input type="hidden" name="restaurantId" th:value="${userInfo.restaurantId}">
-
-
-                            <div class="modal-header border-0">
-                                <h5 class="modal-title fw-bold text-danger">계정 삭제 확인</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-
-                            <div class="modal-body">
-                                <p class="text-center mb-4">
-                                    정말 계정을 삭제하시겠습니까?<br>
-                                    <strong class="text-danger">삭제 시 계정과 연결된 레스토랑 정보가 즉시 삭제됩니다.</strong>
-                                </p>
-
-                                <div class="mb-3">
-                                    <label class="form-label small text-muted">비밀번호 확인</label>
-                                    <input type="password" name="password" class="form-control" required>
-                                </div>
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" required>
-                                    <label class="form-check-label small">계정 삭제 정책을 확인했습니다.</label>
-                                </div>
-
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-danger">계정 삭제</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
         </main>
     </div>
 </div>
@@ -149,18 +103,29 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script th:inline="javascript">
-    /* 수정 완료 후 컨트롤러에서 보낸 메시지 처리 */
-    const msg = [[${alertMessage}]];
-    if(msg) { alert(msg); }
+    $(function() {
+        // ✅ 핵심 로직: userInfo가 null이거나 businessId가 없으면 알림창 띄우기
+        const userInfo = [[${userInfo}]];
 
-    /* 비밀번호 일치 확인 */
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const pwd = document.querySelector('input[name="businessPwd"]').value;
-        const confirm = document.getElementById('confirmPwd').value;
-        if(pwd && pwd !== confirm) {
-            e.preventDefault();
-            alert('새 비밀번호가 일치하지 않습니다.');
+        if (!userInfo || !userInfo.businessId) {
+            alert("식당 등록을 먼저 완료하시면 관리자 상세 정보를 확인하실 수 있습니다.");
+            // 필요하다면 식당 등록 페이지로 이동시킬 수도 있습니다.
+            // location.href = "/mng/restaurantRegister";
         }
+
+        // 기존 메시지 처리
+        const msg = [[${alertMessage}]];
+        if(msg) { alert(msg); }
+
+        // 비밀번호 체크
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const pwd = document.querySelector('input[name="businessPwd"]').value;
+            const confirm = document.getElementById('confirmPwd').value;
+            if(pwd && pwd !== confirm) {
+                e.preventDefault();
+                alert('새 비밀번호가 일치하지 않습니다.');
+            }
+        });
     });
 </script>
 
