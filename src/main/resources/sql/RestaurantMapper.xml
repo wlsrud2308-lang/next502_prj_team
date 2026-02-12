@@ -189,11 +189,9 @@
         VALUES ( #{restaurantName}, #{category}, #{address}, #{mainImg}, #{description}, #{locationTag}, #{seats}, #{price})
     </insert>
 
-    <!-- 식당 정보 수정 -->
     <update id="updateRestaurant" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         UPDATE restaurant
         SET
-        restaurant_id = #{restaurantId},
         place = #{restaurantName},
         category = #{category},
         addr1 = #{address},
@@ -204,17 +202,17 @@
         <if test="mainImg != null and mainImg != ''">
             , main_img = #{mainImg}
         </if>
-        WHERE restaurant_id = #{restaurantId};
+        WHERE restaurant_id = #{restaurantId}
     </update>
 
-    <!-- 식당 삭제 -->
     <delete id="deleteRestaurant">
         DELETE FROM restaurant
-        WHERE restaurant_id = #{restaurantId};
+        WHERE restaurant_id = #{restaurantId}
     </delete>
 
     <select id="selectRestaurantById" parameterType="long" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
-        SELECT r.place AS restaurantName,
+        SELECT r.restaurant_id AS restaurantId,
+               r.place AS restaurantName,
                r.category AS category,
                c.category AS foods,
                r.addr1 AS address,
