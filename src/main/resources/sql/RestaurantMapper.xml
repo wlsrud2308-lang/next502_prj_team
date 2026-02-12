@@ -64,11 +64,13 @@
     <select id="selectReviewsByRestaurantId"
             resultType="bitc.next502.team_prj.dto.ReviewDTO">
         SELECT
-            review_idx AS reviewIdx,
-            rating AS rating,
-            user_id AS userId,
-            comment AS comment,
-            create_date AS createDate
+        review_idx     AS reviewIdx,
+        rating         AS rating,
+        user_id        AS userId,
+        comment        AS comment,
+        create_date    AS createDate,
+        reply_content  AS replyContent,
+        reply_date     AS replyDate
         FROM review
         WHERE restaurant_id = #{restaurantId}
         ORDER BY create_date DESC
