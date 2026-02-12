@@ -106,7 +106,17 @@ public class MngController {
         }
 
         try {
+            // 1. 식당 등록
             restaurantService.registerRestaurant(restaurantDTO);
+
+            // 2. restaurant_id를 비즈니스 유저에 업데이트
+            BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+            String businessId = businessUser.getBusinessId();
+            String restaurantId = restaurantDTO.getRestaurantId();  // 새로 등록된 restaurant_id
+
+            // restaurant_id를 business_user 테이블에 업데이트
+            mngService.updateRestaurantIdForBusinessUser(businessId, restaurantId);
+
             // 성공 메시지
             redirectAttributes.addFlashAttribute("alertMessage", "가게 등록이 완료되었습니다!");
             redirectAttributes.addFlashAttribute("alertType", "success");
