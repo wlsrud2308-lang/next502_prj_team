@@ -191,6 +191,7 @@
     <update id="updateRestaurant" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         UPDATE restaurant
         SET
+        restaurant_id = #{restaurantId},
         place = #{restaurantName},
         category = #{category},
         addr1 = #{address},
