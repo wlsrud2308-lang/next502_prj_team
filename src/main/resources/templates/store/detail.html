@@ -161,6 +161,13 @@
       font-size:0.8rem;
       color:#888;
     }
+
+    .review-img-list { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 10px; }
+    .review-img-item {
+      width: 140px; height: 140px; object-fit: cover; border-radius: 6px;
+      border: 1px solid #eee; cursor: pointer; transition: 0.2s;
+    }
+    .review-img-item:hover { transform: scale(1.02); border-color: #b89255; }
   </style>
 </head>
 
@@ -300,6 +307,7 @@
         </div>
 
         <!-- ✅ 리뷰 목록 (닫는 div 구조 정리 완료) -->
+
         <div class="vstack gap-4">
           <div class="pb-4 border-bottom" th:each="rv : ${reviewList}">
             <div class="d-flex justify-content-between mb-2">
@@ -310,6 +318,13 @@
             <div class="star-meter mb-2">
               <div class="stars-bg">★★★★★</div>
               <div class="stars-fill" th:style="'width:' + (${rv.rating} * 20) + '%'">★★★★★</div>
+            </div>
+
+            <div class="review-img-list" th:if="${rv.storedFilename != null and rv.storedFilename != ''}">
+              <img th:src="@{/images/{path}(path=${rv.storedFilename})}"
+                   class="review-img-item"
+                   alt="리뷰이미지"
+                   onclick="window.open(this.src)">
             </div>
 
             <p class="text-secondary small mb-0" th:text="${rv.comment}">리뷰 내용</p>
