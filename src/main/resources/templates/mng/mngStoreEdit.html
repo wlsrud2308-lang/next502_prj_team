@@ -135,8 +135,8 @@
             <div class="col-md-6 mb-4">
               <label class="form-label">최대 수용 인원</label>
               <input type="number" class="form-control py-2"
-                     name="seats"
-                     th:value="${restaurant.seats}">
+                     name="maxCapacity"
+                     th:value="${restaurant.maxCapacity}">
             </div>
 
             <div class="col-md-6 mb-4">
@@ -154,8 +154,8 @@
             <label class="form-label">식당 소개글</label>
             <textarea class="form-control py-2"
                       rows="5"
-                      name="description"
-                      th:text="${restaurant.description}"></textarea>
+                      name="itemCntnts"
+                      th:text="${restaurant.itemCntnts}"></textarea>
           </div>
 
           <!-- 대표 이미지 -->

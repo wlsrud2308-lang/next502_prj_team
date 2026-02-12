@@ -385,6 +385,8 @@ public class MngController {
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("menuId", "store");
 
+        System.out.println(restaurant);
+
         // templates/mng/mngStoreEdit.html 렌더링
         return "mng/mngStoreEdit";
     }
