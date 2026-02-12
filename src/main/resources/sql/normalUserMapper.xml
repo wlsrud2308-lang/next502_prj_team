@@ -69,4 +69,17 @@
         SET user_pw = #{pw}
         WHERE user_id = #{id}
     </update>
+
+    <select id="checkIdDuplicate" resultType="int">
+        SELECT (
+                   (SELECT COUNT(*) FROM normal_user WHERE user_id = #{id}) +
+                   (SELECT COUNT(*) FROM business_user WHERE business_id = #{id})
+                   ) AS cnt
+    </select>
+
+    <select id="checkNormalNameDuplicate" resultType="int">
+        SELECT COUNT(*)
+        FROM normal_user
+        WHERE user_name = #{name}
+    </select>
 </mapper>
