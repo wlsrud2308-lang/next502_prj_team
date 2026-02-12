@@ -45,14 +45,13 @@ public interface MngMapper {
   // 사업자 정보 수정
   void updateBusiness(BusinessUserDTO business);
 
-  void setDeleteReserveDateAndStatus(@Param("businessId") String businessId,
-                                     @Param("deleteDate") LocalDateTime deleteDate,
-                                     @Param("status") String status);
+  void updateRestaurantIdForBusinessUser(
+          @Param("businessId") String businessId,
+          @Param("restaurantId") long restaurantId
+  );
 
-  // 예약일이 지난 계정 실제 삭제
+  void deleteBusinessAndRestaurant(String businessId, String restaurantId);
 
-  void updateRestaurantIdForBusinessUser(@Param("businessId") String businessId,
-                                         @Param("restaurantId") long restaurantId);
-
-  void deleteAccountsPastDeletionDate(@Param("currentDate") LocalDateTime currentDate);
+  void deleteRestaurant(@Param("restaurantId") String restaurantId);
+  void deleteBusinessUser(@Param("businessId") String businessId);
 }

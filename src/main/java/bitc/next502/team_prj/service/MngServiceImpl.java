@@ -6,9 +6,9 @@ import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.mapper.MngMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -68,32 +68,20 @@ public class MngServiceImpl implements MngService {
     mngMapper.updateBusinessUserInfo(userDTO);
   }
 
+  @Transactional  // 두 DELETE를 하나의 트랜잭션으로 묶음
   @Override
-  public boolean deleteBusinessAccount(String businessId, String password) {
-    // 이제 즉시 삭제는 사용하지 않고 예약 삭제로 대체
-    return scheduleBusinessAccountDeletion(businessId, password);
-  }
-
-  @Override
-  public boolean scheduleBusinessAccountDeletion(String businessId, String password) {
+  public boolean deleteBusinessAccount(String businessId, String restaurantId, String password) {
     BusinessUserDTO user = mngMapper.selectBusinessById(businessId);
     if (user == null || !user.getBusinessPwd().equals(password)) {
       return false; // 비밀번호 틀림
     }
 
-    // 7일 뒤 삭제일
-    LocalDateTime deleteDateTime = LocalDateTime.now().plusDays(7);
-    java.sql.Timestamp deleteTimestamp = java.sql.Timestamp.valueOf(deleteDateTime);
+    // 레스토랑 먼저 삭제
+    mngMapper.deleteRestaurant(restaurantId);
+    // 사업자 계정 삭제
+    mngMapper.deleteBusinessUser(businessId);
 
-    // Mapper에 Timestamp 전달
-    mngMapper.setDeleteReserveDateAndStatus(businessId, deleteDateTime, "PENDING_DELETE");
     return true;
-  }
-
-  @Override
-  public void deleteAccountsPastDeletionDate() {
-    LocalDateTime now = LocalDateTime.now();
-    mngMapper.deleteAccountsPastDeletionDate(now);
   }
 
   @Override
@@ -101,5 +89,3 @@ public class MngServiceImpl implements MngService {
     mngMapper.updateRestaurantIdForBusinessUser(businessId, restaurantId);
   }
 }
-
-

@@ -350,17 +350,20 @@ public class MngController {
 
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
 
-        boolean deleted = mngService.scheduleBusinessAccountDeletion(businessUser.getBusinessId(), password);
+        String businessId = businessUser.getBusinessId();
+        String restaurantId = String.valueOf(businessUser.getRestaurantId()); // restaurantId 가져오기
+
+        boolean deleted = mngService.deleteBusinessAccount(businessId, restaurantId, password);
 
         if (deleted) {
             session.invalidate(); // 세션 종료
-            redirectAttributes.addFlashAttribute("alertMessage", "계정 삭제가 예약되었습니다. 7일 후 자동 삭제됩니다.");
+            redirectAttributes.addFlashAttribute("alertMessage", "계정과 연결된 식당 정보가 즉시 삭제되었습니다.");
             redirectAttributes.addFlashAttribute("alertType", "success");
             return "redirect:/login";
         } else {
             redirectAttributes.addFlashAttribute("alertMessage", "비밀번호가 올바르지 않습니다.");
             redirectAttributes.addFlashAttribute("alertType", "danger");
-            return "redirect:/mngmypage"; // 실패 시 마이페이지로
+            return "redirect:/mngmypage";
         }
     }
 

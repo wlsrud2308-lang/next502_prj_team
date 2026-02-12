@@ -32,13 +32,9 @@ public interface MngService {
 
   void updateBusinessUserInfo(BusinessUserDTO userDTO);
 
-  boolean deleteBusinessAccount(String businessId, String password);
-
   // business_user 테이블의 restaurant_id 업데이트
   void updateRestaurantIdForBusinessUser(String businessId, long restaurantId);
 
-  boolean scheduleBusinessAccountDeletion(String businessId, String password);
-
-  void deleteAccountsPastDeletionDate();
+  boolean deleteBusinessAccount(String businessId, String restaurantId, String password);
 
 }

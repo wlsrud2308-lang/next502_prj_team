@@ -181,18 +181,14 @@
         WHERE business_id = #{businessId}
     </update>
 
-    <!-- 계정 삭제 예약 -->
-    <update id="setDeleteReserveDateAndStatus">
-        UPDATE business_user
-        SET status = #{status},
-            delete_reserve_date = #{deleteDate,jdbcType=TIMESTAMP}
-        WHERE business_id = #{businessId}
-    </update>
+    <!-- 계정 + 레스토랑 즉시 삭제 -->
+    <delete id="deleteRestaurant" parameterType="string">
+        DELETE FROM restaurant
+        WHERE restaurant_id = #{restaurantId, jdbcType=BIGINT}
+    </delete>
 
-    <!-- 예약 삭제 날짜가 지난 계정 삭제 -->
-    <delete id="deleteAccountsPastDeletionDate">
+    <delete id="deleteBusinessUser" parameterType="string">
         DELETE FROM business_user
-        WHERE status = 'PENDING_DELETE'
-        AND delete_reserve_date &lt;= #{currentDate,jdbcType=TIMESTAMP};
+        WHERE business_id = #{businessId}
     </delete>
 </mapper>
