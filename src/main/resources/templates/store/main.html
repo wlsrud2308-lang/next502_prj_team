@@ -88,9 +88,11 @@
         <div class="row row-cols-4 row-cols-md-8 g-4 justify-content-center text-center">
             <div class="col" th:each="cat : ${ {'🍚|한식', '🍣|일식', '🥢|중식', '🍝|양식'} }">
                 <a th:href="@{/store/search(keyword=${#strings.arraySplit(cat, '|') [1] == '전체' ? '' : #strings.arraySplit(cat, '|') [1] })}" class="category-item">
-                    <div class="category-icon-box" th:text="${#strings.arraySplit(cat, '|') [0]}">🍚</div>
-                    <div class="fw-bold small" th:text="${#strings.arraySplit(cat, '|') [1]}">카테고리</div>
-                </a>
+
+                    <a th:href="@{/store/search(categories=${#strings.arraySplit(cat, '|') [1]})}" class="category-item">
+                        <div class="category-icon-box" th:text="${#strings.arraySplit(cat, '|') [0]}">🍚</div>
+                        <div class="fw-bold small" th:text="${#strings.arraySplit(cat, '|') [1]}">카테고리</div>
+                    </a>
             </div>
         </div>
     </section>
