@@ -54,6 +54,14 @@ public class MngController {
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
 
+        // 비즈니스 유저 정보에서 restaurant_id를 가져오기
+        String restaurantId = businessUser.getRestaurantId(); // 가게 ID 확인
+
+        // restaurant_id가 null이면 식당 등록 페이지로 리다이렉션
+        if (restaurantId == null) {
+            return "redirect:/mngstoreWrite"; // 식당 등록 페이지로 리다이렉트
+        }
+
         // 날짜 없으면 오늘로 세팅
         if (resvDate == null) {
             resvDate = LocalDate.now();
