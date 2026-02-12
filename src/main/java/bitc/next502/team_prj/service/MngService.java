@@ -39,6 +39,6 @@ public interface MngService {
   boolean deleteBusinessAccount(String businessId, String password);
 
   // business_user 테이블의 restaurant_id 업데이트
-  void updateRestaurantIdForBusinessUser(String businessId, String restaurantId);
+  void updateRestaurantIdForBusinessUser(String businessId, long restaurantId);
 
 }

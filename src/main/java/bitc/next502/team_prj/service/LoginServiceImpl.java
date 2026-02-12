@@ -61,4 +61,19 @@ public class LoginServiceImpl implements LoginService {
 
         return false;
     }
+
+    @Override
+    public boolean isIdDuplicate(String id) {
+        return normalUserMapper.checkIdDuplicate(id) > 0;
+    }
+
+    @Override
+    public boolean isNormalNameDuplicate(String name) {
+        return normalUserMapper.checkNormalNameDuplicate(name) > 0;
+    }
+
+    @Override
+    public boolean isBusinessNameDuplicate(String businessName) {
+        return businessUserMapper.checkBusinessNameDuplicate(businessName) > 0;
+    }
 }

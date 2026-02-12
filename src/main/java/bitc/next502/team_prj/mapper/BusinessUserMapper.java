@@ -20,4 +20,7 @@ public interface BusinessUserMapper {
     //    비밀번호 변경
     int updatePassword(@Param("id") String id,
                        @Param("pw") String pw);
+
+    int checkBusinessNameDuplicate(String businessName);
+
 }

@@ -6,24 +6,13 @@
 
     <style>
         body { background-color: #f8f9fa; }
-
-        .signup-card {
-            max-width: 500px;
-            width: 100%;
-            background: white;
-            border: 1px solid #eee;
-        }
-
+        .signup-card { max-width: 500px; width: 100%; background: white; border: 1px solid #eee; }
         .text-gold { color: #b89255; }
-
-        .btn-dark {
-            background-color: #333;
-            border: none;
-        }
-
-        .btn-dark:hover {
-            background-color: #b89255;
-        }
+        .btn-outline-gold { color: #b89255; border-color: #b89255; }
+        .btn-outline-gold:hover { background-color: #b89255; color: white; }
+        .btn-dark { background-color: #333; border: none; }
+        .btn-dark:hover { background-color: #b89255; }
+        .msg { font-size: 0.8rem; margin-top: 4px; display: block; }
     </style>
 </head>
 
@@ -32,7 +21,6 @@
 <div th:replace="~{layout/navbar :: navbar}"></div>
 
 <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
-
     <div class="signup-card p-4 shadow-sm">
 
         <div class="text-center mb-4">
@@ -40,101 +28,153 @@
             <p class="text-muted small">회원가입을 진행해주세요.</p>
         </div>
 
-        <form action="/signupProcess" method="post">
-
+        <form th:action="@{/signupProcess}" method="post" id="signupForm">
             <div class="mb-4 text-center">
                 <label class="me-3">
                     <input type="radio" name="userType" value="normal" checked onclick="toggleForm()"> 일반 고객
                 </label>
-
                 <label>
                     <input type="radio" name="userType" value="business" onclick="toggleForm()"> 식당 관리자
                 </label>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">아이디</label>
-                <input type="text" class="form-control" name="id" required>
+                <label class="form-label small fw-bold">아이디</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="id" id="userId" placeholder="아이디 입력" required>
+                    <button type="button" class="btn btn-outline-gold btn-sm" onclick="checkDup('id')">중복확인</button>
+                </div>
+                <span id="idMsg" class="msg"></span>
             </div>
-
 
             <div class="mb-3">
-                <label class="form-label">비밀번호</label>
-                <input type="password" class="form-control" name="pw" required>
+                <label class="form-label small fw-bold">비밀번호</label>
+                <input type="password" class="form-control" name="pw" id="userPw" required>
             </div>
 
-            <!-- ===== 일반 회원 영역 ===== -->
             <div id="normalArea">
-
                 <div class="mb-3">
-                    <label class="form-label">이메일</label>
-                    <input type="text" class="form-control" name="userEmail" >
+                    <label class="form-label small fw-bold">이메일</label>
+                    <input type="email" class="form-control" name="userEmail">
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label">이름</label>
-                    <input type="text" class="form-control" name="userName">
+                    <label class="form-label small fw-bold">이름</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="userName" id="userName">
+                        <button type="button" class="btn btn-outline-gold btn-sm" onclick="checkDup('name')">중복확인</button>
+                    </div>
+                    <span id="nameMsg" class="msg"></span>
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label">전화번호</label>
+                    <label class="form-label small fw-bold">전화번호</label>
                     <input type="text" class="form-control" name="userTel">
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label">나이</label>
+                    <label class="form-label small fw-bold">나이</label>
                     <input type="number" class="form-control" name="userAge">
                 </div>
-
             </div>
 
-            <!-- ===== 식당 관리자 영역 ===== -->
             <div id="businessArea" style="display:none;">
-
                 <div class="mb-3">
-                    <label class="form-label">사업자명</label>
-                    <input type="text" class="form-control" name="businessName">
+                    <label class="form-label small fw-bold">사업자명</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="businessName" id="businessName">
+                        <button type="button" class="btn btn-outline-gold btn-sm" onclick="checkDup('busName')">중복확인</button>
+                    </div>
+                    <span id="busMsg" class="msg"></span>
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label">사업자 번호</label>
+                    <label class="form-label small fw-bold">사업자 번호</label>
                     <input type="text" class="form-control" name="businessNumber">
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label">연락처</label>
+                    <label class="form-label small fw-bold">연락처</label>
                     <input type="text" class="form-control" name="businessTel">
                 </div>
-
             </div>
 
-            <button class="btn btn-dark w-100 mt-3">가입하기</button>
+            <button type="submit" class="btn btn-dark w-100 mt-3 py-3 fw-bold">가입하기</button>
 
-            <div class="text-center mt-3">
+            <div class="text-center mt-3 small">
                 이미 계정이 있으신가요?
-                <a th:href="@{/login}" class="text-gold">로그인</a>
+                <a th:href="@{/login}" class="text-gold text-decoration-none">로그인</a>
             </div>
-
         </form>
     </div>
-
 </main>
 
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
+    // 중복 확인 상태 체크 객체
+    const status = { id: false, name: false, busName: false };
+
     function toggleForm() {
         const type = document.querySelector('input[name="userType"]:checked').value;
+        const nArea = document.getElementById("normalArea");
+        const bArea = document.getElementById("businessArea");
 
         if(type === "normal") {
-            document.getElementById("normalArea").style.display = "block";
-            document.getElementById("businessArea").style.display = "none";
-        }
-        else {
-            document.getElementById("normalArea").style.display = "none";
-            document.getElementById("businessArea").style.display = "block";
+            nArea.style.display = "block"; bArea.style.display = "none";
+        } else {
+            nArea.style.display = "none"; bArea.style.display = "block";
         }
     }
+
+    // 중복 확인 함수 (AJAX/Fetch)
+    function checkDup(type) {
+        let val = ""; let url = ""; let msgId = "";
+
+        if(type === 'id') {
+            val = document.getElementById('userId').value;
+            url = '/user/checkId?id=' + val; msgId = 'idMsg';
+        } else if(type === 'name') {
+            val = document.getElementById('userName').value;
+            url = '/user/checkName?name=' + val; msgId = 'nameMsg';
+        } else if(type === 'busName') {
+            val = document.getElementById('businessName').value;
+            url = '/user/checkBusinessName?businessName=' + val; msgId = 'busMsg';
+        }
+
+        if(!val.trim()) { alert("내용을 입력해주세요."); return; }
+
+        fetch(url, { method: 'POST' })
+            .then(res => res.json())
+            .then(isDup => {
+                const msgEle = document.getElementById(msgId);
+                if(isDup) {
+                    msgEle.innerText = "이미 사용 중입니다."; msgEle.style.color = "red";
+                    status[type] = false;
+                } else {
+                    msgEle.innerText = "사용 가능합니다."; msgEle.style.color = "green";
+                    status[type] = true;
+                }
+            })
+            .catch(err => console.error("Error:", err));
+    }
+
+    // 입력 값이 변경되면 중복 확인 상태 초기화
+    document.getElementById('userId').addEventListener('input', () => { status.id = false; document.getElementById('idMsg').innerText = ""; });
+    document.getElementById('userName').addEventListener('input', () => { status.name = false; document.getElementById('nameMsg').innerText = ""; });
+    document.getElementById('businessName').addEventListener('input', () => { status.busName = false; document.getElementById('busMsg').innerText = ""; });
+
+    // 폼 제출 시 검증
+    document.getElementById('signupForm').onsubmit = function() {
+        const type = document.querySelector('input[name="userType"]:checked').value;
+
+        if(!status.id) { alert("아이디 중복 확인이 필요합니다."); return false; }
+
+        if(type === 'normal' && !status.name) {
+            alert("이름 중복 확인이 필요합니다."); return false;
+        }
+
+        if(type === 'business' && !status.busName) {
+            alert("사업자명 중복 확인이 필요합니다."); return false;
+        }
+
+        return true;
+    };
 </script>
 
 </body>

@@ -19,4 +19,8 @@ public interface NormalUserMapper {
     //    비밀번호 변경
     int updatePassword(@Param("id") String id,
                        @Param("pw") String pw);
+
+    int checkIdDuplicate(String id);
+
+    int checkNormalNameDuplicate(String name);
 }

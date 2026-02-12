@@ -104,7 +104,7 @@ public class MngServiceImpl implements MngService{
   }
 
   // business_user 테이블의 restaurant_id 업데이트
-  public void updateRestaurantIdForBusinessUser(String businessId, String restaurantId) {
+  public void updateRestaurantIdForBusinessUser(String businessId, long restaurantId) {
     mngMapper.updateRestaurantIdForBusinessUser(businessId, restaurantId);
   }
 }
