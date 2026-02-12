@@ -188,15 +188,15 @@
     </insert>
 
     <!-- 식당 정보 수정 -->
-    <update id="updateRestaurant">
+    <update id="updateRestaurant" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         UPDATE restaurant
         SET
         place = #{restaurantName},
         category = #{category},
         addr1 = #{address},
         gugun_nm = #{locationTag},
-        max_capacity = #{seats},
-        itemcntnts = #{description},
+        max_capacity = #{maxCapacity},
+        itemcntnts = #{itemCntnts},
         price = #{price}
         <if test="mainImg != null and mainImg != ''">
             , main_img = #{mainImg}
@@ -212,6 +212,7 @@
 
     <select id="selectRestaurantById" parameterType="long" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
         SELECT r.place AS restaurantName,
+               r.category AS category,
                c.category AS foods,
                r.addr1 AS address,
                r.cntct_tel AS restaurantTel,

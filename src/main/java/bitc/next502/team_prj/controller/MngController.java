@@ -384,9 +384,6 @@ public class MngController {
 
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("menuId", "store");
-
-        System.out.println(restaurant);
-
         // templates/mng/mngStoreEdit.html 렌더링
         return "mng/mngStoreEdit";
     }
@@ -397,6 +394,9 @@ public class MngController {
                 @RequestParam("mainImgFile") MultipartFile mainImgFile,
                 HttpSession session,
                 RedirectAttributes redirectAttributes) throws IOException {
+
+            System.out.println("수정 요청: " + restaurantDTO);
+
             String role = (String) session.getAttribute("role");
             Object userBoxing = session.getAttribute("loginUser");
             if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
