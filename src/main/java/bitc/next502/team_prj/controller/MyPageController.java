@@ -27,24 +27,18 @@ public class MyPageController {
     @Autowired
     private BookmarkService bookmarkService;
 
-    // 1. 메인 화면
+    // 1. 메인 화면 (나의 예약 내역)
     @GetMapping("/main")
     public String myPageMain(@RequestParam(required = false,defaultValue="1",value="pageNum") int pageNum,
                              Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Object userBoxing = session.getAttribute("loginUser");
         String role = (String) session.getAttribute("role");
-        String userId = null;
+        String userId = getUserIdFromSession(userBoxing, role);
 
-        if (userBoxing == null) return "redirect:/user/login";
+        if (userId == null) return "redirect:/user/login";
 
-        if (role != null && role.equals("NORMAL")) {
-            userId = ((NormalUserDTO) userBoxing).getUserId();
-        } else if (role != null && role.equals("BUSINESS")) {
-            userId = ((BusinessUserDTO) userBoxing).getBusinessId();
-        }
-
-        model.addAttribute("userId", userId); // 아이디 전달
+        model.addAttribute("userId", userId);
 
         MyInfoDTO userInfo = myPageService.getMyInfo(userId);
         if (userInfo == null) {
@@ -54,17 +48,13 @@ public class MyPageController {
         }
         model.addAttribute("userInfo", userInfo);
 
-        //List<MyResvDTO> resvList = myPageService.getMyResvList(userId);
-        //페이징처리
-        int navigatePages = 5; //화면에 보여지는 페이지버튼수
-        PageInfo<MyResvDTO> resvList = new PageInfo<>( myPageService.getMyResvList(pageNum,userId), navigatePages);
-
-
-
+        int navigatePages = 5;
+        PageInfo<MyResvDTO> resvList = new PageInfo<>(myPageService.getMyResvList(pageNum, userId), navigatePages);
         model.addAttribute("resvList", resvList);
 
         List<BookmarkDTO> bookmarkList = bookmarkService.getBookmarkList(userId);
         model.addAttribute("bookmarkList", bookmarkList);
+
         return "mypage/mypage";
     }
 
@@ -75,29 +65,20 @@ public class MyPageController {
         return "redirect:/mypage/main";
     }
 
-    // 3. 관심 식당
+    // 3. 관심 식당 리스트
     @GetMapping("/mybookmarkList")
     public String myBookmarkList(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Object userBoxing = session.getAttribute("loginUser");
         String role = (String) session.getAttribute("role");
-        String userId = null;
+        String userId = getUserIdFromSession(userBoxing, role);
 
-        if (userBoxing == null) return "redirect:/user/login";
-
-        if (role != null && role.equals("NORMAL")) {
-            userId = ((NormalUserDTO) userBoxing).getUserId();
-        } else if (role != null && role.equals("BUSINESS")) {
-            userId = ((BusinessUserDTO) userBoxing).getBusinessId();
-        }
-
-        model.addAttribute("userId", userId); // 아이디 전달
+        if (userId == null) return "redirect:/user/login";
 
         MyInfoDTO userInfo = myPageService.getMyInfo(userId);
         if (userInfo == null) {
             userInfo = new MyInfoDTO();
             userInfo.setName("회원");
-            userInfo.setGrade("일반");
         }
         model.addAttribute("userInfo", userInfo);
 
@@ -106,21 +87,44 @@ public class MyPageController {
 
         return "mypage/mybookmarkList";
     }
-    // 4. 일반 유저 계정 삭제
+
+    @GetMapping("/mypageList")
+    public String mypageList(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object userBoxing = session.getAttribute("loginUser");
+        String role = (String) session.getAttribute("role");
+        String userId = getUserIdFromSession(userBoxing, role);
+
+        if (userId == null) return "redirect:/user/login";
+
+        MyInfoDTO userInfo = myPageService.getMyInfo(userId);
+        if (userInfo == null) {
+            userInfo = new MyInfoDTO();
+            userInfo.setName("회원");
+        }
+        model.addAttribute("userInfo", userInfo);
+
+        List<BookmarkDTO> bookmarkList = bookmarkService.getBookmarkList(userId);
+        model.addAttribute("bookmarkList", bookmarkList);
+
+        return "mypage/mypageList";
+    }
+
+
     @PostMapping("/deleteAccount")
     public String deleteNormalUserAccount(HttpSession session, @RequestParam String password, RedirectAttributes redirectAttributes) {
         Object userBoxing = session.getAttribute("loginUser");
         String role = (String) session.getAttribute("role");
 
         if (userBoxing == null || role == null || !"NORMAL".equals(role)) {
-            return "redirect:/user/login"; // 일반 유저가 아니면 로그인으로
+            return "redirect:/user/login";
         }
 
         NormalUserDTO normalUser = (NormalUserDTO) userBoxing;
         boolean deleted = myPageService.deleteNormalUserAccount(normalUser.getUserId(), password);
 
         if (deleted) {
-            session.invalidate(); // 로그아웃 처리
+            session.invalidate();
             redirectAttributes.addFlashAttribute("alertMessage", "회원 탈퇴가 완료되었습니다.");
             redirectAttributes.addFlashAttribute("alertType", "success");
             return "redirect:/main";
@@ -129,5 +133,28 @@ public class MyPageController {
             redirectAttributes.addFlashAttribute("alertType", "danger");
             return "redirect:/mypage/main";
         }
+    }
+
+
+    private String getUserIdFromSession(Object userBoxing, String role) {
+        if (userBoxing == null || role == null) return null;
+        if ("NORMAL".equals(role)) return ((NormalUserDTO) userBoxing).getUserId();
+        if ("BUSINESS".equals(role)) return ((BusinessUserDTO) userBoxing).getBusinessId();
+        return null;
+    }
+
+    @PostMapping("/updateInfo")
+    public String updateInfo(MyInfoDTO updatedInfo, RedirectAttributes redirectAttributes) {
+        try {
+            myPageService.updateMyInfo(updatedInfo);
+
+            redirectAttributes.addFlashAttribute("alertMessage", "개인정보가 수정되었습니다.");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("alertMessage", "수정 중 오류가 발생했습니다.");
+            redirectAttributes.addFlashAttribute("alertType", "danger");
+        }
+
+        return "redirect:/mypage/mypageList";
     }
 }

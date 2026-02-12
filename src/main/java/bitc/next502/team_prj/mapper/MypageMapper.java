@@ -25,4 +25,7 @@ public interface MypageMapper {
 
     // 신규: 일반 유저 계정 삭제
     int deleteNormalUser(String userId);
+
+    void updateMyInfo(MyInfoDTO updatedInfo);
+
 }
