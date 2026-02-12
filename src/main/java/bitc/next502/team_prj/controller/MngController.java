@@ -401,8 +401,6 @@ public class MngController {
                 HttpSession session,
                 RedirectAttributes redirectAttributes) throws IOException {
 
-            System.out.println("수정 요청: " + restaurantDTO);
-
             String role = (String) session.getAttribute("role");
             Object userBoxing = session.getAttribute("loginUser");
             if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
