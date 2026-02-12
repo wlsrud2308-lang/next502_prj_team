@@ -140,6 +140,15 @@
         font-weight: bold; transition: 0.3s;
       }
       .btn-login-premium:hover { background: #C19A6B; border-color: #C19A6B; }
+
+      .owner-reply{
+        margin-top:12px;
+        padding:12px 14px;
+        background:#f5f5f5;
+        border-left:4px solid #cfcfcf;
+        border-radius:4px;
+      }
+      .re-tag{ font-weight:800; margin-right:6px; color:#444; }
   </style>
 </head>
 
@@ -291,6 +300,11 @@
             </div>
 
             <p class="text-secondary small mb-0" th:text="${rv.comment}">리뷰 내용</p>
+            <div class="owner-reply"
+                 th:if="${rv.replyContent != null and !#strings.isEmpty(rv.replyContent)}">
+              <span class="re-tag">[Re]</span>
+              <span th:text="${rv.replyContent}" style="white-space: pre-line;"></span>
+            </div>
           </div>
 
           <div class="text-muted small" th:if="${#lists.isEmpty(reviewList)}">
