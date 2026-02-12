@@ -25,7 +25,7 @@ public interface RestaurantService {
 
     void updateRestaurantInfo(RestaurantDTO dto) throws IOException;
 
-    RestaurantDTO getRestaurantById(String restaurantId);
+    RestaurantDTO getRestaurantById(long restaurantId);
 
         int getTotalCount();
 }

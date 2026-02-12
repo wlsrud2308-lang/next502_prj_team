@@ -210,7 +210,7 @@
         WHERE restaurant_id = #{restaurantId};
     </delete>
 
-    <select id="selectRestaurantById" parameterType="string" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
+    <select id="selectRestaurantById" parameterType="long" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
         SELECT *
         FROM restaurant
         WHERE restaurant_id = #{restaurantId}

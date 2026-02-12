@@ -64,7 +64,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public RestaurantDTO getRestaurantById(String restaurantId) {
+    public RestaurantDTO getRestaurantById(long restaurantId) {
         return restaurantMapper.selectRestaurantById(restaurantId);
     }
 

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class BusinessUserDTO {
-    private String restaurantId;
+    private long restaurantId;
     private String businessId;
     private String businessPwd;
     private String businessName;
