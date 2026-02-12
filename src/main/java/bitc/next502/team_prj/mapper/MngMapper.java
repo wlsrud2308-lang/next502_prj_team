@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -44,9 +45,14 @@ public interface MngMapper {
   // 사업자 정보 수정
   void updateBusiness(BusinessUserDTO business);
 
-  // 사업자 계정 삭제
-  void deleteBusiness(@Param("businessId") String businessId);
+  void setDeleteReserveDateAndStatus(@Param("businessId") String businessId,
+                                     @Param("deleteDate") LocalDateTime deleteDate,
+                                     @Param("status") String status);
+
+  // 예약일이 지난 계정 실제 삭제
 
   void updateRestaurantIdForBusinessUser(@Param("businessId") String businessId,
                                          @Param("restaurantId") long restaurantId);
+
+  void deleteAccountsPastDeletionDate(@Param("currentDate") LocalDateTime currentDate);
 }
