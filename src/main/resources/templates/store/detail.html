@@ -150,6 +150,9 @@
       }
       .re-tag{ font-weight:800; margin-right:6px; color:#444; }
   </style>
+
+
+
 </head>
 
 <body class="bg-white">
@@ -398,6 +401,43 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=xu3exk9j7j"></script>
+
+<script th:inline="javascript">
+    const resId = [[${restaurant.restaurantId}]];
+
+    $(document).ready(function() {
+
+        const lat = [[${lat}]];
+        const lng = [[${lng}]];
+        document.getElementById('map');
+
+        const map = new naver.maps.Map('map', {
+            center: new naver.maps.LatLng(lat, lng), //지도의 초기 중심 좌표
+            zoom: 15, //지도의 초기 줌 레벨
+            minZoom: 12, //지도의 최소 줌 레벨
+        });
+
+        function checkLoginAndGo() {
+            location.href = "/reservation/write?restaurantId=" + resId;
+        }
+
+        const marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(lat, lng),
+            map: map
+        });
+
+        window.checkLoginAndGo = function() {
+            location.href = "/reservation/write?restaurantId=" + resId;
+        }
+
+        window.closeLoginModal = function() {
+            const modal = document.getElementById("loginCheckModal");
+            if (modal) modal.style.display = "none";
+        }
+    });
+</script>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<KAKAO_APP_KEY>&libraries=services"></script>
 <script th:inline="javascript">
     window.onload = function() {
