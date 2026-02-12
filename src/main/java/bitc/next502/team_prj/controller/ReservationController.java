@@ -50,15 +50,30 @@ public class ReservationController {
     @PostMapping("/insert")
     public String resvInsert(ReservationDTO reservation, Model model) {
         try {
+
+            RestaurantDTO restaurant = restaurantService.getRestaurantDetail(String.valueOf(reservation.getRestaurantId()));
+
+
+            if (restaurant.getMaxCapacity() != null && !restaurant.getMaxCapacity().equals("미정")) {
+                int maxLimit = Integer.parseInt(restaurant.getMaxCapacity());
+
+
+                if (reservation.getCountPeople() > maxLimit) {
+                    model.addAttribute("msg", "해당 식당의 최대 예약 가능 인원은 " + maxLimit + "명입니다.");
+                    model.addAttribute("url", "javascript:history.back();");
+                    return "common/alert";
+                }
+            }
+
+
             reservationService.saveReservation(reservation);
-            model.addAttribute("msg", "예약이 성공적으로 확정되었습니다."); // 성공 메시지
+            model.addAttribute("msg", "예약이 성공적으로 확정되었습니다.");
             model.addAttribute("url", "/main");
             return "common/alert";
-        } catch (Exception e) {
-            // DB 에러(외래키 등)가 나면 이쪽으로 옵니다.
 
+        } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("msg", "예약 처리 중 오류가 발생했습니다. 정보를 다시 확인해 주세요.");
+            model.addAttribute("msg", "오류가 발생했습니다.");
             model.addAttribute("url", "javascript:history.back();");
             return "common/alert";
         }

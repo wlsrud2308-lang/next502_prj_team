@@ -43,7 +43,7 @@
             r.addr1 AS address,
             r.cntct_tel AS restaurantTel,
             r.gugun_nm AS locationTag,
-            r.max_capacity AS seats,
+            r.max_capacity AS maxCapacity,
             r.itemcntnts AS description,
             r.lat AS lat,
             r.lng AS lng,

@@ -11,7 +11,7 @@ public class ReservationDTO {
     private String reservationDate;
     private String reservationTime;
     private String reservationState;
-    private String countPeople;
+    private int countPeople;
     private String restaurantName;
     private String userName;
     private String userTel;

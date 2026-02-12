@@ -21,4 +21,5 @@ public class RestaurantDTO {
     private String lng;
     private String mainImgThumb;
     private String price;
+    private String maxCapacity;
 }
