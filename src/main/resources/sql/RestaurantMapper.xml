@@ -182,7 +182,7 @@
     <insert id="insertRestaurant" useGeneratedKeys="true" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         INSERT INTO restaurant (
             place, category, addr1, main_img, itemcntnts, gugun_nm, max_capacity, price)
-        VALUES ( #{restaurantName}, #{category}, #{address}, #{mainImg}, #{description}, #{locationTag}, #{seats} #{price})
+        VALUES ( #{restaurantName}, #{category}, #{address}, #{mainImg}, #{description}, #{locationTag}, #{seats}, #{price})
     </insert>
 
     <!-- 식당 정보 수정 -->

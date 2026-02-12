@@ -50,5 +50,5 @@ public interface MngMapper {
   void deleteBusiness(@Param("businessId") String businessId);
 
   void updateRestaurantIdForBusinessUser(@Param("businessId") String businessId,
-                                         @Param("restaurantId") String restaurantId);
+                                         @Param("restaurantId") long restaurantId);
 }

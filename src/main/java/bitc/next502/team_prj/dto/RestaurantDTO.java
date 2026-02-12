@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RestaurantDTO {
-    private String restaurantId;
+    private long restaurantId;
     private String restaurantName;
     private String category;
     private String foods;
@@ -22,4 +22,13 @@ public class RestaurantDTO {
     private String mainImgThumb;
     private String price;
     private String maxCapacity;
+
+    // Getters and Setters
+    public Long getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(Long restaurantId) {
+        this.restaurantId = restaurantId;
+    }
 }
