@@ -211,8 +211,17 @@
     </delete>
 
     <select id="selectRestaurantById" parameterType="long" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
-        SELECT *
-        FROM restaurant
+        SELECT r.place AS restaurantName,
+               c.category AS foods,
+               r.addr1 AS address,
+               r.cntct_tel AS restaurantTel,
+               r.gugun_nm AS locationTag,
+               r.price AS price,
+               r.main_img AS mainImg,
+               r.itemcntnts AS itemCntnts,
+               r.max_capacity AS maxCapacity
+        FROM restaurant r
+                 JOIN category c ON r.category = c.category
         WHERE restaurant_id = #{restaurantId}
     </select>
 
