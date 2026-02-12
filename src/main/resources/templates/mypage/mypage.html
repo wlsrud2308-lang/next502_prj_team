@@ -183,9 +183,22 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button th:unless="${resv.status == '방문완료'}" class="btn btn-outline-secondary btn-sm px-3"
-                                            th:onclick="|if(confirm('예약을 취소하시겠습니까?')) location.href='/mypage/delete?resvId=${resv.resvId}'|">예약 취소</button>
-                                        <button th:if="${resv.status == '방문완료'}" class="btn btn-outline-gold btn-sm px-3 datasetval" th:attrappend="data-value1=${resv.storeName},data-value2=${resv.resvId}">리뷰 쓰기</button>
+                                        <button th:unless="${resv.status == '방문완료'}"
+                                                class="btn btn-outline-secondary btn-sm px-3"
+                                                th:onclick="|if(confirm('예약을 취소하시겠습니까?')) location.href='/mypage/delete?resvId=${resv.resvId}'|">
+                                            예약 취소
+                                        </button>
+
+                                        <button th:if="${resv.status == '방문완료' and resv.isReviewed == 0}"
+                                                class="btn btn-outline-gold btn-sm px-3 datasetval"
+                                                th:attrappend="data-value1=${resv.storeName},data-value2=${resv.resvId}">
+                                            리뷰 쓰기
+                                        </button>
+
+                                        <button th:if="${resv.status == '방문완료' and resv.isReviewed == 1}"
+                                                class="btn btn-light btn-sm px-3 text-muted" disabled>
+                                            리뷰 작성 완료
+                                        </button>
                                     </div>
                                 </div>
                             </div>

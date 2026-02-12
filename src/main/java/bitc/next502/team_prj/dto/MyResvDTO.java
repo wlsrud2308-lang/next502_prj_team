@@ -10,4 +10,6 @@ public class MyResvDTO {
     private String resvTime;
     private int headCount;
     private String status;
+    private int isReviewed;
+
 }
