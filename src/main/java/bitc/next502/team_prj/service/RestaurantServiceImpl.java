@@ -61,4 +61,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantDTO getRestaurantById(String restaurantId) {
         return restaurantMapper.selectRestaurantById(restaurantId);
     }
+
+        @Override
+    public int getTotalCount() {
+        return restaurantMapper.getTotalCount();
+    }
 }

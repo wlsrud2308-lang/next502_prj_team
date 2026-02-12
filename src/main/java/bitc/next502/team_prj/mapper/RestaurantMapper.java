@@ -47,4 +47,7 @@ public interface RestaurantMapper {
     void updateRestaurant(RestaurantDTO dto);
 
     RestaurantDTO selectRestaurantById(String restaurantId);
+
+
+    int getTotalCount();
 }
