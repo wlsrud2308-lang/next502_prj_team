@@ -5,8 +5,8 @@
 
     <select id="selectMyInfoById" resultType="bitc.next502.team_prj.dto.MyInfoDTO">
         SELECT
-            user_email  AS email,
-            user_tel   AS phone,
+            user_id     AS userId,   user_email  AS email,
+            user_tel    AS phone,
             user_age    AS age,
             user_name   AS name,
             user_role   AS grade
@@ -27,7 +27,8 @@
         FROM
             reservation r
                 JOIN
-            restaurant_detail d ON r.restaurant_id = d.restaurant_id WHERE
+            restaurant_detail d ON r.restaurant_id = d.restaurant_id
+        WHERE
             r.user_id = #{userId}
         ORDER BY
             r.reservation_date DESC
@@ -38,16 +39,42 @@
         WHERE reservation_id = #{resvId}
     </delete>
 
-    <!-- 일반 유저 조회 -->
     <select id="selectNormalUserById" resultType="bitc.next502.team_prj.dto.NormalUserDTO">
         SELECT *
         FROM normal_user
         WHERE user_id = #{userId}
     </select>
 
-    <!-- 일반 유저 삭제 -->
     <delete id="deleteNormalUser">
         DELETE FROM normal_user
         WHERE user_id = #{userId}
     </delete>
+
+    <select id="getMyInfo" resultType="bitc.next502.team_prj.dto.MyInfoDTO">
+        SELECT
+            user_id AS userId,
+            user_name AS name,
+            user_email AS email,
+            user_tel AS phone,
+            user_age AS age
+        FROM normal_user
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="updateMyInfo" parameterType="bitc.next502.team_prj.dto.MyInfoDTO">
+        UPDATE normal_user
+        <set>
+            <if test="name != null and name != ''">
+                user_name = #{name},
+            </if>
+            <if test="phone != null and phone != ''">
+                user_tel = #{phone},
+            </if>
+            <if test="password != null and password != ''">
+                user_pw = #{password}
+            </if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
 </mapper>

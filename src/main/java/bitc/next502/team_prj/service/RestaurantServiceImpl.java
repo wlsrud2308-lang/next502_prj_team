@@ -6,6 +6,7 @@ import bitc.next502.team_prj.dto.RatingStatDTO;
 import bitc.next502.team_prj.mapper.RestaurantMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,9 +48,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantMapper.searchByFilter(keyword, locations, categories, sort);
     }
 
+    @Transactional
     @Override
-    public void registerRestaurant(RestaurantDTO dto) {
-        restaurantMapper.insertRestaurant(dto);
+    public void registerRestaurant(RestaurantDTO restaurantDTO) {
+        // restaurant_id 자동 생성 후 DTO에 반영
+        restaurantMapper.insertRestaurant(restaurantDTO);  // insert 이후 restaurantDTO.getRestaurantId()가 자동으로 채워짐
+        if (restaurantDTO.getRestaurantId() == null) {
+            throw new RuntimeException("식당 ID가 생성되지 않았습니다.");
+        }
     }
 
     @Override
@@ -66,4 +72,5 @@ public class RestaurantServiceImpl implements RestaurantService {
     public int getTotalCount() {
         return restaurantMapper.getTotalCount();
     }
+
 }

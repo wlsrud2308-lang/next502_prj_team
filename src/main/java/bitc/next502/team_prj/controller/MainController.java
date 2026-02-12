@@ -36,9 +36,7 @@ public class MainController {
 
     @GetMapping("/myreviewList")
     public String myreviewList() { return "mypage/myreviewList"; }
-
-    @GetMapping("/mypageList")
-    public String mypageList() { return "mypage/mypageList"; }
+    
 
     @GetMapping("/detail")
     public String detail(@RequestParam("id") String id, Model model) {

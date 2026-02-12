@@ -21,5 +21,7 @@ public interface MypageService {
 
 //  유저 계정 삭제
   boolean deleteNormalUserAccount(String userId, String password);
+
+  void updateMyInfo(MyInfoDTO updatedInfo);
 }
 

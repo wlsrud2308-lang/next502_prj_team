@@ -184,4 +184,10 @@
         DELETE FROM business_user
         WHERE business_id = #{businessId}
     </delete>
+
+    <update id="updateRestaurantIdForBusinessUser">
+        UPDATE business_user
+        SET restaurant_id = #{restaurantId}
+        WHERE business_id = #{businessId}
+    </update>
 </mapper>

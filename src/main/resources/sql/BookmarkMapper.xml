@@ -22,22 +22,14 @@
             b.id_seq,
             b.restaurant_id,
             b.create_date,
-
-
             r.place AS restaurantName,
-
-
             r.main_img AS mainImgThumb,
-
-
             r.addr1 AS address,
-
             r.category,
-
             c.foods,
-
-            0.0 AS rating
-
+            (SELECT IFNULL(ROUND(AVG(rating), 1), 0.0)
+             FROM review
+             WHERE restaurant_id = b.restaurant_id) AS rating
         FROM bookmark b
                  JOIN restaurant r ON b.restaurant_id = r.restaurant_id
                  JOIN category c ON r.category = c.category

@@ -20,4 +20,10 @@ public interface LoginService {
 
   // 비밀번호 변경
   boolean updatePassword(String userType, String userId, String newPassword);
+
+    boolean isIdDuplicate(String id);
+
+  boolean isNormalNameDuplicate(String name);
+
+  boolean isBusinessNameDuplicate(String businessName);
 }

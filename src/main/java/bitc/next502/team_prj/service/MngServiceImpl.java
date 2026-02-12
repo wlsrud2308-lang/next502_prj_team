@@ -102,4 +102,9 @@ public class MngServiceImpl implements MngService{
     mngMapper.deleteBusiness(businessId); // Mapper에서 delete 처리
     return true;
   }
+
+  // business_user 테이블의 restaurant_id 업데이트
+  public void updateRestaurantIdForBusinessUser(String businessId, long restaurantId) {
+    mngMapper.updateRestaurantIdForBusinessUser(businessId, restaurantId);
+  }
 }

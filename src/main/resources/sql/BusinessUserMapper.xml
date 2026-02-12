@@ -77,4 +77,17 @@
         </if>
         WHERE business_id = #{businessId}
     </update>
+
+    <select id="checkIdDuplicate" resultType="int">
+        SELECT (
+                   (SELECT COUNT(*) FROM normal_user WHERE user_id = #{id}) +
+                   (SELECT COUNT(*) FROM business_user WHERE business_id = #{id})
+                   ) AS cnt
+    </select>
+
+    <select id="checkBusinessNameDuplicate" resultType="int">
+        SELECT COUNT(*)
+        FROM business_user
+        WHERE business_name = #{businessName}
+    </select>
 </mapper>

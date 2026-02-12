@@ -53,4 +53,9 @@ public class MyPageServiceImpl implements MypageService {
         myPageMapper.deleteNormalUser(userId);
         return true;
     }
+
+    @Override
+    public void updateMyInfo(MyInfoDTO updatedInfo) {
+        myPageMapper.updateMyInfo(updatedInfo);
+    }
 }

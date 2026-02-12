@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -144,5 +145,26 @@ public class LoginController {
 
         rttr.addFlashAttribute("error","비밀번호 변경 실패");
         return "redirect:/login";
+    }
+
+    // 아이디 중복 확인
+    @PostMapping("/user/checkId")
+    @ResponseBody
+    public boolean checkId(@RequestParam("id") String id) {
+        return loginService.isIdDuplicate(id); // 중복이면 true, 아니면 false
+    }
+
+    // 일반 유저 이름 중복 확인
+    @PostMapping("/user/checkName")
+    @ResponseBody
+    public boolean checkName(@RequestParam("name") String name) {
+        return loginService.isNormalNameDuplicate(name);
+    }
+
+    // 사업자명 중복 확인
+    @PostMapping("/user/checkBusinessName")
+    @ResponseBody
+    public boolean checkBusinessName(@RequestParam("businessName") String businessName) {
+        return loginService.isBusinessNameDuplicate(businessName);
     }
 }
