@@ -208,10 +208,12 @@
 
             <div class="modal-body px-4 pb-4">
                 <h4 id="modalStoreName" class="text-center fw-bold mb-4 text-gold" style="font-size: 1.4rem;"></h4>
+
                 <form action="/review/reviewUpdate" method="post" enctype="multipart/form-data">
-                    <input type="hidden" id="modalReviewId" name="reviewIdx" value="">
+                    <input type="hidden" id="modalReviewId" name="reviewIdx">
                     <input type="hidden" id="modalRatingValue" name="rating" value="0">
                     <input type="hidden" id="modalImgUrl" name="imgUrl" value="" >
+                    <input type="hidden" name="userId" th:value="${session.loginUser.userId}">
 
                     <div class="mb-4 text-center">
                         <p class="text-muted small mb-2">식사는 만족스러우셨나요?</p>
@@ -248,92 +250,64 @@
     </div>
 </div>
 
-<script>
-    $(function (){
+<script th:inline="javascript">
+    $(function() {
+        // 1. 서버에서 전달된 알림 메시지 처리
+        const msg = [[${msg}]];
+        if (msg) {
+            alert(msg);
+        }
 
+        // 2. 별점 스크립트 (기존 유지)
         const stars = document.querySelectorAll('.stars .star');
         const ratingInput = document.getElementById('modalRatingValue');
         let selectedRating = 0;
 
-        stars.forEach(function (star) {
-            star.addEventListener('click', function () {
+        function updateStars(val) {
+            stars.forEach(star => {
+                star.classList.toggle('active', star.dataset.value <= val);
+            });
+        }
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
                 selectedRating = star.dataset.value;
                 ratingInput.value = selectedRating;
                 updateStars(selectedRating);
             });
-            // 마우스 오버
-            star.addEventListener('mouseover', () => {
-                updateStars(star.dataset.value);
-            });
-
-            // 마우스 아웃
-            star.addEventListener('mouseout', () => {
-                updateStars(selectedRating);
-            });
+            star.addEventListener('mouseover', () => updateStars(star.dataset.value));
+            star.addEventListener('mouseout', () => updateStars(selectedRating));
         });
 
-        //별점변경
-        function updateStars(val00) {
-            stars.forEach(function (star) {
-                star.classList.toggle(
-                    'active',
-                    star.dataset.value <= val00
-                );
-            });
-        }
+        // 3. 수정 모달 열기 (기존 유지)
+        $(".btnuptate").on("click", function() {
+            const btn = $(this);
+            const name = btn.attr("data-storeName");
+            const idx = btn.attr("data-reviewIdx");
+            const rating = btn.attr("data-rating");
+            const comment = btn.attr("data-comment");
 
+            $('#modalStoreName').text(name);
+            $('#modalReviewId').val(idx);
+            $('#modalRatingValue').val(rating);
+            $('#modalComment').val(comment);
+            updateStars(rating);
+            selectedRating = rating;
 
-        $(".btnuptate").on("click",function (){
-            const test = $(this);
-            const dataValue1 = test.attr("data-storeName");
-            const dataValue2 = test.attr("data-reviewIdx");
-            const dataValue3 = test.attr("data-rating");
-            const dataValue4 = test.attr("data-comment");
-            openReviewModal(dataValue1,dataValue2,dataValue3,dataValue4);
-
+            new bootstrap.Modal(document.getElementById('reviewModal')).show();
         });
 
-        //게시글 삭제
-        const btndels = document.querySelectorAll('.btndel2');
-        btndels.forEach(function (delno) {
-            delno.addEventListener('click', function () {
-                const val=this.id;
-                location.href="/review/delReview?reviewIdx="+ val ;
-            });
-        });
+        // 4. 삭제 버튼 (Confirm 추가 및 리다이렉트 경로 대응)
+        $(".btndel2").on("click", function() {
+            const reviewIdx = $(this).attr("id");
+            // 세션이나 다른 곳에서 userId를 가져오거나, 버튼에 data-userid를 심어서 사용하세요.
+            const userId = [[${session.loginUser.userId}]];
 
-
-        function openReviewModal(storeName,reviewIdx,ratingVal,comment) {
-
-            const nameElement = document.getElementById('modalStoreName');
-            const idElement = document.getElementById('modalReviewId');
-            const starElement = document.getElementById('modalRatingValue');
-            const commElement = document.getElementById('modalComment');
-            if(nameElement) nameElement.innerText = storeName;
-            if(idElement) idElement.value = reviewIdx;
-
-            if(starElement) starElement.value = ratingVal;
-            if(commElement) commElement.value = comment;
-
-            updateStars(ratingVal);
-            let reviewModalElement = document.getElementById('reviewModal');
-            let reviewModal = bootstrap.Modal.getInstance(reviewModalElement);
-
-            if (!reviewModal) {
-
-                reviewModal = new bootstrap.Modal(reviewModalElement);
+            if (confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
+                location.href = "/review/delReview?reviewIdx=" + reviewIdx + "&userId=" + userId;
             }
-
-            reviewModal.show();
-        }
-
-
-
-
+        });
     });
-//
-
-
 </script>
 <div th:replace="~{layout/footer :: footer}"></div>
 </body>

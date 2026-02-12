@@ -30,6 +30,21 @@
       .res-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
       .badge-category { background-color: #f0f0f0; color: #666; font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
+
+      .res-card {
+        cursor: pointer;
+      }
+
+      .res-card:hover {
+        background-color: #fcfaf5 !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+      }
+
+      .res-card:hover .card-title a {
+        color: var(--main-gold) !important;
+      }
   </style>
 
 </head>
@@ -90,33 +105,33 @@
         </div>
       </div>
 
-      <div class="res-card card" th:each="res : ${resList}">
-        <div class="row g-0 align-items-center">
-          <div class="col-md-4">
-            <div class="res-img-wrapper shadow-sm">
-              <img src="" th:src="${res.mainImg}" class="card-img-top" alt="식당">
-            </div>
-          </div>
-          <div class="col-md-8">
-            <div class="card-body py-0 ps-md-4">
-              <div class="mb-2">
-                <span class="badge-category" th:text="${res.foods}"></span>
-                <span class="ms-2 text-muted small"><i class="bi bi-geo-alt"></i> [[${res.locationTag}]]</span>
-              </div>
-              <h4 class="card-title fw-bold mb-2">
-                <a th:href="@{/detail(id=${res.restaurantId})}"
-                   class="text-decoration-none text-dark" th:text="${res.restaurantName}">식당명</a>
-              </h4>
-              <div class="mb-3">
-                <span class="text-gold fw-bold fs-5">★ [[${res.rating}]]</span>
-              </div>
-              <p class="card-text text-secondary small mb-3 text-truncate" th:text="${res.description}">
-                식당 소개글입니다.
-              </p>
-              <a th:href="@{/detail(id=${res.restaurantId})}" class="btn btn-dark btn-sm px-4">예약하기</a>
-            </div>
+      <div class="res-card card position-relative" th:each="res : ${resList}"> <div class="row g-0 align-items-center">
+        <div class="col-md-4">
+          <div class="res-img-wrapper shadow-sm">
+            <img src="" th:src="${res.mainImg}" class="card-img-top" alt="식당">
           </div>
         </div>
+        <div class="col-md-8">
+          <div class="card-body py-0 ps-md-4">
+            <div class="mb-2">
+              <span class="badge-category" th:text="${res.foods}"></span>
+              <span class="ms-2 text-muted small"><i class="bi bi-geo-alt"></i> [[${res.locationTag}]]</span>
+            </div>
+            <h4 class="card-title fw-bold mb-2">
+              <a th:href="@{/detail(id=${res.restaurantId})}"
+                 class="text-decoration-none text-dark stretched-link"
+                 th:text="${res.restaurantName}">식당명</a>
+            </h4>
+            <div class="mb-3">
+              <span class="text-gold fw-bold fs-5">★ [[${res.rating}]]</span>
+            </div>
+            <p class="card-text text-secondary small mb-3 text-truncate" th:text="${res.description}">
+              식당 소개글입니다.
+            </p>
+            <button class="btn btn-dark btn-sm px-4 position-relative" style="z-index: 2;">예약하기</button>
+          </div>
+        </div>
+      </div>
       </div>
 
       <div th:if="${#lists.isEmpty(resList)}" class="py-5 text-center">
