@@ -337,51 +337,13 @@ public class MngController {
         return "redirect:/mngmypage";
     }
 
-    //    관리자 정보 수정 페이지
-    @GetMapping("/mng/account")
-    public String editBusinessAccount(Model model, HttpSession session) {
+    @PostMapping("/mngmypage/deleteAccount")
+    public String deleteAccountFromMyPage(@RequestParam String password,
+                                          HttpSession session,
+                                          RedirectAttributes redirectAttributes) {
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
 
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-        BusinessUserDTO business = mngService.getBusinessById(businessUser.getBusinessId());
-
-        model.addAttribute("business", business);
-        model.addAttribute("menuId", "account");
-        return "mng/mngAccount"; // 뷰 파일명
-    }
-
-    // POST: 정보 수정 처리
-    @PostMapping("/mng/account/update")
-    public String updateBusinessAccount(@RequestParam String businessName,
-                                        @RequestParam String businessPhone,
-                                        @RequestParam(required = false) String newPassword,
-                                        HttpSession session,
-                                        RedirectAttributes redirectAttributes) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
-
-        BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-        mngService.updateBusinessInfo(businessUser.getBusinessId(), businessName, businessPhone, newPassword);
-
-        redirectAttributes.addFlashAttribute("alertMessage", "계정 정보가 수정되었습니다.");
-        redirectAttributes.addFlashAttribute("alertType", "success");
-        return "redirect:/mng/account";
-    }
-
-    // POST: 계정 삭제 처리
-    @PostMapping("/mng/account/delete")
-    public String deleteBusinessAccount(@RequestParam String password,
-                                        HttpSession session,
-                                        RedirectAttributes redirectAttributes) {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
         if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
             return "redirect:/login";
         }
@@ -390,58 +352,64 @@ public class MngController {
         boolean deleted = mngService.deleteBusinessAccount(businessUser.getBusinessId(), password);
 
         if (deleted) {
-            session.invalidate();
-            return "redirect:/login";
+            session.invalidate(); // 세션 종료
+            return "redirect:/login"; // 삭제 후 로그인 페이지로 이동
         } else {
             redirectAttributes.addFlashAttribute("alertMessage", "비밀번호가 올바르지 않습니다.");
             redirectAttributes.addFlashAttribute("alertType", "danger");
-            return "redirect:/mng/account";
+            return "redirect:/mngmypage"; // 실패 시 마이페이지로
         }
     }
 
     // GET: 식당 정보 수정 페이지
-    @GetMapping("/mng/store/edit")
+    @GetMapping("/mngStoreEdit")
     public String editRestaurant(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         String role = (String) session.getAttribute("role");
         Object userBoxing = session.getAttribute("loginUser");
+
         if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
             return "redirect:/login";
         }
 
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
+
+        // businessUser에 연결된 식당 정보 가져오기
         RestaurantDTO restaurant = restaurantService.getRestaurantById(businessUser.getRestaurantId());
 
         if (restaurant == null) {
             redirectAttributes.addFlashAttribute("alertMessage", "등록된 식당 정보가 없습니다. 먼저 식당을 등록해주세요.");
             redirectAttributes.addFlashAttribute("alertType", "warning");
-            return "redirect:/mngstoreWrite"; // 등록 페이지로 이동
+            return "redirect:/mngstoreWrite";
         }
 
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("menuId", "store");
+
+        // templates/mng/mngStoreEdit.html 렌더링
         return "mng/mngStoreEdit";
     }
 
-    // POST: 식당 정보 수정 처리
-    @PostMapping("/mng/store/update")
-    public String updateRestaurant(@ModelAttribute RestaurantDTO restaurantDTO,
-                                   @RequestParam("mainImgFile") MultipartFile mainImgFile,
-                                   HttpSession session,
-                                   RedirectAttributes redirectAttributes) throws IOException {
-        String role = (String) session.getAttribute("role");
-        Object userBoxing = session.getAttribute("loginUser");
-        if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
-            return "redirect:/login";
-        }
+        // POST: 식당 정보 수정 처리
+        @PostMapping("/mngStoreUpdate")
+        public String updateRestaurant(@ModelAttribute RestaurantDTO restaurantDTO,
+                @RequestParam("mainImgFile") MultipartFile mainImgFile,
+                HttpSession session,
+                RedirectAttributes redirectAttributes) throws IOException {
+            String role = (String) session.getAttribute("role");
+            Object userBoxing = session.getAttribute("loginUser");
+            if (role == null || userBoxing == null || !"BUSINESS".equals(role)) {
+                return "redirect:/login";
+            }
 
-        if (!mainImgFile.isEmpty()) {
-            String fileName = saveFile(mainImgFile);
-            restaurantDTO.setMainImg(fileName);
-        }
+            if (!mainImgFile.isEmpty()) {
+                String fileName = saveFile(mainImgFile);
+                restaurantDTO.setMainImg(fileName);
+            }
 
-        restaurantService.updateRestaurantInfo(restaurantDTO);
-        redirectAttributes.addFlashAttribute("alertMessage", "식당 정보가 수정되었습니다.");
-        redirectAttributes.addFlashAttribute("alertType", "success");
-        return "redirect:/mng/store/edit";
+            restaurantService.updateRestaurantInfo(restaurantDTO);
+            redirectAttributes.addFlashAttribute("alertMessage", "식당 정보가 수정되었습니다.");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+            return "redirect:/mngStoreEdit";
     }
+
 }

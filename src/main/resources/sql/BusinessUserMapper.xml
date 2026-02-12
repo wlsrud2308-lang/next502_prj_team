@@ -10,7 +10,8 @@
             business_id   AS businessId,
             business_pwd  AS businessPwd,
             business_name AS businessName,
-            business_tel  AS phone
+            business_tel  AS phone,
+            restaurant_id AS restaurantId
         FROM business_user
         WHERE business_id = #{id}
           AND business_pwd = #{pw}
