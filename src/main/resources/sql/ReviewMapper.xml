@@ -3,57 +3,68 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="bitc.next502.team_prj.mapper.ReviewMapper">
+
     <select id="selectReviewsList" parameterType="String" resultType="bitc.next502.team_prj.dto.ReviewDTO" >
-        SELECT review_idx, user_id, restaurant_id, comment, create_date, img_url, rating
-        FROM review
-        WHERE restaurant_id = #{restaurantId}
-        ORDER BY review_idx DESC
+        SELECT
+        r.review_idx AS reviewIdx,
+        r.user_id AS userId,
+        r.restaurant_id AS restaurantId,
+        r.comment,
+        r.create_date AS createDate,
+        r.rating,
+        r.reply_content AS replyContent,
+        r.reply_date AS replyDate,
+        f.stored_filename AS storedFilename
+        FROM review r
+        LEFT OUTER JOIN file f ON r.review_idx = f.review_id
+        WHERE r.restaurant_id = #{restaurantId}
+        ORDER BY r.review_idx DESC
     </select>
+
     <select id="selectMyReviewsList" parameterType="String" resultType="bitc.next502.team_prj.dto.ReviewDTO" >
         SELECT
-            rw.review_idx        as reviewIdx,
-            rw.user_id           as userId,
-            rw.restaurant_id     as restaurantId,
-            rw.reservation_id    as reservationId,
-            d.title              as storeName ,
-            rw.comment           as comment ,
-            rw.create_date       as createDate,
-            rw.img_url           as imgUrl,
-            rw.rating            as rating,
-            rw.reply_content     as replyContent,
-            rw.reply_date        as replyDate
+        rw.review_idx        as reviewIdx,
+        rw.user_id           as userId,
+        rw.restaurant_id     as restaurantId,
+        rw.reservation_id    as reservationId,
+        d.title              as storeName ,
+        rw.comment           as comment ,
+        rw.create_date       as createDate,
+        rw.rating            as rating,
+        rw.reply_content     as replyContent,
+        rw.reply_date        as replyDate,
+        f.stored_filename    as storedFilename
         FROM review rw
-            JOIN restaurant_detail d ON rw.restaurant_id = d.restaurant_id
+        JOIN restaurant_detail d ON rw.restaurant_id = d.restaurant_id
+        LEFT OUTER JOIN file f ON rw.review_idx = f.review_id
         WHERE rw.user_id = #{userId}
         ORDER BY rw.create_date DESC
     </select>
+
     <select id="selectReviewsDetail" parameterType="int" resultType="bitc.next502.team_prj.dto.ReviewDTO">
-        SELECT review_idx, user_id, restaurant_id, comment, create_date, img_url, rating
+        SELECT review_idx, user_id, restaurant_id, comment, create_date, rating
         FROM review
         WHERE review_idx = #{reviewIdx}
     </select>
+
     <insert id="insertReview" parameterType="bitc.next502.team_prj.dto.ReviewDTO" useGeneratedKeys="true" keyProperty="reviewIdx">
-        INSERT INTO review (user_id, restaurant_id, comment, create_date, img_url, rating, reservation_id)
-        VALUES (#{userId},#{restaurantId}, #{comment}, now(), #{imgUrl}, #{rating} ,#{reservationId} )
+        INSERT INTO review (user_id, restaurant_id, comment, create_date, rating, reservation_id)
+        VALUES (#{userId},#{restaurantId}, #{comment}, now(), #{rating} ,#{reservationId} )
     </insert>
+
     <insert id="insertReviewByResvId" parameterType="bitc.next502.team_prj.dto.ReviewDTO" useGeneratedKeys="true" keyProperty="reviewIdx">
-        INSERT INTO review (user_id, restaurant_id, reservation_id, `comment`, create_date, img_url, rating)
-        SELECT
-            r.user_id,
-            r.restaurant_id,
-            r.reservation_id,
-            #{comment},
-            NOW(),
-            #{imgUrl},
-            #{rating}
+        INSERT INTO review (user_id, restaurant_id, reservation_id, `comment`, create_date, rating)
+        SELECT r.user_id, r.restaurant_id, r.reservation_id, #{comment}, NOW(), #{rating}
         FROM reservation r
-        WHERE r.reservation_id = #{reservationId};
+        WHERE r.reservation_id = #{reservationId}
     </insert>
+
     <update id="updateReview" parameterType="bitc.next502.team_prj.dto.ReviewDTO">
         UPDATE review
-        SET rating =#{rating}, comment = #{comment} , img_url= #{imgUrl} , update_date=now()
+        SET rating =#{rating}, comment = #{comment}, update_date=now()
         WHERE review_idx = #{reviewIdx}
     </update>
+
     <delete id="deleteReview" parameterType="int">
         DELETE FROM review WHERE review_idx = #{reviewIdx}
     </delete>

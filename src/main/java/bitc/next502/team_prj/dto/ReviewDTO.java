@@ -16,6 +16,7 @@ public class ReviewDTO {
     private String comment;
     private String createDate;
     private String updateDate;
+    private String storedFilename;
 
     private boolean replied;
     private String replyContent;

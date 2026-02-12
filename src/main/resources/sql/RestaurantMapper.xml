@@ -61,19 +61,21 @@
             LIMIT 1
     </select>
 
-    <select id="selectReviewsByRestaurantId"
-            resultType="bitc.next502.team_prj.dto.ReviewDTO">
+    <select id="selectReviewsByRestaurantId" resultType="bitc.next502.team_prj.dto.ReviewDTO">
         SELECT
-        review_idx     AS reviewIdx,
-        rating         AS rating,
-        user_id        AS userId,
-        comment        AS comment,
-        create_date    AS createDate,
-        reply_content  AS replyContent,
-        reply_date     AS replyDate
-        FROM review
-        WHERE restaurant_id = #{restaurantId}
-        ORDER BY create_date DESC
+            r.review_idx AS reviewIdx,
+            r.user_id AS userId,
+            r.restaurant_id AS restaurantId,
+            r.comment,
+            r.create_date AS createDate,
+            r.rating,
+            r.reply_content AS replyContent,
+            r.reply_date AS replyDate,
+            f.stored_filename AS storedFilename
+        FROM review r
+                 LEFT OUTER JOIN file f ON r.review_idx = f.review_id
+        WHERE r.restaurant_id = #{restaurantId}
+        ORDER BY r.review_idx DESC
     </select>
 
     <select id="selectReviewCountByRestaurantId" resultType="int">
