@@ -22,6 +22,8 @@ public class BusinessAuthInterceptor implements HandlerInterceptor {
 
         Object userBoxing = session.getAttribute("loginUser");
         String role = (String) session.getAttribute("role");
+        System.out.println("로그인된 사용자: " + userBoxing);
+        System.out.println("사용자 권한(role): " + role);
 
         if (userBoxing == null || role == null || !"BUSINESS".equals(role)) {
             response.sendRedirect(request.getContextPath() + "/login");

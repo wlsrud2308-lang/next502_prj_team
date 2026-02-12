@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/mng")
+//@RequestMapping("/mng")
 public class MngController {
 
     @Autowired
@@ -249,7 +249,7 @@ public class MngController {
     }
 
 //    관리자 정보 수정 페이지
-    @GetMapping("/account")
+    @GetMapping("/mngaccount")
     public String editBusinessAccount(Model model, HttpSession session) {
 
         BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
@@ -296,7 +296,7 @@ public class MngController {
     }
 
     // GET: 식당 정보 수정 페이지
-    @GetMapping("/mng/store/edit")
+    @GetMapping("/mngstoreEdit")
     public String editRestaurant(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
 
         BusinessUserDTO businessUser = (BusinessUserDTO) session.getAttribute("loginUser");
