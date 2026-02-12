@@ -2,88 +2,160 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{layout/header :: header}"></div>
-    <title>NEXT502 | 메인 맛집 찾기</title>
+    <title>NEXT502 | 맛있는 만남의 시작</title>
     <style>
+        :root { --main-gold: #b89255; }
         .hero-section {
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
             url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1470&q=80');
             background-size: cover; background-position: center;
-            height: 450px; display: flex; align-items: center; justify-content: center; color: white;
-        }
-        .top-card {
-            border: 1px solid #f0f0f0;
-            border-radius: 0px !important;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        .top-card:hover { transform: translateY(-10px); }
-        .top-card img { height: 250px; object-fit: cover;  border-radius: 0px !important;}
-        .badge-rank { position: absolute; top: 15px; left: 15px; z-index: 10; background: #b89255; color: white; padding: 5px 12px; border-radius: 4px; font-weight: bold; }
-        #main-map { width: 100%; height: 500px; border-radius: 15px; border: 1px solid #ddd; }
-        .section-title { font-weight: bold; border-left: 5px solid #b89255; padding-left: 15px; margin-bottom: 30px; }
-        .card-link { display: block; color: inherit; text-decoration: none; }
-        .card-link:hover { color: inherit; text-decoration: none; }
-
-        /* Placeholder 스타일링 */
-        .hero-input::placeholder {
-            color: #ccc;
-            font-size: 1rem;
-            font-weight: 300;
-            letter-spacing: -0.5px;
-            transition: opacity 0.3s ease;
-            line-height: 1.5;
-            vertical-align: middle;
+            height: 550px; display: flex; align-items: center; justify-content: center; color: white;
         }
 
+        /* [수정] 플레이스홀더 색상 연하게 조정 */
+        .hero-input::placeholder { color: #bbb !important; font-weight: 300; opacity: 0.8; }
+        .hero-input:focus { transform: scale(1.01); transition: 0.3s; }
 
-        .hero-input:focus::placeholder {
-            opacity: 0;
+        /* 카테고리 스타일 */
+        .category-icon-box {
+            width: 75px; height: 75px;
+            background: white; border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px; font-size: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: 0.3s;
+        }
+        .category-item { text-decoration: none; color: #333; transition: 0.3s; display: block; }
+        .category-item:hover { transform: translateY(-8px); color: var(--main-gold); }
+        .category-item:hover .category-icon-box { background: var(--main-gold); color: white; }
+
+        /* 전체보기 배너 */
+        .all-view-banner {
+            background: linear-gradient(135deg, #fffaf3 0%, #f7f1e6 100%);
+            border: 1px solid rgba(184, 146, 85, 0.2);
+            border-radius: 20px; padding: 50px;
+        }
+        .section-title { font-weight: bold; border-left: 5px solid var(--main-gold); padding-left: 15px; margin-bottom: 35px; }
+
+        /* 이용방법 가이드 스타일 */
+        .guide-step { text-align: center; padding: 20px; position: relative; }
+        .guide-step i { font-size: 2.5rem; color: var(--main-gold); margin-bottom: 15px; display: block; }
+
+        /* [수정] 맛집 카드 및 TOP 배지 스타일 복구 */
+        .top-card { border: none; border-radius: 15px !important; transition: 0.4s; background: white; position: relative; overflow: hidden;}
+        .top-card:hover { transform: translateY(-10px); box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important; }
+        .top-card img { height: 260px; object-fit: cover; border-radius: 15px 15px 0 0; width: 100%; }
+
+        /* TOP 1 스타일 명확히 정의 */
+        .badge-rank {
+            position: absolute; top: 15px; left: 15px; z-index: 10;
+            background: var(--main-gold); color: white; padding: 5px 15px;
+            border-radius: 8px; font-weight: bold; font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        .hero-input { color: #333; font-weight: 500; }
+        .text-gold { color: var(--main-gold); }
+        .btn-gold { background-color: var(--main-gold); color: white; border-radius: 30px; font-weight: bold; padding: 12px 35px; border: none; }
+        .btn-gold:hover { background-color: #a6834d; color: white; }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
 <div th:replace="~{layout/navbar :: navbar}"></div>
 
 <header class="hero-section">
-    <div class="text-center w-100 px-3" style="max-width: 700px;">
-        <h1 class="display-4 fw-bold mb-4">오늘 어디서 먹을까?</h1>
-        <form action="/store/search" method="get" class="input-group input-group-lg shadow-lg">
-
-            <input type="text" name="keyword" class="form-control border-0 hero-input"
-                   placeholder="지역, 식당, 음식 종류 검색..." autocomplete="off">
-
-            <button class="btn btn-warning px-4 text-white" type="submit" style="background-color: #b89255;">
-                <i class="bi bi-search"></i>
+    <div class="text-center w-100 px-3" style="max-width: 800px;">
+        <span class="badge bg-white text-dark mb-3 px-3 py-2 rounded-pill shadow-sm">🚩 부산의 숨은 맛집을 찾아보세요</span>
+        <h1 class="display-4 fw-bold mb-4 text-white">오늘은 어디서 먹을까?</h1>
+        <form action="/store/search" method="get" class="input-group input-group-lg shadow-lg mb-4 rounded-pill overflow-hidden bg-white">
+            <input type="text" name="keyword" class="form-control border-0 hero-input ps-4"
+                   placeholder="지역명, 메뉴, 식당 이름을 입력하세요..." autocomplete="off">
+            <button class="btn px-5 text-white border-0" type="submit" style="background-color: var(--main-gold);">
+                <i class="bi bi-search me-2"></i>검색
             </button>
         </form>
+        <div class="popular-tags d-none d-md-block">
+            <a href="/store/search?keyword=밀면" class="btn btn-sm btn-outline-light rounded-pill mx-1 px-3">#밀면</a>
+            <a href="/store/search?keyword=파스타" class="btn btn-sm btn-outline-light rounded-pill mx-1 px-3">#파스타</a>
+            <a href="/store/search?keyword=회" class="btn btn-sm btn-outline-light rounded-pill mx-1 px-3">#회</a>
+            <a href="/store/search?keyword=국밥" class="btn btn-sm btn-outline-light rounded-pill mx-1 px-3">#국밥</a>
+        </div>
     </div>
 </header>
 
 <main class="container my-5">
-    <section class="mb-5 py-3">
-        <h3 class="section-title">실시간 인기 맛집 TOP 3</h3>
+    <section class="mb-5 py-4">
+        <div class="row row-cols-4 row-cols-md-8 g-4 justify-content-center text-center">
+            <div class="col" th:each="cat : ${ {'🍚|한식', '🍣|일식', '🥢|중식', '🍝|양식'} }">
+                <a th:href="@{/store/search(keyword=${#strings.arraySplit(cat, '|') [1] == '전체' ? '' : #strings.arraySplit(cat, '|') [1] })}" class="category-item">
+                    <div class="category-icon-box" th:text="${#strings.arraySplit(cat, '|') [0]}">🍚</div>
+                    <div class="fw-bold small" th:text="${#strings.arraySplit(cat, '|') [1]}">카테고리</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="all-view-banner text-center shadow-sm">
+            <h2 class="fw-bold mb-3">부산의 모든 맛집이 한곳에</h2>
+            <p class="lead text-muted mb-4">현재 <strong class="text-gold" th:text="${#numbers.formatInteger(totalStoreCount, 1, 'COMMA')}">0</strong>개의 식당이 당신을 기다리고 있습니다.</p>
+            <a href="/store/search" class="btn btn-gold btn-lg">
+                지금 바로 맛집 탐험하기 <i class="bi bi-compass ms-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <section class="mb-5 py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="section-title mb-0">주목해야 할 실시간 인기 맛집</h3>
+            <a href="/store/search?sort=rating" class="text-decoration-none text-muted">리스트 전체보기 <i class="bi bi-chevron-right"></i></a>
+        </div>
         <div class="row g-4">
             <div class="col-md-4" th:each="res, iterStat : ${topList}">
-                <a class="card-link" th:href="@{/detail(id=${res.restaurantId})}">
-                    <div class="card top-card shadow-sm">
-                        <span class="badge-rank shadow" th:text="${iterStat.count} + '위'">1위</span>
-                        <img src="" th:src="${res.mainImg}" class="card-img-top" alt="식당">
-                        <div class="card-body px-3">
-                            <div class="text-muted small">
-                                <span th:text="${res.foods}"></span> • <span th:text="${res.address}"></span>
+                <a class="text-decoration-none" th:href="@{/detail(id=${res.restaurantId})}">
+                    <div class="card top-card shadow-sm h-100">
+                        <span class="badge-rank shadow-sm" th:text="${iterStat.count} + '위'">TOP 1</span>
+                        <img th:src="${res.mainImg}" class="card-img-top" alt="식당">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title fw-bold mb-0 text-dark" th:text="${res.restaurantName}">식당명</h5>
+                                <span class="text-gold fw-bold"><i class="bi bi-star-fill me-1"></i><span th:text="${res.rating}">4.5</span></span>
                             </div>
-                            <h5 class="card-title fw-bold mt-1" th:text="${res.restaurantName}"></h5>
-                            <p class="text-gold mb-0">
-                                ★ <span th:text="${res.rating}"></span>
-                            </p>
+                            <p class="card-text text-muted mb-3"><i class="bi bi-geo-alt me-1"></i><span th:text="${res.address}">주소 정보</span></p>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-light text-dark border px-2 py-1" th:text="${res.foods}">카테고리</span>
+                            </div>
                         </div>
                     </div>
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <hr class="my-5 opacity-25">
+
+    <section class="mb-5 py-3">
+        <h3 class="text-center fw-bold mb-5">NEXT502 이용방법</h3>
+        <div class="row g-4">
+            <div class="col-md-3 guide-step">
+                <i class="bi bi-search-heart"></i>
+                <h5 class="fw-bold">1. 맛집 탐색</h5>
+                <p class="text-muted small">취향과 지역에 맞는<br>최적의 식당을 검색하세요.</p>
+            </div>
+            <div class="col-md-3 guide-step">
+                <i class="bi bi-chat-left-quote"></i>
+                <h5 class="fw-bold">2. 리뷰 확인</h5>
+                <p class="text-muted small">방문자들의 생생한 후기와<br>사진으로 신뢰를 더하세요.</p>
+            </div>
+            <div class="col-md-3 guide-step">
+                <i class="bi bi-calendar-check"></i>
+                <h5 class="fw-bold">3. 간편 예약</h5>
+                <p class="text-muted small">원하는 날짜와 시간을 선택해<br>클릭 한 번으로 예약 완료!</p>
+            </div>
+            <div class="col-md-3 guide-step">
+                <i class="bi bi-emoji-heart-eyes"></i>
+                <h5 class="fw-bold">4. 미식 체험</h5>
+                <p class="text-muted small">기다림 없이 입장하여<br>최고의 요리를 즐겨보세요.</p>
             </div>
         </div>
     </section>

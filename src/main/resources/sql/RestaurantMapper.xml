@@ -212,4 +212,8 @@
         FROM restaurant
         WHERE restaurant_id = #{restaurantId}
     </select>
+
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*) FROM restaurant
+    </select>
 </mapper>
