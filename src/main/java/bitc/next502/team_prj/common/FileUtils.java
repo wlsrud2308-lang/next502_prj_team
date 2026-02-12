@@ -81,7 +81,7 @@ public class FileUtils {
                 fileDTO.setReviewId(reviewId);
                 fileDTO.setFileSize(uploadFile.getSize());
                 fileDTO.setOriginalFilename(uploadFile.getOriginalFilename());
-                fileDTO.setStoredFilename(path + "/" + newFileName);
+                fileDTO.setStoredFilename(currentTime.format(fm) + "/" + newFileName);
 
                 filelist.add(fileDTO);
                 file = new File(path + "/" + newFileName);

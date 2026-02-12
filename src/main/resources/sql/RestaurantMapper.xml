@@ -61,19 +61,21 @@
             LIMIT 1
     </select>
 
-    <select id="selectReviewsByRestaurantId"
-            resultType="bitc.next502.team_prj.dto.ReviewDTO">
+    <select id="selectReviewsByRestaurantId" resultType="bitc.next502.team_prj.dto.ReviewDTO">
         SELECT
-        review_idx     AS reviewIdx,
-        rating         AS rating,
-        user_id        AS userId,
-        comment        AS comment,
-        create_date    AS createDate,
-        reply_content  AS replyContent,
-        reply_date     AS replyDate
-        FROM review
-        WHERE restaurant_id = #{restaurantId}
-        ORDER BY create_date DESC
+            r.review_idx AS reviewIdx,
+            r.user_id AS userId,
+            r.restaurant_id AS restaurantId,
+            r.comment,
+            r.create_date AS createDate,
+            r.rating,
+            r.reply_content AS replyContent,
+            r.reply_date AS replyDate,
+            f.stored_filename AS storedFilename
+        FROM review r
+                 LEFT OUTER JOIN file f ON r.review_idx = f.review_id
+        WHERE r.restaurant_id = #{restaurantId}
+        ORDER BY r.review_idx DESC
     </select>
 
     <select id="selectReviewCountByRestaurantId" resultType="int">
@@ -187,31 +189,31 @@
         VALUES ( #{restaurantName}, #{category}, #{address}, #{mainImg}, #{description}, #{locationTag}, #{seats}, #{price})
     </insert>
 
-    <!-- 식당 정보 수정 -->
-    <update id="updateRestaurant">
+    <update id="updateRestaurant" parameterType="bitc.next502.team_prj.dto.RestaurantDTO">
         UPDATE restaurant
         SET
         place = #{restaurantName},
         category = #{category},
         addr1 = #{address},
         gugun_nm = #{locationTag},
-        max_capacity = #{seats},
-        itemcntnts = #{description},
+        max_capacity = #{maxCapacity},
+        itemcntnts = #{itemCntnts},
         price = #{price}
         <if test="mainImg != null and mainImg != ''">
             , main_img = #{mainImg}
         </if>
-        WHERE restaurant_id = #{restaurantId};
+        WHERE restaurant_id = #{restaurantId}
     </update>
 
-    <!-- 식당 삭제 -->
     <delete id="deleteRestaurant">
         DELETE FROM restaurant
-        WHERE restaurant_id = #{restaurantId};
+        WHERE restaurant_id = #{restaurantId}
     </delete>
 
     <select id="selectRestaurantById" parameterType="long" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
-        SELECT r.place AS restaurantName,
+        SELECT r.restaurant_id AS restaurantId,
+               r.place AS restaurantName,
+               r.category AS category,
                c.category AS foods,
                r.addr1 AS address,
                r.cntct_tel AS restaurantTel,
