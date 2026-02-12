@@ -386,7 +386,7 @@ public class MngController {
         }
 
         model.addAttribute("restaurant", restaurant);
-        model.addAttribute("menuId", "store");
+        model.addAttribute("menuId", "storeEdit");
         // templates/mng/mngStoreEdit.html 렌더링
         return "mng/mngStoreEdit";
     }
