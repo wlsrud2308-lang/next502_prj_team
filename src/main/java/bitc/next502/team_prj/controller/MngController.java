@@ -53,7 +53,7 @@ public class MngController {
 
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
         String businessId = businessUser.getBusinessId();
-        
+
         // 날짜 없으면 오늘로 세팅
         if (resvDate == null) {
             resvDate = LocalDate.now();
@@ -130,6 +130,7 @@ public class MngController {
         return "/uploads/" + fileName;
     }
 
+    // 관리자 리뷰 관리
     @GetMapping("/mngreview")
     public String mngreview(Model model,
                             HttpSession session,
@@ -170,6 +171,7 @@ public class MngController {
         return "mng/mngreview";
     }
 
+    // 관리자 리뷰 답글
     @PostMapping("/mngreview/reply")
     public String postReviewReply(@RequestParam int reviewIdx,
                                   @RequestParam String replyContent,
@@ -319,20 +321,6 @@ public class MngController {
         ra.addFlashAttribute("alertMessage", "정보가 성공적으로 수정되었습니다.");
         return "redirect:/mngmypage";
     }
-
-//    // 식당 정보 등록
-//    @GetMapping("/mngstoreWrite")
-//    public String mngStoreWrite(Model model) {
-//        model.addAttribute("menuId", "store"); // 'store'라는 별명을 붙임
-//        return "mng/mngstoreWrite";
-//    }
-//
-//    // 리뷰 답변 관리
-//    @GetMapping("/mngreview")
-//    public String mngReview(Model model) {
-//        model.addAttribute("menuId", "review"); // 'review'라는 별명을 붙임
-//        return "mng/mngreview";
-//    }
 
     //    관리자 정보 수정 페이지
     @GetMapping("/mng/account")
