@@ -53,6 +53,8 @@ public class MainController {
         model.addAttribute("reviewList", reviewList);
         model.addAttribute("reviewCount", reviewCount);
         model.addAttribute("ratingCounts", ratingCounts);
+        model.addAttribute("lat", restaurant.getLat());
+        model.addAttribute("lng", restaurant.getLng());
 
         return "store/detail";
     }
