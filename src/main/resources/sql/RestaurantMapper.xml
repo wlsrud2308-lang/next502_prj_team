@@ -188,7 +188,7 @@
     </insert>
 
     <!-- 식당 정보 수정 -->
-    <update id="updateRestaurantInfo">
+    <update id="updateRestaurant">
         UPDATE restaurant
         SET
         place = #{restaurantName},
@@ -196,7 +196,8 @@
         addr1 = #{address},
         gugun_nm = #{locationTag},
         max_capacity = #{seats},
-        itemcntnts = #{description}
+        itemcntnts = #{description},
+        price = #{price}
         <if test="mainImg != null and mainImg != ''">
             , main_img = #{mainImg}
         </if>

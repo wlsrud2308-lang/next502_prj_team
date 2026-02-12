@@ -45,8 +45,6 @@ public interface MngMapper {
   void updateBusiness(BusinessUserDTO business);
 
   // 사업자 계정 삭제
-  void deleteReservations(@Param("businessId") String businessId);
-  void deleteRestaurant(@Param("businessId") String businessId);
   void deleteBusiness(@Param("businessId") String businessId);
 
   void updateRestaurantIdForBusinessUser(@Param("businessId") String businessId,

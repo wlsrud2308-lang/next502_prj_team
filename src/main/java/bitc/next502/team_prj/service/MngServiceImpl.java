@@ -67,27 +67,6 @@ public class MngServiceImpl implements MngService{
     mngMapper.updateBusinessUserInfo(userDTO);
   }
 
-  // 사업자 정보 조회
-  @Override
-  public BusinessUserDTO getBusinessById(String businessId) {
-    return mngMapper.selectBusinessById(businessId);
-  }
-
-  // 사업자 정보 수정 (비밀번호 평문)
-  @Override
-  public void updateBusinessInfo(String businessId, String businessName, String businessPhone, String newPassword) {
-    BusinessUserDTO business = mngMapper.selectBusinessById(businessId);
-    if (business == null) return;
-
-    business.setBusinessName(businessName);
-    business.setBusinessPhone(businessPhone);
-
-    if (newPassword != null && !newPassword.isEmpty()) {
-      business.setBusinessPwd(newPassword); // 평문 저장
-    }
-
-    mngMapper.updateBusiness(business); // Mapper에서 update 처리
-  }
 
   //  // 사업자 계정 삭제
   @Override
