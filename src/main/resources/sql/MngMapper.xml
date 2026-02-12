@@ -137,7 +137,14 @@
     </select>
 
     <update id="updateBusinessUserInfo" parameterType="bitc.next502.team_prj.dto.BusinessUserDTO">
-        WHERE business_id = #{businessId};
+        UPDATE business_user
+        SET
+        business_name = #{businessName},
+        business_tel = #{businessPhone}
+        <if test="businessPwd != null and businessPwd != ''">
+            , business_pwd = #{businessPwd}
+        </if>
+        WHERE business_id = #{businessId}
     </update>
 
     <!-- 사업자 정보 조회 -->
@@ -167,27 +174,25 @@
         WHERE business_id = #{businessId}
     </update>
 
-    <!-- 1. 예약 삭제 -->
-    <delete id="deleteReservations">
-        DELETE FROM reservation
-        WHERE restaurant_id = (SELECT restaurant_id FROM business_user WHERE business_id = #{businessId})
-    </delete>
-
-    <!-- 2. 식당 삭제 -->
-    <delete id="deleteRestaurant">
-        DELETE FROM restaurant
-        WHERE restaurant_id = (SELECT restaurant_id FROM business_user WHERE business_id = #{businessId})
-    </delete>
-
-    <!-- 3. 사업자 계정 삭제 -->
-    <delete id="deleteBusiness">
-        DELETE FROM business_user
-        WHERE business_id = #{businessId}
-    </delete>
-
+    <!-- restaurant_id 업데이트 -->
     <update id="updateRestaurantIdForBusinessUser">
         UPDATE business_user
         SET restaurant_id = #{restaurantId}
         WHERE business_id = #{businessId}
     </update>
+
+    <!-- 계정 삭제 예약 -->
+    <update id="setDeleteReserveDateAndStatus">
+        UPDATE business_user
+        SET status = #{status},
+            delete_reserve_date = #{deleteDate,jdbcType=TIMESTAMP}
+        WHERE business_id = #{businessId}
+    </update>
+
+    <!-- 예약 삭제 날짜가 지난 계정 삭제 -->
+    <delete id="deleteAccountsPastDeletionDate">
+        DELETE FROM business_user
+        WHERE status = 'PENDING_DELETE'
+        AND delete_reserve_date &lt;= #{currentDate,jdbcType=TIMESTAMP};
+    </delete>
 </mapper>

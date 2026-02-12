@@ -349,11 +349,14 @@ public class MngController {
         }
 
         BusinessUserDTO businessUser = (BusinessUserDTO) userBoxing;
-        boolean deleted = mngService.deleteBusinessAccount(businessUser.getBusinessId(), password);
+
+        boolean deleted = mngService.scheduleBusinessAccountDeletion(businessUser.getBusinessId(), password);
 
         if (deleted) {
             session.invalidate(); // 세션 종료
-            return "redirect:/login"; // 삭제 후 로그인 페이지로 이동
+            redirectAttributes.addFlashAttribute("alertMessage", "계정 삭제가 예약되었습니다. 7일 후 자동 삭제됩니다.");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+            return "redirect:/login";
         } else {
             redirectAttributes.addFlashAttribute("alertMessage", "비밀번호가 올바르지 않습니다.");
             redirectAttributes.addFlashAttribute("alertType", "danger");

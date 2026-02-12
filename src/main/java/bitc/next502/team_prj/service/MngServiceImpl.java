@@ -1,17 +1,18 @@
 package bitc.next502.team_prj.service;
 
 import bitc.next502.team_prj.dto.BusinessUserDTO;
-import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.dto.MngDTO;
+import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.mapper.MngMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class MngServiceImpl implements MngService{
+public class MngServiceImpl implements MngService {
 
   @Autowired
   private MngMapper mngMapper;
@@ -22,8 +23,8 @@ public class MngServiceImpl implements MngService{
   }
 
   @Override
-  public List<MngDTO> getResvList(String businessID) {
-      return mngMapper.selectResvList(businessID);
+  public List<MngDTO> getResvList(String businessId) {
+    return mngMapper.selectResvList(businessId);
   }
 
   @Override
@@ -33,7 +34,7 @@ public class MngServiceImpl implements MngService{
 
   @Override
   public List<ReviewDTO> getReviewListByBusinessId(String businessId, int page, int size) {
-    int offset = page * size; // 페이징 오프셋 계산
+    int offset = page * size;
     return mngMapper.selectReviewListByBusinessIdWithPaging(businessId, offset, size);
   }
 
@@ -67,23 +68,38 @@ public class MngServiceImpl implements MngService{
     mngMapper.updateBusinessUserInfo(userDTO);
   }
 
-
-  //  // 사업자 계정 삭제
   @Override
   public boolean deleteBusinessAccount(String businessId, String password) {
-    BusinessUserDTO business = mngMapper.selectBusinessById(businessId);
-    if (business == null) return false;
+    // 이제 즉시 삭제는 사용하지 않고 예약 삭제로 대체
+    return scheduleBusinessAccountDeletion(businessId, password);
+  }
 
-    if (!password.equals(business.getBusinessPwd())) { // 평문 비교
-      return false;
+  @Override
+  public boolean scheduleBusinessAccountDeletion(String businessId, String password) {
+    BusinessUserDTO user = mngMapper.selectBusinessById(businessId);
+    if (user == null || !user.getBusinessPwd().equals(password)) {
+      return false; // 비밀번호 틀림
     }
 
-    mngMapper.deleteBusiness(businessId); // Mapper에서 delete 처리
+    // 7일 뒤 삭제일
+    LocalDateTime deleteDateTime = LocalDateTime.now().plusDays(7);
+    java.sql.Timestamp deleteTimestamp = java.sql.Timestamp.valueOf(deleteDateTime);
+
+    // Mapper에 Timestamp 전달
+    mngMapper.setDeleteReserveDateAndStatus(businessId, deleteDateTime, "PENDING_DELETE");
     return true;
   }
 
-  // business_user 테이블의 restaurant_id 업데이트
+  @Override
+  public void deleteAccountsPastDeletionDate() {
+    LocalDateTime now = LocalDateTime.now();
+    mngMapper.deleteAccountsPastDeletionDate(now);
+  }
+
+  @Override
   public void updateRestaurantIdForBusinessUser(String businessId, long restaurantId) {
     mngMapper.updateRestaurantIdForBusinessUser(businessId, restaurantId);
   }
 }
+
+
