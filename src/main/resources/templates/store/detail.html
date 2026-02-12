@@ -6,153 +6,162 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
-      :root { --main-gold: #b89255; }
-      .text-gold { color: var(--main-gold) !important; }
+    :root { --main-gold: #b89255; }
+    .text-gold { color: var(--main-gold) !important; }
 
-      .detail-hero {
-        width: 100%;
-        height: 450px;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .detail-hero {
+      width: 100%;
+      height: 450px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .hero-bg-blur {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: url([(${restaurant.mainImgThumb})]) center/cover no-repeat;
-        filter: blur(15px) brightness(0.7);
-        transform: scale(1.1);
-        z-index: 1;
-      }
-      
-      .hero-content {
-        position: relative;
-        z-index: 2;
-        padding: 0 20px;
-      }
+    .hero-bg-blur {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url([(${restaurant.mainImgThumb})]) center/cover no-repeat;
+      filter: blur(15px) brightness(0.7);
+      transform: scale(1.1);
+      z-index: 1;
+    }
 
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 20px;
+    }
+
+    .hero-card-img {
+      width: 320px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border: 3px solid rgba(255,255,255,0.3);
+    }
+
+    @media (max-width: 768px) {
       .hero-card-img {
-        width: 320px;
-        height: 220px;
-        object-fit: cover;
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        border: 3px solid rgba(255,255,255,0.3);
+        width: 260px;
+        height: 180px;
       }
+    }
 
+    /* 예약 박스 */
+    .sticky-booking {
+      position: sticky;
+      top: 100px;
+      z-index: 10;
+    }
 
-      @media (max-width: 768px) {
-        .hero-card-img {
-          width: 260px;
-          height: 180px;
-        }
-      }
+    /* 지도 스타일 */
+    .map-box {
+      width: 100%;
+      height: 250px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
 
-      /* 예약 박스 */
-      .sticky-booking {
-          position: sticky;
-          top: 100px;
-          z-index: 10;
-      }
+    /* 버튼 커스텀 */
+    .btn-gold { background-color: var(--main-gold); color: white; border: none; }
+    .btn-gold:hover { background-color: #9c7b46; color: white; }
+    .btn-bookmark { border: 1px solid #dee2e6; color: #ccc; transition: 0.3s; }
+    .btn-bookmark.active { color: #e74c3c; border-color: #e74c3c; background: #fff5f5; }
 
-      /* 지도 스타일 */
-      .map-box {
-          width: 100%;
-          height: 250px;
-          border-radius: 8px;
-          border: 1px solid #dee2e6;
-      }
+    .star-meter {
+      position: relative;
+      display: inline-block;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      line-height: 1;
+      vertical-align: middle;
+    }
+    .star-meter .stars-bg { color: #d7d7d7; }
+    .star-meter .stars-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0%;
+      overflow: hidden;
+      white-space: nowrap;
+      color: var(--main-gold);
+    }
 
-      /* 버튼 커스텀 */
-      .btn-gold { background-color: var(--main-gold); color: white; border: none; }
-      .btn-gold:hover { background-color: #9c7b46; color: white; }
-      .btn-bookmark { border: 1px solid #dee2e6; color: #ccc; transition: 0.3s; }
-      .btn-bookmark.active { color: #e74c3c; border-color: #e74c3c; background: #fff5f5; }
+    /*예약페이지 관련 팝업 디자인 css 0209am 추가*/
+    .resv-modal {
+      display: none; position: fixed; z-index: 10000; left: 0; top: 0;
+      width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+    }
 
+    .resv-modal-content {
+      background: #fff; width: 400px; position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%); border-radius: 0;
+      border: 1px solid #eee;
+    }
 
-      .star-meter {
-          position: relative;
-          display: inline-block;
-          font-size: 1.1rem;
-          letter-spacing: 2px;
-          line-height: 1;
-          vertical-align: middle;
-      }
-      .star-meter .stars-bg { color: #d7d7d7; }
-      .star-meter .stars-fill {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 0%;
-          overflow: hidden;
-          white-space: nowrap;
-          color: var(--main-gold);
-      }
-      /*예약페이지 관련 팝업 디자인 css 0209am 추가*/
-      .resv-modal {
-        display: none; position: fixed; z-index: 10000; left: 0; top: 0;
-        width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px); /* 배경을 더 고급스럽게 흐림 처리 */
-      }
+    .modal-gold-line { height: 3px; background: #C19A6B; width: 100%; }
+    .modal-body { padding: 50px 40px; text-align: center; }
+    .modal-icon-wrapper { font-size: 32px; color: #C19A6B; margin-bottom: 20px; font-weight: 100; }
 
+    .modal-title {
+      font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700;
+      letter-spacing: 3px; color: #111; margin-bottom: 15px;
+    }
 
-      .resv-modal-content {
-        background: #fff; width: 400px; position: absolute; left: 50%; top: 50%;
-        transform: translate(-50%, -50%); border-radius: 0;
-        border: 1px solid #eee;
-      }
+    .modal-text { font-size: 14px; color: #777; line-height: 1.8; margin-bottom: 40px; }
+    .modal-text span { color: #C19A6B; font-weight: bold; }
+    .modal-button-group { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
 
-      .modal-gold-line { height: 3px; background: #C19A6B; width: 100%; }
+    .btn-cancel-minimal {
+      background: transparent; color: #999; border: 1px solid #ddd;
+      padding: 14px 0; flex: 1; font-size: 12px; letter-spacing: 1px;
+      transition: 0.3s;
+    }
+    .btn-cancel-minimal:hover { color: #111; border-color: #111; }
 
-      .modal-body { padding: 50px 40px; text-align: center; }
+    .btn-login-premium {
+      background: #111; color: #fff; border: 1px solid #111;
+      padding: 14px 0; flex: 1.2; font-size: 12px; letter-spacing: 1px;
+      font-weight: bold; transition: 0.3s;
+    }
+    .btn-login-premium:hover { background: #C19A6B; border-color: #C19A6B; }
 
-      .modal-icon-wrapper { font-size: 32px; color: #C19A6B; margin-bottom: 20px; font-weight: 100; }
+    /* ✅ 사장님 답글(좌: [Re]+내용 / 우: 시간) */
+    .owner-reply{
+      margin-top:12px;
+      padding:12px 14px;
+      background:#f5f5f5;
+      border-left:4px solid #cfcfcf;
+      border-radius:4px;
 
-      .modal-title {
-        font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700;
-        letter-spacing: 3px; color: #111; margin-bottom: 15px;
-      }
-
-      .modal-text { font-size: 14px; color: #777; line-height: 1.8; margin-bottom: 40px; }
-      .modal-text span { color: #C19A6B; font-weight: bold; }
-
-
-      .modal-button-group { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-
-
-      .btn-cancel-minimal {
-        background: transparent; color: #999; border: 1px solid #ddd;
-        padding: 14px 0; flex: 1; font-size: 12px; letter-spacing: 1px;
-        transition: 0.3s;
-      }
-      .btn-cancel-minimal:hover { color: #111; border-color: #111; }
-
-
-      .btn-login-premium {
-        background: #111; color: #fff; border: 1px solid #111;
-        padding: 14px 0; flex: 1.2; font-size: 12px; letter-spacing: 1px;
-        font-weight: bold; transition: 0.3s;
-      }
-      .btn-login-premium:hover { background: #C19A6B; border-color: #C19A6B; }
-
-      .owner-reply{
-        margin-top:12px;
-        padding:12px 14px;
-        background:#f5f5f5;
-        border-left:4px solid #cfcfcf;
-        border-radius:4px;
-      }
-      .re-tag{ font-weight:800; margin-right:6px; color:#444; }
+      display:flex;
+      align-items:flex-start;   /* 여러 줄이면 시간은 위로 */
+      gap:10px;
+    }
+    .re-tag{
+      font-weight:800;
+      color:#444;
+      white-space:nowrap;
+    }
+    .reply-text{
+      flex: 1;                 /* ✅ 내용이 가운데를 차지 */
+      min-width:0;
+      word-break:break-word;
+    }
+    .reply-date{
+      margin-left:auto;        /* ✅ 시간 오른쪽 끝 */
+      white-space:nowrap;
+      font-size:0.8rem;
+      color:#888;
+    }
   </style>
-
-
-
 </head>
 
 <body class="bg-white">
@@ -201,7 +210,8 @@
         </div>
         <div class="border-start ps-4">
           <span class="text-muted small d-block">좌석 수</span>
-          <b class="fs-5">[[${restaurant.maxCapacity} != null ? ${restaurant.maxCapacity} : '0']]석</b>
+          <!-- ✅ thymeleaf 표기 안전하게 정리 -->
+          <b class="fs-5">[[${restaurant.maxCapacity != null ? restaurant.maxCapacity : 0}]]석</b>
         </div>
       </div>
 
@@ -289,7 +299,7 @@
           </div>
         </div>
 
-        <!-- 리뷰 목록 -->
+        <!-- ✅ 리뷰 목록 (닫는 div 구조 정리 완료) -->
         <div class="vstack gap-4">
           <div class="pb-4 border-bottom" th:each="rv : ${reviewList}">
             <div class="d-flex justify-content-between mb-2">
@@ -303,10 +313,20 @@
             </div>
 
             <p class="text-secondary small mb-0" th:text="${rv.comment}">리뷰 내용</p>
+
+            <!-- ✅ 사장님 답글 + 오른쪽 시간(같은 박스 안) -->
             <div class="owner-reply"
                  th:if="${rv.replyContent != null and !#strings.isEmpty(rv.replyContent)}">
+
               <span class="re-tag">[Re]</span>
-              <span th:text="${rv.replyContent}" style="white-space: pre-line;"></span>
+
+              <span class="reply-text"
+                    th:text="${rv.replyContent}"
+                    style="white-space: pre-line;"></span>
+
+              <span class="reply-date"
+                    th:if="${rv.replyDate != null and !#strings.isEmpty(rv.replyDate)}"
+                    th:text="${#strings.substring(rv.replyDate,0,16)}"></span>
             </div>
           </div>
 
@@ -330,8 +350,6 @@
             </div>
 
             <div class="d-flex gap-2 mb-4">
-
-              <!--      예약하기 페이지 연결 여기부터 323행 까지 예약페이지 관련 0209 am 수정 -->
               <button type="button" class="btn btn-dark btn-lg flex-grow-1 fw-bold py-3" onclick="checkLoginAndGo()">예약하기</button>
 
               <button type="button" class="btn btn-bookmark btn-lg px-3"
@@ -341,22 +359,22 @@
                       onclick="toggleLike(this)">
                 <i class="bi bi-heart-fill"></i>
               </button>
+
               <input type="hidden" th:value="${restaurant.lat}" id="val-lat">
               <input type="hidden" th:value="${restaurant.lng}" id="val-lng">
               <input type="hidden" th:value="${restaurant.restaurantName}" id="val-restName">
-
             </div>
 
             <div class="pt-4 border-top">
               <h6 class="fw-bold mb-3 small"><i class="bi bi-compass me-1"></i> 주변 관광 명소 (2km 이내)</h6>
-<!--              <div id="tourMap" class="map-box" style="height: 180px;"></div>-->
               <div id="tourMapTest" class="map-box" style="height: 180px;"></div>
             </div>
           </div>
         </div>
       </div>
     </aside>
-    <!--    팝업 디자인 -->
+
+    <!-- 팝업 디자인 -->
     <div id="resvSuccessModal" class="resv-modal">
       <div class="resv-modal-content">
         <div class="modal-gold-line"></div>
@@ -371,7 +389,8 @@
         </div>
       </div>
     </div>
-    <!--    비로그인 팝업 디자인 -->
+
+    <!-- 비로그인 팝업 디자인 -->
     <div id="loginCheckModal" class="resv-modal">
       <div class="resv-modal-content">
         <div class="modal-gold-line"></div>
@@ -405,141 +424,97 @@
 <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=xu3exk9j7j"></script>
 
 <script th:inline="javascript">
-    const resId = [[${restaurant.restaurantId}]];
+  const resId = [[${restaurant.restaurantId}]];
 
-    $(document).ready(function() {
+  $(document).ready(function() {
 
-        const lat = [[${lat}]];
-        const lng = [[${lng}]];
-        document.getElementById('map');
+    const lat = [[${lat}]];
+    const lng = [[${lng}]];
+    document.getElementById('map');
 
-        const map = new naver.maps.Map('map', {
-            center: new naver.maps.LatLng(lat, lng), //지도의 초기 중심 좌표
-            zoom: 15, //지도의 초기 줌 레벨
-            minZoom: 12, //지도의 최소 줌 레벨
-        });
-
-        function checkLoginAndGo() {
-            location.href = "/reservation/write?restaurantId=" + resId;
-        }
-
-        const marker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(lat, lng),
-            map: map
-        });
-
-        window.checkLoginAndGo = function() {
-            location.href = "/reservation/write?restaurantId=" + resId;
-        }
-
-        window.closeLoginModal = function() {
-            const modal = document.getElementById("loginCheckModal");
-            if (modal) modal.style.display = "none";
-        }
+    const map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(lat, lng),
+      zoom: 15,
+      minZoom: 12,
     });
-</script>
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<KAKAO_APP_KEY>&libraries=services"></script>
-<script th:inline="javascript">
-    window.onload = function() {
-
-        // // restaurant.lat/lng가 문자열이어도 숫자로 변환해서 안전하게 사용
-        // const latRaw = /*[[${restaurant.lat}]]*/ "35.1796";
-        // const lngRaw = /*[[${restaurant.lng}]]*/ "129.0756";
-        // const lat = parseFloat(latRaw) || 35.1796;
-        // const lng = parseFloat(lngRaw) || 129.0756;
-        //
-        // // 1. 메인 지도 설정
-        // const mapContainer = document.getElementById('map');
-        // const mapOption = { center: new kakao.maps.LatLng(lat, lng), level: 3 };
-        // const map = new kakao.maps.Map(mapContainer, mapOption);
-        //
-        // new kakao.maps.Marker({
-        //     position: new kakao.maps.LatLng(lat, lng),
-        //     map: map
-        // });
-        //
-        // // 2. 관광지 지도 설정
-        // const tourMapContainer = document.getElementById('tourMap');
-        // const tourMapOption = { center: new kakao.maps.LatLng(lat, lng), level: 5 };
-        // const tourMap = new kakao.maps.Map(tourMapContainer, tourMapOption);
-        //
-        // const ps = new kakao.maps.services.Places();
-        // ps.categorySearch('AT4', (data, status) => {
-        //     if (status === kakao.maps.services.Status.OK) {
-        //         data.forEach(place => {
-        //             new kakao.maps.Marker({
-        //                 position: new kakao.maps.LatLng(place.y, place.x),
-        //                 map: tourMap
-        //             });
-        //         });
-        //     }
-        // }, { location: new kakao.maps.LatLng(lat, lng), radius: 2000 });
-
-    };
-
-    // 비로그인 상황에서 예약하기 버튼눌렀을때 로그인 페이지로 보내주는 스크립트 0209 am  수정
 
     function checkLoginAndGo() {
-
-      const resId = [[${restaurant.restaurantId}]];
-
-
       location.href = "/reservation/write?restaurantId=" + resId;
     }
 
-    function closeLoginModal() {
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(lat, lng),
+      map: map
+    });
 
+    window.checkLoginAndGo = function() {
+      location.href = "/reservation/write?restaurantId=" + resId;
+    }
 
+    window.closeLoginModal = function() {
       const modal = document.getElementById("loginCheckModal");
-      if(modal) {
-        modal.style.display = "none";
-      }
+      if (modal) modal.style.display = "none";
     }
-
-
-    // ************ 찜하기(하트) 기능**********
-    function toggleLike(btn) {
-      const restaurantId = $(btn).data("restaurant-id");
-      const restaurantName = $(btn).data("restaurant-name");
-
-      const $btn = $(btn);
-
-      $.ajax({
-        url: "/bookmark/toggle",
-        type: "POST",
-        data: {
-          restaurantId: restaurantId,
-          restaurantName: restaurantName
-        },
-        success: function(result) {
-          if (result === "login-required") {
-            // 로그인 모달 띄우기
-            const modal = document.getElementById("loginCheckModal");
-            if(modal) modal.style.display = "block";
-
-          } else if (result === "1") {
-
-            $btn.addClass("active");
-            alert("관심 식당에 추가되었습니다! ");
-
-          } else if (result === "0") {
-
-            $btn.removeClass("active");
-            alert("관심 식당에서 삭제되었습니다.");
-          }
-        },
-        error: function() {
-          alert("서버 통신 오류가 발생했습니다.");
-        }
-      });
-    }
-
+  });
 </script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<KAKAO_APP_KEY>&libraries=services"></script>
+<script th:inline="javascript">
+  window.onload = function() {
+    // (기존 주석 유지)
+  };
+
+  function checkLoginAndGo() {
+    const resId = [[${restaurant.restaurantId}]];
+    location.href = "/reservation/write?restaurantId=" + resId;
+  }
+
+  function closeLoginModal() {
+    const modal = document.getElementById("loginCheckModal");
+    if(modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  // ************ 찜하기(하트) 기능**********
+  function toggleLike(btn) {
+    const restaurantId = $(btn).data("restaurant-id");
+    const restaurantName = $(btn).data("restaurant-name");
+
+    const $btn = $(btn);
+
+    $.ajax({
+      url: "/bookmark/toggle",
+      type: "POST",
+      data: {
+        restaurantId: restaurantId,
+        restaurantName: restaurantName
+      },
+      success: function(result) {
+        if (result === "login-required") {
+          const modal = document.getElementById("loginCheckModal");
+          if(modal) modal.style.display = "block";
+
+        } else if (result === "1") {
+          $btn.addClass("active");
+          alert("관심 식당에 추가되었습니다! ");
+
+        } else if (result === "0") {
+          $btn.removeClass("active");
+          alert("관심 식당에서 삭제되었습니다.");
+        }
+      },
+      error: function() {
+        alert("서버 통신 오류가 발생했습니다.");
+      }
+    });
+  }
+</script>
+
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-
   const restaurant = {
     name: $("#val-restName").val(),
     lat: $("#val-lat").val(),
@@ -585,11 +560,6 @@
               const type = place.tags?.type;
               const name = place.tags?.name || "";
 
-              //const osmType = place.type; // node / way / relation
-              const osmType = type;
-              const osmId = place.id;
-
-              //const detailUrl = `https://www.openstreetmap.org/${type}/${osmId}`
               const marker=L.marker([lat, lng], {
                 icon: L.icon({
                   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
@@ -602,14 +572,14 @@
                         offset: [0, -10],
                         opacity: 0.9
                       });
+
               marker.on("click",function (){
                 const url="https://search.naver.com/search.naver?query="+ name;
                 window.open(url,"new");
-
               });
             });
           });
-
 </script>
+
 </body>
 </html>
