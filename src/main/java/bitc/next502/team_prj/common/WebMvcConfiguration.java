@@ -13,6 +13,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("file:///C:/next502/images/");
 
         registry.addResourceHandler("/uploads/**")
-            .addResourceLocations("file:///C:/Next502/GItgub/uploads/");
+            .addResourceLocations("file:///C:/Next502/spring_projects/uploads/");
     }
 }
