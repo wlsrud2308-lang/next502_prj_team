@@ -183,7 +183,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <button th:unless="${resv.status == '방문완료'}"
+                                        <button th:unless="${resv.status == '방문완료' or resv.status == '노쇼' or resv.status == '취소' }"
                                                 class="btn btn-outline-secondary btn-sm px-3"
                                                 th:onclick="|if(confirm('예약을 취소하시겠습니까?')) location.href='/mypage/delete?resvId=${resv.resvId}'|">
                                             예약 취소
@@ -198,6 +198,16 @@
                                         <button th:if="${resv.status == '방문완료' and resv.isReviewed == 1}"
                                                 class="btn btn-light btn-sm px-3 text-muted" disabled>
                                             리뷰 작성 완료
+                                        </button>
+
+                                        <button th:if="${resv.status == '노쇼'}"
+                                                class="btn btn-light btn-sm px-3 text-muted" disabled>
+                                            방문하지 않으셨습니다.
+                                        </button>
+
+                                        <button th:if="${resv.status == '취소'}"
+                                                class="btn btn-light btn-sm px-3 text-muted" disabled>
+                                            가게에서 예약을 취소하였습니다.
                                         </button>
                                     </div>
                                 </div>
