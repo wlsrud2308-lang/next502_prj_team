@@ -7,7 +7,7 @@
     <select id="selectTop3Restaurants" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
         SELECT
             r.restaurant_id AS restaurantId,
-            COALESCE(rd.title, r.place) AS restaurantName,
+            r.place AS restaurantName,
             r.category AS category,
             c.foods AS foods,
             r.addr1 AS address,
@@ -17,11 +17,9 @@
             COALESCE(ROUND(AVG(rv.rating),1), 0) AS rating
         FROM restaurant AS r
                  JOIN category c ON r.category = c.category
-                 LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
                  LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
         GROUP BY
             r.restaurant_id,
-            rd.title,
             r.place,
             r.category,
             c.foods,
@@ -37,7 +35,7 @@
             resultType="bitc.next502.team_prj.dto.RestaurantDTO">
         SELECT
             r.restaurant_id AS restaurantId,
-            COALESCE(rd.title, r.place) AS restaurantName,
+            r.place AS restaurantName,
             r.category AS category,
             c.foods AS foods,
             r.addr1 AS address,
@@ -47,7 +45,7 @@
             r.itemcntnts AS description,
             r.lat AS lat,
             r.lng AS lng,
-            rd.main_img_thumb AS mainImgThumb,
+            r.main_img AS mainImgThumb,
             r.itemcntnts AS itemCntnts,
             COALESCE((
                          SELECT ROUND(AVG(rv.rating),1)
@@ -56,7 +54,6 @@
                      ), 0) AS rating
         FROM restaurant r
                  JOIN category c ON r.category = c.category
-                 LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
         WHERE r.restaurant_id = #{restaurantId}
             LIMIT 1
     </select>
@@ -104,27 +101,25 @@
             r.addr1 AS address,
             r.gugun_nm AS locationTag,
             r.main_img AS mainImg,
-            rd.main_img_thumb AS mainImgThumb,
+            r.main_img AS mainImgThumb,
             r.itemcntnts AS description,
             COALESCE(ROUND(AVG(rv.rating), 1), 0) AS rating,
             COUNT(rv.review_idx) AS reviewCount
         FROM restaurant r
                  JOIN category c ON r.category = c.category
-                 LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
                  LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
         WHERE r.place LIKE CONCAT('%', #{keyword}, '%')
            OR c.foods LIKE CONCAT('%', #{keyword}, '%')
            OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
         GROUP BY
             r.restaurant_id,
-            rd.title,
             r.place,
             r.category,
             c.foods,
             r.addr1,
             r.gugun_nm,
             r.main_img,
-            rd.main_img_thumb,
+            r.main_img_thumb,
             r.itemcntnts
         ORDER BY rating DESC
     </select>
@@ -132,7 +127,7 @@
     <select id="searchByFilter" resultType="bitc.next502.team_prj.dto.RestaurantDTO">
         SELECT
         r.restaurant_id AS restaurantId,
-        COALESCE(rd.title, r.place) AS restaurantName,
+        r.place AS restaurantName,
         c.foods AS foods,
         r.category AS category,
         r.addr1 AS address,
@@ -142,11 +137,9 @@
         COUNT(rv.review_idx) AS reviewCount
         FROM restaurant r
         JOIN category c ON r.category = c.category
-        LEFT JOIN restaurant_detail rd ON r.restaurant_id = rd.restaurant_id
         LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
         WHERE (
         r.place LIKE CONCAT('%', #{keyword}, '%')
-        OR rd.title LIKE CONCAT('%', #{keyword}, '%')
         OR r.itemcntnts LIKE CONCAT('%', #{keyword}, '%') OR c.foods LIKE CONCAT('%', #{keyword}, '%')
         OR r.addr1 LIKE CONCAT('%', #{keyword}, '%')
         OR r.gugun_nm LIKE CONCAT('%', #{keyword}, '%')
@@ -168,7 +161,6 @@
 
         GROUP BY
         r.restaurant_id,
-        rd.title,
         r.place,
         c.foods,
         r.category,
