@@ -160,8 +160,10 @@
                                                 <strong>[Re]</strong> <span th:text="${review.replyContent}"></span>
                                             </div>
                                             <div>
-                                                <img alt="272513510053900.jpg" src="https://github.com/wlsrud2308-lang/next502_prj_team/blob/main/src/main/resources/static/images/2026-02-13/272513510053900.jpg?raw=true" data-hpc="true" class="Box-sc-62in7e-0 eLrlvS img-loading"/>
-                                                <img th:src="@{'/images/2026-02-13/272513510053900.jpg'}" class="img-loading"/>
+
+                                                <img th:unless="${review.storedFilename !=null}" alt="272513510053900.jpg" src="https://github.com/wlsrud2308-lang/next502_prj_team/blob/main/src/main/resources/static/images/2026-02-13/272513510053900.jpg?raw=true" data-hpc="true" class="Box-sc-62in7e-0 eLrlvS img-loading"/>
+<!--                                                <img th:src="@{'/images/2026-02-13/272513510053900.jpg'}" class="img-loading"/>-->
+                                                <img th:if="${review.storedFilename !=null}" th:src="@{'/images/'+${review.storedFilename}}" class="img-loading"/>
                                             </div>
                                             <div class="text-end">
                                                 <button class="btn btn-outline-gold btn-sm px-3 btnuptate" th:attrappend="data-storeName=${review.storeName},

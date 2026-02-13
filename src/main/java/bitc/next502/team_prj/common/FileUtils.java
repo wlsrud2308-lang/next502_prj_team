@@ -35,7 +35,7 @@ public class FileUtils {
         DateTimeFormatter fm=DateTimeFormatter.ofPattern("yyyy-MM-dd");
         ZonedDateTime currentTime=ZonedDateTime.now();
 
-        String path ="C:/next502/images/" + currentTime.format(fm);
+        String path ="C:/next502/teamproject/new_2011/src/main/resources/static/images/" + currentTime.format(fm);
         File file = new File(path);
         if(!file.exists()){
             file.mkdirs();
