@@ -1,9 +1,12 @@
 package bitc.next502.team_prj.controller;
 
+import bitc.next502.team_prj.dto.NormalUserDTO;
 import bitc.next502.team_prj.dto.RatingStatDTO;
 import bitc.next502.team_prj.dto.ReviewDTO;
 import bitc.next502.team_prj.dto.RestaurantDTO;
+import bitc.next502.team_prj.service.BookmarkService;
 import bitc.next502.team_prj.service.RestaurantService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,9 @@ public class MainController {
 
     @Autowired
     private RestaurantService restaurantService;
+
+    @Autowired
+    private BookmarkService bookmarkService;
 
     @GetMapping({"/main", "/"})
     public String mainPage(Model model) {
@@ -39,10 +45,20 @@ public class MainController {
     
 
     @GetMapping("/detail")
-    public String detail(@RequestParam("id") String id, Model model) {
+    public String detail(@RequestParam("id") String id, HttpSession session, Model model) {
         RestaurantDTO restaurant = restaurantService.getRestaurantDetail(id);
         List<ReviewDTO> reviewList = restaurantService.getReviewsByRestaurantId(id);
         int reviewCount = restaurantService.getReviewCountByRestaurantId(id);
+
+        boolean isBookmarked = false;
+        Object userBoxing = session.getAttribute("loginUser");
+
+        if (userBoxing instanceof NormalUserDTO) {
+            String userId = ((NormalUserDTO) userBoxing).getUserId();
+            isBookmarked = bookmarkService.isBookmarked(userId, id);
+        }
+        model.addAttribute("isBookmarked", isBookmarked);
+        model.addAttribute("restaurant", restaurant);
 
         List<RatingStatDTO> stats = restaurantService.getRatingStatsByRestaurantId(id);
         Map<Integer, Integer> ratingCounts = new HashMap<>();

@@ -12,4 +12,5 @@ public interface BookmarkService {
 
     void deleteBookmark(String userId, String restaurantId);
 
+    boolean isBookmarked(String userId, String restaurantId);
 }

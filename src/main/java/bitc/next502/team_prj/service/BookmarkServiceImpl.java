@@ -38,4 +38,11 @@ public class BookmarkServiceImpl implements BookmarkService {
     public void deleteBookmark(String userId, String restaurantId) {
         bookmarkMapper.deleteBookmark(userId, restaurantId);
     }
+
+    @Override
+    public boolean isBookmarked(String userId, String restaurantId) {
+        // 이미 작성하신 mapper 로직을 그대로 활용하면 됩니다.
+        int count = bookmarkMapper.isBookmarked(userId, restaurantId);
+        return count > 0;
+    }
 }

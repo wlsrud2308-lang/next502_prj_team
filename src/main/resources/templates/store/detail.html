@@ -367,13 +367,13 @@
             <div class="d-flex gap-2 mb-4">
               <button type="button" class="btn btn-dark btn-lg flex-grow-1 fw-bold py-3" onclick="checkLoginAndGo()">예약하기</button>
 
-              <button type="button" class="btn btn-bookmark btn-lg px-3"
-                      th:classappend="${isBookmarked == 1} ? 'active'"
-                      th:data-restaurant-id="${restaurant.restaurantId}"
-                      th:data-restaurant-name="${restaurant.restaurantName}"
-                      onclick="toggleLike(this)">
-                <i class="bi bi-heart-fill"></i>
-              </button>
+                <button type="button" class="btn btn-bookmark btn-lg px-3" id="btnBookmark"
+                        th:classappend="${isBookmarked} ? 'active' : ''"
+                        th:data-restaurant-id="${restaurant.restaurantId}"
+                        th:data-restaurant-name="${restaurant.restaurantName}"
+                        onclick="toggleLike(this)">
+                  <i class="bi" th:classappend="${isBookmarked} ? 'bi-heart-fill ' : 'bi-heart'"></i>
+                </button>
 
               <input type="hidden" th:value="${restaurant.lat}" id="val-lat">
               <input type="hidden" th:value="${restaurant.lng}" id="val-lng">
@@ -512,6 +512,7 @@
 
         } else if (result === "1") {
           $btn.addClass("active");
+          $btn.find('i').removeClass('bi-heart').addClass('bi-heart-fill')
           alert("관심 식당에 추가되었습니다! ");
 
         } else if (result === "0") {
