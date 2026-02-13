@@ -31,8 +31,8 @@
 <!--        </foreach>-->
 <!--    </insert>-->
     <insert id="insertFileList" parameterType="bitc.next502.team_prj.dto.FileDTO">
+        <foreach collection="list" item="item" separator=";">
         INSERT INTO FILE (img_type,restaurant_id, original_filename, stored_filename, file_size, create_date,delete_yn, review_id,reservation_id,create_id )
-        <foreach collection="list" item="item" separator=",">
         SELECT
             '2',
             r.restaurant_id ,
