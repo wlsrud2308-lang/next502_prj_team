@@ -23,9 +23,11 @@
             r.reservation_time   AS resvTime,
             r.count_people       AS headCount,
             r.reservation_state  AS status,
+            rr.place AS storeName,
             IF(rv.review_idx IS NULL, 0, 1) AS isReviewed
         FROM
             reservation r
+                JOIN restaurant rr ON r.restaurant_id = rr.restaurant_id
                 LEFT JOIN
             review rv ON r.reservation_id = rv.reservation_id
         WHERE
