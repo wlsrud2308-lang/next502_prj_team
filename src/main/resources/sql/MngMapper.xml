@@ -155,9 +155,7 @@
             business_pwd AS businessPwd,
             business_name AS businessName,
             business_tel AS businessPhone,
-            business_number AS businessNumber,
-            status AS status,
-            delete_reserve_date AS deleteReserveDate
+            business_number AS businessNumber
         FROM business_user
         WHERE business_id = #{businessId}
     </select>
