@@ -4,6 +4,8 @@
   <div th:replace="~{layout/header :: header}"></div>
   <title>식당 정보 수정 | NEXT502</title>
 
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=lpdvoku5d1&submodules=geocoder"></script>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
     :root { --main-gold: #b89255; }
 
@@ -101,6 +103,13 @@
           <input type="hidden" name="restaurantId"
                  th:value="${restaurant.restaurantId}" />
 
+<!--          좌표-->
+          <input type="hidden" name="lat"
+                 th:value="${restaurant.lat}" />
+
+          <input type="hidden" name="lng"
+                 th:value="${restaurant.lng}" />
+
           <!-- 기존 이미지 값 유지용 -->
           <input type="hidden" name="existingMainImg"
                  th:value="${restaurant.mainImg}" />
@@ -151,9 +160,21 @@
 
             <div class="col-md-8 mb-4">
               <label class="form-label">상세 주소</label>
-              <input type="text" class="form-control py-2"
-                     name="address"
-                     th:value="${restaurant.address}">
+
+              <div class="input-group">
+                <input type="text"
+                       class="form-control py-2"
+                       id="address"
+                       name="address"
+                       th:value="${restaurant.address}"
+                       readonly>
+
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        onclick="searchAddress()">
+                  주소 검색
+                </button>
+              </div>
             </div>
           </div>
 
@@ -255,6 +276,35 @@
 
       reader.readAsDataURL(input.files[0]);
     }
+  }
+  function searchAddress() {
+    new daum.Postcode({
+      oncomplete: function(data) {
+
+        const addr = data.address;
+
+        document.getElementById("address").value = addr;
+
+        fetch("/api/geocode?address=" + encodeURIComponent(addr))
+                .then(res => res.json())
+                .then(response => {
+
+                  if (!response.addresses || response.addresses.length === 0) {
+                    alert("좌표 없음");
+                    return;
+                  }
+
+                  const result = response.addresses[0];
+
+                  document.querySelector("input[name='lat']").value = result.y;
+                  document.querySelector("input[name='lng']").value = result.x;
+                })
+                .catch(err => {
+                  console.error(err);
+                  alert("좌표 변환 실패");
+                });
+      }
+    }).open();
   }
 </script>
 
