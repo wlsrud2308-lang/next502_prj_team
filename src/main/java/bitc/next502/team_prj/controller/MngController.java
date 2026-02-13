@@ -131,7 +131,7 @@ public class MngController {
                 currentUser.setRestaurantId((int)restaurantId); // DTO에 해당 필드가 있다면 세팅
                 session.setAttribute("loginUser", currentUser); // 업데이트된 객체를 세션에 다시 저장
             }
-            
+
             // 성공 메시지
             redirectAttributes.addFlashAttribute("alertMessage", "가게 등록이 완료되었습니다!");
             redirectAttributes.addFlashAttribute("alertType", "success");
