@@ -27,7 +27,6 @@
         rw.user_id           as userId,
         rw.restaurant_id     as restaurantId,
         rw.reservation_id    as reservationId,
-        d.title              as storeName ,
         rw.comment           as comment ,
         rw.create_date       as createDate,
         rw.rating            as rating,
@@ -35,7 +34,6 @@
         rw.reply_date        as replyDate,
         f.stored_filename    as storedFilename
         FROM review rw
-        JOIN restaurant_detail d ON rw.restaurant_id = d.restaurant_id
         LEFT OUTER JOIN file f ON rw.review_idx = f.review_id
         WHERE rw.user_id = #{userId}
         ORDER BY rw.create_date DESC
