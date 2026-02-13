@@ -75,7 +75,7 @@
                           .then(data => {
                               if(data.success){
                                   row.remove();
-                                  updateCards({ total: -1, waiting: -1 });
+                                  updateCardsFromServer(data);
                               } else alert('취소 실패');
                           });
                   });
@@ -113,7 +113,7 @@
                               if(data.success){
                                   statusCell.innerHTML = `<span class="badge bg-success bi bi-check2-all">방문 완료</span>`;
                                   row.setAttribute('data-status', '방문완료');
-                                  updateCards({ visit: 1, waiting: -1 });
+                                  updateCardsFromServer(data);
                               } else alert('상태 변경 실패');
                           });
                   });
@@ -129,13 +129,19 @@
                                   statusCell.innerHTML = `<span class="badge bg-danger">노쇼</span>`;
                                   row.setAttribute('data-status', '노쇼');
                                   row.classList.add('status-completed');
-                                  updateCards({ waiting: -1 });
+                                  updateCardsFromServer(data);
                               } else alert('노쇼 처리 실패');
                           });
                   });
               });
         });
       });
+
+    function updateCardsFromServer(data) {
+        document.getElementById('totalCount').textContent = data.totalCount;
+        document.getElementById('visitCount').textContent = data.visitCount;
+        document.getElementById('waitingCount').textContent = data.waitingCount;
+    }
   </script>
 </head>
 <body class="bg-light">
@@ -190,19 +196,19 @@
         <div class="row g-3 mb-5">
           <div class="col-md-4">
             <div class="summary-card bg-white p-4 text-center">
-              <div class="card-num" th:text="${totalCount ?: 12}">12</div>
+              <div class="card-num" id="totalCount" th:text="${totalCount ?: 12}">12</div>
               <div class="small text-muted mt-1">오늘 총 예약</div>
             </div>
           </div>
           <div class="col-md-4">
             <div class="summary-card bg-white p-4 text-center">
-              <div class="card-num" th:text="${visitCount ?: 8}">8</div>
+              <div class="card-num" id="visitCount" th:text="${visitCount ?: 8}">8</div>
               <div class="small text-muted mt-1 text-success">방문 완료</div>
             </div>
           </div>
           <div class="col-md-4">
             <div class="summary-card bg-white p-4 text-center">
-              <div class="card-num" th:text="${waitingCount ?: 4}">4</div>
+              <div class="card-num" id="waitingCount" th:text="${waitingCount ?: 4}">4</div>
               <div class="small text-muted mt-1 text-warning">대기 중</div>
             </div>
           </div>
