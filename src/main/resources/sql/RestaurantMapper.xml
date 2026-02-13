@@ -47,6 +47,8 @@
             r.lng AS lng,
             r.main_img AS mainImgThumb,
             r.itemcntnts AS itemCntnts,
+            r.usage_day_week_and_time AS usageDayWeekAndTime,
+            r.menu AS menu,
             COALESCE((
                          SELECT ROUND(AVG(rv.rating),1)
                          FROM review rv
@@ -190,7 +192,9 @@
         gugun_nm = #{locationTag},
         max_capacity = #{maxCapacity},
         itemcntnts = #{itemCntnts},
-        price = #{price}
+        price = #{price},
+        lat = #{lat},
+        lng = #{lng}
         <if test="mainImg != null and mainImg != ''">
             , main_img = #{mainImg}
         </if>
@@ -213,7 +217,9 @@
                r.price AS price,
                r.main_img AS mainImg,
                r.itemcntnts AS itemCntnts,
-               r.max_capacity AS maxCapacity
+               r.max_capacity AS maxCapacity,
+               r.lat AS lat,
+               r.lng AS lng
         FROM restaurant r
                  JOIN category c ON r.category = c.category
         WHERE restaurant_id = #{restaurantId}

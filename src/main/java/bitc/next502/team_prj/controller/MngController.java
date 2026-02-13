@@ -429,4 +429,30 @@ public class MngController {
             return "redirect:/mngStoreEdit";
     }
 
+    @GetMapping("/api/geocode")
+    @ResponseBody
+    public ResponseEntity<?> geocode(@RequestParam String address) {
+
+        try {
+            String url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" +
+                    java.net.URLEncoder.encode(address, java.nio.charset.StandardCharsets.UTF_8);
+
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("X-NCP-APIGW-API-KEY-ID", "lpdvoku5d1");
+            headers.set("X-NCP-APIGW-API-KEY", "dYnSiJuq5qBDFBzZIoghDswW9vc1U3V7CG5STzFG");
+
+            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
+
+            org.springframework.web.client.RestTemplate rt = new org.springframework.web.client.RestTemplate();
+
+            org.springframework.http.ResponseEntity<Map> response =
+                    rt.exchange(url, org.springframework.http.HttpMethod.GET, entity, Map.class);
+
+            return ResponseEntity.ok(response.getBody());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("geocode error");
+        }
+    }
 }

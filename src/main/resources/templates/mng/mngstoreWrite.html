@@ -3,6 +3,13 @@
 <head>
   <div th:replace="~{layout/header :: header}"></div>
   <title>NEXT502 | 식당 등록 관리</title>
+
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=lpdvoku5d1"></script>
+
+
+
+
   <style>
       .form-control, .form-select {
           border-color: #eee;
@@ -119,9 +126,13 @@
               </div>
               <div class="col-md-8">
                 <label for="address" class="form-label">상세 주소</label>
-                <input type="text" class="form-control" id="address" name="address" placeholder="전체 주소를 입력하세요">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="address" name="address" placeholder="주소 검색 버튼을 눌러주세요" readonly required>
+                  <button class="btn btn-outline-gold" type="button" onclick="searchAddress()">주소 검색</button>
               </div>
             </div>
+              <input type="hidden" id="lat" name="lat">
+              <input type="hidden" id="lng" name="lng">
 
             <h5 class="section-title mt-5">운영 정보</h5>
             <div class="row g-3 mb-4">
@@ -177,18 +188,55 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
-    // 이미지 미리보기
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const container = document.getElementById('preview-container');
-                container.innerHTML = `<img src="${e.target.result}" style="max-height: 250px; border-radius: 4px;" class="img-fluid shadow-sm">
+  // 주소 검색 함수
+  function searchAddress() {
+    new daum.Postcode({
+      oncomplete: function(data) {
+
+        const addr = data.roadAddress || data.jibunAddress;
+
+        console.log("주소:", addr);
+
+        document.getElementById("address").value = addr;
+
+        naver.maps.Service.geocode({
+          query: addr
+        }, function(status, response) {
+
+          if (status !== naver.maps.Service.Status.OK) {
+            alert("좌표 변환 실패");
+            return;
+          }
+
+          if (!response.v2.addresses || response.v2.addresses.length === 0) {
+            alert("좌표 결과 없음");
+            return;
+          }
+
+          const result = response.v2.addresses[0];
+
+          document.getElementById("lat").value = result.y;
+          document.getElementById("lng").value = result.x;
+
+          console.log("좌표 성공", result.y, result.x);
+        });
+
+      }
+    }).open();
+  }
+
+  // 이미지 미리보기
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const container = document.getElementById('preview-container');
+        container.innerHTML = `<img src="${e.target.result}" style="max-height: 250px; border-radius: 4px;" class="img-fluid shadow-sm">
                                        <p class="mt-2 mb-0 text-gold fw-bold">이미지가 선택되었습니다. 다시 클릭하면 변경 가능합니다.</p>`;
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
+      }
+      reader.readAsDataURL(input.files[0]);
     }
+  }
 </script>
 
 </body>
