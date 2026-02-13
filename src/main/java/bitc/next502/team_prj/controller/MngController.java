@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -86,6 +87,7 @@ public class MngController {
     }
 
     // POST: 가게 등록 처리
+    @Transactional
     @PostMapping("/mngstoreWrite")
     public String registerStore(@ModelAttribute RestaurantDTO restaurantDTO,
                                 @RequestParam("mainImgFile") MultipartFile mainImgFile,
