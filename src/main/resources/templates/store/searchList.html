@@ -125,10 +125,16 @@
             <div class="mb-3">
               <span class="text-gold fw-bold fs-5">★ [[${res.rating}]]</span>
             </div>
-            <p class="card-text text-secondary small mb-3 text-truncate" th:text="${res.description}">
-              식당 소개글입니다.
-            </p>
-            <button class="btn btn-dark btn-sm px-4 position-relative" style="z-index: 2;">예약하기</button>
+
+              <p class="card-text text-secondary small mb-3 text-truncate" th:text="${res.description}">
+                식당 소개글입니다.
+              </p>
+
+              <a th:href="@{/reservation/write(restaurantId=${res.restaurantId})}"
+                 class="btn btn-dark btn-sm px-4 shadow-sm"
+                 style="z-index: 5;">
+                예약하기
+              </a>
           </div>
         </div>
       </div>
